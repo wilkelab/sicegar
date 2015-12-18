@@ -1,9 +1,29 @@
 Package: sicegar
 Type: Package
-Title: What the package does (short line)
-Version: 1.0
+Title: Analysis of single-cell viral growth curves
+Version: 0.1
 Date: 2015-12-17
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Authors@R: c( person("M. Umut", "Caglar", role = c("aut", "cre"), email =
+    "umut.caglar@gmail.com"), person("Claus O.", "Wilke", role = c("aut"), email =
+    "wilke@austin.utexas.edu") )
+Description: Need a detailed description here. sicegar = SIngle CEll Growth Analysis in R
+URL: https://github.com/wilkelab/sicegar
+Imports:
+    dplyr,
+    minpack.lm
+License: GPL-2 | GPL-3
+LazyData: true
+Suggests:
+    knitr
+VignetteBuilder: knitr
+BugReports: https://github.com/wilkelab/sicegar/issues
+Collate:
+  'clusterFunction.R'
+  'filterFunction.R'
+  'fit_noSol.R'
+  'fGeneral_00.R'
+  'fit_S1.R'
+  'renameFun.R'
+  'fGeneral_00_Numeric.R'
+  'fit_main.R'
+  'sicegar.R'

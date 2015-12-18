@@ -1,3 +1,5 @@
 #sicegar package
 
-We need some description here.
+Package for single-cell virology.
+
+We need some more description here.

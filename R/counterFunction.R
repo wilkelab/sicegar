@@ -1,7 +1,7 @@
 #' @title Counter function
 #'
 #' @param data Normalized input data that will be fitted transferred into related functions
-#' @param fitFunction type of fit function that will be used. Can be "linear", "sigmoidal", "double_sigmoidal", "test"
+#' @param model type of fit function that will be used. Can be "linear", "sigmoidal", "double_sigmoidal", "test"
 #' @param n_runs_max number of maximum runs that the algorithm can run
 #' @param n_runs_min number of minimum runs that the algorithm can run
 #'
@@ -10,50 +10,105 @@
 #' @export
 #'
 #' @examples
-#' # add usage examples here
+#' # Example 1 (test function without normalization)
+#' # data sent to algorithm directly as data frame
+#' # a- Generate data
+#' time = seq(3,48,0.5)
+#' intensity=runif(length(time), 3.0, 7.5)
+#' dataInput = data.frame(time,intensity)
+#' # b- generate "random Parameter" for model "test"
+#' randomParameter=0.7 # it should be a parameter between 0 and 1
+#' # c- use the function "test"
+#' parameterOutput=counterFunction(data=dataInput,model="test",n_runs_min=5,n_runs_max=15)
+#'
+#' # Example 2 (test function with normalization)
+#' # data sent to algorithm after normalization
+#' # a- Generate data
+#' time = seq(3,48,0.5)
+#' intensity=runif(length(time), 3.0, 7.5)
+#' dataInput = data.frame(time,intensity)
+#' # b- normalize data
+#' dataOutput = normalizeData(dataInput)
+#' # c- generate "random Parameter" for model "test"
+#' randomParameter=0.7 # it should be a parameter between 0 and 1
+#' # d- use the function "test"
+#' dataInput2=dataOutput
+#' parameterOutput=counterFunction(data=dataInput2,
+#'                                 model="test",
+#'                                 n_runs_min=5,
+#'                                 n_runs_max=15)
+#'
+#' # Example 3 (linear function without normalization)
+#' # data sent to algorithm directly as data frame
+#' # a- Generate data
+#' time = seq(3,48,0.5)
+#' intensity=runif(length(time), 3.0, 7.5)
+#' dataInput = data.frame(time,intensity)
+#' # b- use the function "linear"
+#' parameterOutput=counterFunction(data=dataInput,
+#'                                 model="linear",
+#'                                 n_runs_min=5,
+#'                                 n_runs_max=15)
+#'
+#' # Example 4 (linear function with normalization)
+#' # data sent to algorithm after normalization
+#' # a- Generate data
+#' time = seq(3,48,0.5)
+#' intensity=runif(length(time), 3.0, 7.5)
+#' dataInput = data.frame(time,intensity)
+#' # b- normalize data
+#' dataOutput = normalizeData(dataInput)
+#' # c- use the function "linear"
+#' dataInput2=dataOutput
+#' parameterOutput=counterFunction(data=dataInput2,
+#'                                 model="linear",
+#'                                 n_runs_min=5,
+#'                                 n_runs_max=15)
+#'
 counterFunction <-
-  function(data,fitFunction, n_runs_min, n_runs_max, ...)
+  function(dataInput,model, n_runs_min, n_runs_max, ...)
   {
-    if(!(fitFunction %in% c("linear", "sigmoidal", "double_sigmoidal", "test")) )
-    {stop("fitFunction should be one of linear, sigmoidal, double_sigmoidal, test")}
-    
+    dataInputCheck=dataCheck(dataInput)
+
+    if(!(model %in% c("linear", "sigmoidal", "double_sigmoidal", "test")) )
+    {stop("model should be one of linear, sigmoidal, double_sigmoidal, test")}
+
     counterBetterFit=0
     counterCorrectFit=0
     counterTotalFit=0
     residual_Sum_of_Squares_min=Inf
-    storedFitFunctionOutput=list()
-    storedFitFunctionOutput$residual_Sum_of_Squares=Inf
- 
+    storedModelOutput=list()
+    storedModelOutput$residual_Sum_of_Squares=Inf
+
     while(counterCorrectFit<n_runs_min & counterTotalFit<n_runs_max)
     {
-      
-      
-      
-      if(fitFunction == "test"){fitFunctionOutput=exampleFitFunction(randomParameter)}
-      
-      if(fitFunctionOutput[[1]]){
+
+      counterTotalFit=counterTotalFit+1
+      if(model == "test"){modelOutput=exampleFitFunction(randomParameter)}
+      if(model == "linear"){modelOutput=lineFitFunction(dataInput=dataInput,tryCounter=counterTotalFit)}
+      if(model == "sigmoidal"){modelOutput=sigmoidalFitFunction(dataInput=dataInput,tryCounter=counterTotalFit)}
+
+      if(modelOutput[["isThisaFit"]]){
         counterCorrectFit=counterCorrectFit+1
-        if(residual_Sum_of_Squares_min>fitFunctionOutput$residual_Sum_of_Squares){
+        if(residual_Sum_of_Squares_min>modelOutput$residual_Sum_of_Squares){
           counterBetterFit=counterBetterFit+1
-          residual_Sum_of_Squares_min=fitFunctionOutput$residual_Sum_of_Squares
-          storedFitFunctionOutput=fitFunctionOutput
+          residual_Sum_of_Squares_min=modelOutput$residual_Sum_of_Squares
+          storedModelOutput=modelOutput
         }
       }
-      
-      counterTotalFit=counterTotalFit+1
-      
+
       print(c(counterBetterFit,
               counterCorrectFit,
               counterTotalFit,
-              storedFitFunctionOutput$residual_Sum_of_Squares))
-      
+              modelOutput$residual_Sum_of_Squares))
+
     }
-    return(storedFitFunctionOutput)
+    return(modelOutput)
   }
 
 #' exampleFitFunction
 #'
-#' @param randomParameter This parameter defines the probability that the exampleFitFunction returns TRUE values for isThisaFit parameter
+#' @param randomParameter This parameter defines the probability that the exampleFitFunction returns TRUE values for isThisaFit parameter. The aparemeter should be in the interval of 0 and 1
 #' @details This is the exampleFitFunction that generates TRUE values for isThisaFit parameter whit given probability
 #' @return The function returns TRUE or FALSE for isThisaFit parameter and also residual_Sum_of_Squares parameter that determines the goodness of the fit
 #'
@@ -62,6 +117,8 @@ counterFunction <-
 exampleFitFunction<-
   function(randomParameter)
   {
+    if(randomParameter<0 | randomParameter>1)
+      {stop("the random parameter for model test should be between 0 and 1")}
     randomNumber=runif(1, 0, 1)
     if(randomNumber<randomParameter){isThisaFit=TRUE; residual_Sum_of_Squares=runif(1, 0, 1)}
     if(randomNumber>randomParameter){isThisaFit=FALSE; residual_Sum_of_Squares=NA}

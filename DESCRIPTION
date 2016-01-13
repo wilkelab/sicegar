@@ -10,7 +10,9 @@ Description: Need a detailed description here. Origin of the package name: siceg
 URL: https://github.com/wilkelab/sicegar
 Imports:
     dplyr,
-    minpack.lm
+    minpack.lm,
+    fBasics,
+    ggplot2
 License: GPL-2 | GPL-3
 LazyData: true
 Suggests:
@@ -19,6 +21,12 @@ VignetteBuilder: knitr
 BugReports: https://github.com/wilkelab/sicegar/issues
 Collate:
   'clusterFunction.R'
+  'counterFunction.R'
+  'fit_main2.R'
+  'lineFitFunctions.R'
+  'sigmoidalFitFunctions.R'
+  'doublesigmoidalFitFunctions.R'
+  'normalizationFunction.R'
   'filterFunction.R'
   'fit_noSol.R'
   'fGeneral_00.R'
@@ -27,3 +35,4 @@ Collate:
   'fGeneral_00_Numeric.R'
   'fit_main.R'
   'sicegar.R'
+  'dataInputCheck.R'

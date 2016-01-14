@@ -31,14 +31,38 @@ lineFitFunction
 }
 \examples{
 # related examples
-intensity=c(0.9947917, 0.7395833, 0.4010417, 0.8020833, 0.5364583, 0.6718750, 0.6770833,
-      0.6145833, 0.6041667, 0.2708333, 1.0000000, 0.4687500, 0.3385417, 0.5364583,
-      0.4687500, 0.6041667, 0.6718750, 0.3333333, 0.4010417, 0.7500000, 0.2031250,
-      0.4114583, 0.4010417, 0.8802083, 0.6041667, 0.7500000, 0.4010417, 0.8072917,
-      0.4687500, 0.3333333, 0.2708333, 0.0000000, 0.4010417, 0.7343750, 0.4062500,
-      0.6718750, 0.6666667, 0.3385417, 0.8020833, 0.5468750, 0.6093750, 0.6093750, 0.6770833)
+# Initial Command to Reset the System
+rm(list = ls())
+if (is.integer(dev.list())){dev.off()}
+cat("\\014")
+
 time=seq(3,24,0.5)
+
+#intensity with Noise
+noise_parameter=.2
+intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+intensity=lineFitFormula(time, slope=4, intersection=-2)
+intensity=intensity+intensity_noise
+
 dataInput=data.frame(intensity=intensity,time=time)
-parameterVector<-lineFitFunction(dataInput,tryCounter=2)
+dataOutput = normalizeData(dataInput)
+dataInput2=dataOutput
+parameterVector<-lineFitFunction(dataInput2,tryCounter=2)
+
+#Check the results
+if(parameterVector$isThisaFit){
+ intensityTheoretical=lineFitFormula(time,
+                                     slope=parameterVector$slope_Estimate,
+                                     intersection=parameterVector$intersection_Estimate)
+
+ comparisonData=cbind(dataInput,intensityTheoretical)
+
+ print(parameterVector$residual_Sum_of_Squares)
+ ggplot(comparisonData)+
+   geom_point(aes(x=time, y=intensity))+
+   geom_line(aes(x=time,y=intensityTheoretical))+
+   expand_limits(x = 0, y = 0)}
+
+if(!parameterVector$isThisaFit){print(parameterVector)}
 }
 

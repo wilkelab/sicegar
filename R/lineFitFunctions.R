@@ -12,16 +12,41 @@
 #' @export
 #'
 #' @examples
-#' # related examples
-#' intensity=c(0.9947917, 0.7395833, 0.4010417, 0.8020833, 0.5364583, 0.6718750, 0.6770833,
-#'       0.6145833, 0.6041667, 0.2708333, 1.0000000, 0.4687500, 0.3385417, 0.5364583,
-#'       0.4687500, 0.6041667, 0.6718750, 0.3333333, 0.4010417, 0.7500000, 0.2031250,
-#'       0.4114583, 0.4010417, 0.8802083, 0.6041667, 0.7500000, 0.4010417, 0.8072917,
-#'       0.4687500, 0.3333333, 0.2708333, 0.0000000, 0.4010417, 0.7343750, 0.4062500,
-#'       0.6718750, 0.6666667, 0.3385417, 0.8020833, 0.5468750, 0.6093750, 0.6093750, 0.6770833)
-#' time=seq(3,24,0.5)
-#' dataInput=data.frame(intensity=intensity,time=time)
-#' parameterVector<-lineFitFunction(dataInput,tryCounter=2)
+#'# related examples
+#'# Initial Command to Reset the System
+#'rm(list = ls())
+#'if (is.integer(dev.list())){dev.off()}
+#'cat("\014")
+#'
+#'time=seq(3,24,0.5)
+#'
+#'#intensity with Noise
+#'noise_parameter=.2
+#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+#'intensity=lineFitFormula(time, slope=4, intersection=-2)
+#'intensity=intensity+intensity_noise
+#'
+#'dataInput=data.frame(intensity=intensity,time=time)
+#'dataOutput = normalizeData(dataInput)
+#'dataInput2=dataOutput
+#'parameterVector<-lineFitFunction(dataInput2,tryCounter=2)
+#'
+#'#Check the results
+#'if(parameterVector$isThisaFit){
+#'  intensityTheoretical=lineFitFormula(time,
+#'                                      slope=parameterVector$slope_Estimate,
+#'                                      intersection=parameterVector$intersection_Estimate)
+#'
+#'  comparisonData=cbind(dataInput,intensityTheoretical)
+#'
+#'  print(parameterVector$residual_Sum_of_Squares)
+#'  ggplot(comparisonData)+
+#'    geom_point(aes(x=time, y=intensity))+
+#'    geom_line(aes(x=time,y=intensityTheoretical))+
+#'    expand_limits(x = 0, y = 0)}
+#'
+#'if(!parameterVector$isThisaFit){print(parameterVector)}
+
 #'
 lineFitFunction<-function(dataInput,
                           tryCounter,
@@ -45,35 +70,64 @@ lineFitFunction<-function(dataInput,
     counterDependentStartList=as.list(counterDependentStartVector)}
 
 
-  theFitResult <- minpack.lm::nlsLM(intensity ~ sicegar::lineFitFormula(time, slope, intersection),
-                        dataFrameInput,
-                        start=counterDependentStartList,
-                        control = list(maxiter = n_iterations, minFactor = min_Factor),
-                        lower = lowerBounds,
-                        upper = upperBounds,
-                        trace=F)
+  theFitResult <- try(minpack.lm::nlsLM(intensity ~ sicegar::lineFitFormula(time, slope, intersection),
+                                        dataFrameInput,
+                                        start=counterDependentStartList,
+                                        control = list(maxiter = n_iterations, minFactor = min_Factor),
+                                        lower = lowerBounds,
+                                        upper = upperBounds,
+                                        trace=F),silent = TRUE)
 
-  parameterMatrix=summary(theFitResult)$parameters
-  colnames(parameterMatrix)<-c("Estimate","Std_Error","t_value","Pr_t")
+  if(class(theFitResult)!="try-error")
+  {
+    parameterMatrix=summary(theFitResult)$parameters
+    colnames(parameterMatrix)<-c("Estimate","Std_Error","t_value","Pr_t")
 
 
-  parameterVector=c(t(parameterMatrix))
-  names(parameterVector)<- c("slope_Estimate","slope_Std_Error","slope_t_value","slope_Pr_t",
-                             "intersection_Estimate","intersection_Std_Error","intersection_t_value","intersection_Pr_t")
+    parameterVector=c(t(parameterMatrix))
+    names(parameterVector)<- c("slope_N_Estimate","slope_Std_Error","slope_t_value","slope_Pr_t",
+                               "intersection_N_Estimate","intersection_Std_Error","intersection_t_value","intersection_Pr_t")
 
-  parameterVector<-c(parameterVector,
-                     residual_Sum_of_Squares=sum((as.vector(resid(theFitResult)))^2)[1],
-                     log_likelihood=as.vector(logLik(theFitResult))[1],
-                     AIC_value=as.vector(AIC(theFitResult))[1],
-                     BIC_value=as.vector(BIC(theFitResult))[1])
+    parameterVector<-c(parameterVector,
+                       residual_Sum_of_Squares=sum((as.vector(resid(theFitResult)))^2)[1],
+                       log_likelihood=as.vector(logLik(theFitResult))[1],
+                       AIC_value=as.vector(AIC(theFitResult))[1],
+                       BIC_value=as.vector(BIC(theFitResult))[1])
 
-  parameterList=as.list(parameterVector)
-  parameterList$isThisaFit=TRUE
-  parameterList$startVector=counterDependentStartList
-  if(isalist){parameterList$dataScalingParameters=as.list(dataInput$dataScalingParameters)}
-  parameterList$model="linaer"
+    parameterList=as.list(parameterVector)
+    parameterList$isThisaFit=TRUE
+    parameterList$startVector=counterDependentStartList
+    if(isalist){parameterList$dataScalingParameters=as.list(dataInput$dataScalingParameters)}
+    parameterList$model="linaer"
 
-  parameterDf=as.data.frame(parameterList)
+    parameterDf=as.data.frame(parameterList)
+    #Renormalize Parameters
+    parameterDf=linearRenormalizeParameters(parameterDf,isalist)
+  }
+
+  if(class(theFitResult)=="try-error")
+  {
+    parameterVector=rep(NA, 24)
+    names(parameterVector)<- c("slope_N_Estimate","slope_Std_Error","slope_t_value","slope_Pr_t",
+                               "intersection_N_Estimate","intersection_Std_Error","intersection_t_value","intersection_Pr_t")
+    parameterVector<-c(parameterVector,
+                       residual_Sum_of_Squares=Inf,
+                       log_likelihood=NA,
+                       AIC_value=NA,
+                       BIC_value=NA)
+
+    parameterList=as.list(parameterVector)
+    parameterList$isThisaFit=FALSE
+    parameterList$startVector=counterDependentStartList
+    if(isalist){parameterList$dataScalingParameters=as.list(dataInput$dataScalingParameters)}
+    parameterList$model="linear"
+
+    parameterDf=as.data.frame(parameterList)
+    #Renormalize Parameters
+    parameterDf=linearRenormalizeParameters(parameterDf,isalist)
+  }
+
+
   return(parameterDf)
 
 }
@@ -92,3 +146,17 @@ lineFitFunction<-function(dataInput,
 lineFitFormula<-function(x, slope, intersection){
   y=slope*x+intersection;
   return(y)}
+
+#' @export
+linearRenormalizeParameters<-function(parameterDF,isalist)
+{
+  if(isalist){
+    parameterDF$intersection_Estimate=parameterDF$intersection_N_Estimate*parameterDF$dataScalingParameters.intensityRatio+parameterDF$dataScalingParameters.intensityMin
+    parameterDF$slope_Estimate=parameterDF$slope_N_Estimate*parameterDF$dataScalingParameters.intensityRatio/parameterDF$dataScalingParameters.timeRatio
+  }
+  if(!isalist){
+    parameterDF$intersection_Estimate=parameterDF$intersection_N_Estimate
+    parameterDF$slope_Estimate=parameterDF$slope_N_Estimate
+  }
+  return(parameterDF)
+}

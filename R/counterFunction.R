@@ -1,4 +1,4 @@
-?lin#' @title Counter function
+#' @title fit function
 #'
 #' @param data Normalized input data that will be fitted transferred into related functions
 #' @param model type of fit function that will be used. Can be "linear", "sigmoidal", "double_sigmoidal", "test"
@@ -19,7 +19,7 @@
 #' # b- generate "random Parameter" for model "test"
 #' randomParameter=0.7 # it should be a parameter between 0 and 1
 #' # c- use the function "test"
-#' parameterOutput=counterFunction(data=dataInput,model="test",n_runs_min=5,n_runs_max=15)
+#' parameterOutput=fitFunction(data=dataInput,model="test",n_runs_min=5,n_runs_max=15)
 #'
 #' # Example 2 (test function with normalization)
 #' # data sent to algorithm after normalization
@@ -33,7 +33,7 @@
 #' randomParameter=0.7 # it should be a parameter between 0 and 1
 #' # d- use the function "test"
 #' dataInput2=dataOutput
-#' parameterOutput=counterFunction(data=dataInput2,
+#' parameterOutput=fitFunction(data=dataInput2,
 #'                                 model="test",
 #'                                 n_runs_min=5,
 #'                                 n_runs_max=15)
@@ -45,25 +45,49 @@
 #' intensity=runif(length(time), 3.0, 7.5)
 #' dataInput = data.frame(time,intensity)
 #' # b- use the function "linear"
-#' parameterOutput=counterFunction(data=dataInput,
+#' parameterOutput=fitFunction(data=dataInput,
 #'                                 model="linear",
 #'                                 n_runs_min=5,
 #'                                 n_runs_max=15)
 #'
-#' # Example 4 (linear function with normalization)
-#' # data sent to algorithm after normalization
-#' # a- Generate data
-#' time = seq(3,48,0.5)
-#' intensity=runif(length(time), 3.0, 7.5)
-#' dataInput = data.frame(time,intensity)
-#' # b- normalize data
-#' dataOutput = normalizeData(dataInput)
-#' # c- use the function "linear"
-#' dataInput2=dataOutput
-#' parameterOutput=counterFunction(data=dataInput2,
-#'                                 model="linear",
+#'
+#'# Example 4 (linear function with normalization)
+#'# Initial Command to Reset the System
+#'rm(list = ls())
+#'if (is.integer(dev.list())){dev.off()}
+#'cat("\014")
+#'
+#'time=seq(3,24,0.5)
+#'
+#'#intensity with Noise
+#'noise_parameter=20
+#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+#'intensity=lineFitFormula(time, slope=4, intersection=-2)
+#'intensity=intensity+intensity_noise
+#'
+#'dataInput=data.frame(intensity=intensity,time=time)
+#'dataOutput = normalizeData(dataInput)
+#'dataInput2=dataOutput
+#'parameterVector=fitFunction(data=dataInput2,
+#'                                model="linear",
 #'                                 n_runs_min=5,
 #'                                 n_runs_max=15)
+#'
+#'#Check the results
+#'if(parameterVector$isThisaFit){
+#'  intensityTheoretical=lineFitFormula(time,
+#'                                      slope=parameterVector$slope_Estimate,
+#'                                      intersection=parameterVector$intersection_Estimate)
+#'
+#'  comparisonData=cbind(dataInput,intensityTheoretical)
+#'
+#'  print(parameterVector$residual_Sum_of_Squares)
+#'  ggplot(comparisonData)+
+#'    geom_point(aes(x=time, y=intensity))+
+#'    geom_line(aes(x=time,y=intensityTheoretical))+
+#'    expand_limits(x = 0, y = 0)}
+#'
+#'if(!parameterVector$isThisaFit){print(parameterVector)}
 #'
 #'# Example 5 (sigmoidal function with normalization)
 #'# Initial Command to Reset the System
@@ -82,7 +106,7 @@
 #'dataInput=data.frame(intensity=intensity,time=time)
 #'dataOutput = normalizeData(dataInput)
 #'dataInput2=dataOutput
-#'parameterVector=counterFunction(data=dataInput2,
+#'parameterVector=fitFunction(data=dataInput2,
 #'                                model="sigmoidal",
 #'                                n_runs_min=20,
 #'                                n_runs_max=500)
@@ -131,7 +155,7 @@
 #'dataInput=data.frame(intensity=intensity,time=time)
 #'dataOutput = normalizeData(dataInput)
 #'dataInput2=dataOutput
-#'parameterVector=counterFunction(data=dataInput2,
+#'parameterVector=fitFunction(data=dataInput2,
 #'                                model="doublesigmoidal",
 #'                                n_runs_min=20,
 #'                                n_runs_max=500)
@@ -154,7 +178,7 @@
 #'    expand_limits(x = 0, y = 0)}
 #'
 #'if(!parameterVector$isThisaFit){print(parameterVector)}
-counterFunction <-
+fitFunction <-
   function(dataInput,model, n_runs_min, n_runs_max, ...)
   {
     dataInputCheck=dataCheck(dataInput)

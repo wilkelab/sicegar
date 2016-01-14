@@ -64,20 +64,19 @@ parameterVector<-doublesigmoidalFitFunction(dataInput2,tryCounter=2)
 
 #Check the results
 if(parameterVector$isThisaFit){
-time=dataInput2$timeIntensityData$time
-intensityTheoretical=doublesigmoidalFitFormula(time,
-                                              finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
-                                              maximum=parameterVector$maximum_Estimate,
-                                              slope1=parameterVector$slope1_Estimate,
-                                              midPoint1=parameterVector$midPoint1_Estimate,
-                                              slope2=parameterVector$slope2_Estimate,
-                                              midPointDistance=parameterVector$midPointDistance_Estimate)
+ intensityTheoretical=doublesigmoidalFitFormula(time,
+                                                finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+                                                maximum=parameterVector$maximum_Estimate,
+                                                slope1=parameterVector$slope1_Estimate,
+                                                midPoint1=parameterVector$midPoint1_Estimate,
+                                                slope2=parameterVector$slope2_Estimate,
+                                                midPointDistance=parameterVector$midPointDistance_Estimate)
 
-comparisonData=cbind(dataOutput$timeIntensityData,intensityTheoretical)
-ggplot(comparisonData)+
- geom_point(aes(x=time, y=intensity))+
- geom_line(aes(x=time,y=intensityTheoretical))+
- ylim(c(0,1.04))+xlim(c(0,1.04))}
+ comparisonData=cbind(dataInput,intensityTheoretical)
+ ggplot(comparisonData)+
+   geom_point(aes(x=time, y=intensity))+
+   geom_line(aes(x=time,y=intensityTheoretical))+
+   expand_limits(x = 0, y = 0)}
 
 if(!parameterVector$isThisaFit){print(parameterVector)}
 }

@@ -14,7 +14,7 @@
 #' @examples
 #' # Related example
 #'
-#' # Initial Command to Reset the System
+#'# Initial Command to Reset the System
 #'rm(list = ls())
 #'if (is.integer(dev.list())){dev.off()}
 #'cat("\014")
@@ -41,20 +41,19 @@
 #'
 #'#Check the results
 #'if(parameterVector$isThisaFit){
-#'time=dataInput2$timeIntensityData$time
-#'intensityTheoretical=doublesigmoidalFitFormula(time,
-#'                                               finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
-#'                                               maximum=parameterVector$maximum_Estimate,
-#'                                               slope1=parameterVector$slope1_Estimate,
-#'                                               midPoint1=parameterVector$midPoint1_Estimate,
-#'                                               slope2=parameterVector$slope2_Estimate,
-#'                                               midPointDistance=parameterVector$midPointDistance_Estimate)
+#'  intensityTheoretical=doublesigmoidalFitFormula(time,
+#'                                                 finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+#'                                                 maximum=parameterVector$maximum_Estimate,
+#'                                                 slope1=parameterVector$slope1_Estimate,
+#'                                                 midPoint1=parameterVector$midPoint1_Estimate,
+#'                                                 slope2=parameterVector$slope2_Estimate,
+#'                                                 midPointDistance=parameterVector$midPointDistance_Estimate)
 #'
-#'comparisonData=cbind(dataOutput$timeIntensityData,intensityTheoretical)
-#'ggplot(comparisonData)+
-#'  geom_point(aes(x=time, y=intensity))+
-#'  geom_line(aes(x=time,y=intensityTheoretical))+
-#'  ylim(c(0,1.04))+xlim(c(0,1.04))}
+#'  comparisonData=cbind(dataInput,intensityTheoretical)
+#'  ggplot(comparisonData)+
+#'    geom_point(aes(x=time, y=intensity))+
+#'    geom_line(aes(x=time,y=intensityTheoretical))+
+#'    expand_limits(x = 0, y = 0)}
 #'
 #'if(!parameterVector$isThisaFit){print(parameterVector)}
 #'
@@ -121,12 +120,12 @@ doublesigmoidalFitFunction<-function(dataInput,
     colnames(parameterMatrix)<-c("Estimate","Std_Error","t_value","Pr_t")
 
     parameterVector=c(t(parameterMatrix))
-    names(parameterVector)<- c("finalAsymptoteIntensity_Estimate","finalAsymptoteIntensity_Std_Error","finalAsymptoteIntensity_t_value","finalAsymptoteIntensity_Pr_t",
-                               "maximum_Estimate","maximum_Std_Error","maximum_t_value","maximum_Pr_t",
-                               "slope1_Estimate","slope1_Std_Error","slope1_t_value","slope1_Pr_t",
-                               "midPoint1_Estimate","midPoint1_Std_Error","midPoint1_t_value","midPoint1_Pr_t",
-                               "slope2_Estimate","slope2_Std_Error","slope2_t_value","slope2_Pr_t",
-                               "midPointDistance_Estimate","midPointDistance_Std_Error","midPointDistance_t_value","midPointDistance_Pr_t")
+    names(parameterVector)<- c("finalAsymptoteIntensity_N_Estimate","finalAsymptoteIntensity_Std_Error","finalAsymptoteIntensity_t_value","finalAsymptoteIntensity_Pr_t",
+                               "maximum_N_Estimate","maximum_Std_Error","maximum_t_value","maximum_Pr_t",
+                               "slope1_N_Estimate","slope1_Std_Error","slope1_t_value","slope1_Pr_t",
+                               "midPoint1_N_Estimate","midPoint1_Std_Error","midPoint1_t_value","midPoint1_Pr_t",
+                               "slope2_N_Estimate","slope2_Std_Error","slope2_t_value","slope2_Pr_t",
+                               "midPointDistance_N_Estimate","midPointDistance_Std_Error","midPointDistance_t_value","midPointDistance_Pr_t")
 
     parameterVector<-c(parameterVector,
                        residual_Sum_of_Squares=sum((as.vector(resid(theFitResult)))^2)[1],
@@ -140,8 +139,11 @@ doublesigmoidalFitFunction<-function(dataInput,
     if(isalist){parameterList$dataScalingParameters=as.list(dataInput$dataScalingParameters)}
     parameterList$model="doublesigmoidal"
 
+
     parameterDf=as.data.frame(parameterList)
-    return(parameterDf)
+    #Renormalize Parameters
+    parameterDf=doublesigmoidalRenormalizeParameters(parameterDf,isalist)
+
   }
 
   if(class(theFitResult)=="try-error")
@@ -166,11 +168,13 @@ doublesigmoidalFitFunction<-function(dataInput,
     if(isalist){parameterList$dataScalingParameters=as.list(dataInput$dataScalingParameters)}
     parameterList$model="doublesigmoidal"
 
-    #Renormalize Parameters
-
     parameterDf=as.data.frame(parameterList)
-    return(parameterDf)
+    #Renormalize Parameters
+    parameterDf=doublesigmoidalRenormalizeParameters(parameterDf,isalist)
+
   }
+
+  return(parameterDf)
 
 }
 
@@ -223,3 +227,25 @@ f1 <- function (x, B1, M1, B2, L) {
 f2 <- function (x, A2, Ka, B1, M1, B2, L, const, argument)
 { fBasics::Heaviside(x-argument)* ( f0(x, B1, M1, B2, L)* ((Ka-A2*Ka)/(const)) + A2*Ka) +
     (1-fBasics::Heaviside(x-argument))* ( f0(x, B1, M1, B2, L)* ((Ka-0*Ka)/(const)) + 0*Ka)}
+
+#' @export
+doublesigmoidalRenormalizeParameters<-function(parameterDF,isalist)
+{
+  if(isalist){
+    parameterDF$finalAsymptoteIntensity_Estimate=parameterDF$finalAsymptoteIntensity_N_Estimate
+    parameterDF$maximum_Estimate=parameterDF$maximum_N_Estimate*parameterDF$dataScalingParameters.intensityRatio+parameterDF$dataScalingParameters.intensityMin
+    parameterDF$slope1_Estimate=parameterDF$slope1_N_Estimate/parameterDF$dataScalingParameters.timeRatio
+    parameterDF$midPoint1_Estimate=parameterDF$midPoint1_N_Estimate*parameterDF$dataScalingParameters.timeRatio
+    parameterDF$slope2_Estimate=parameterDF$slope2_N_Estimate/parameterDF$dataScalingParameters.timeRatio
+    parameterDF$midPointDistance_Estimate=parameterDF$midPointDistance_N_Estimate*parameterDF$dataScalingParameters.timeRatio
+    }
+  if(!isalist){
+    parameterDF$finalAsymptoteIntensity_Estimate=parameterDF$finalAsymptoteIntensity_N_Estimate
+    parameterDF$maximum_Estimate=parameterDF$maximum_N_Estimate
+    parameterDF$slope1_Estimate=parameterDF$slope1_N_Estimate
+    parameterDF$midPoint1_Estimate=parameterDF$midPoint1_N_Estimate
+    parameterDF$slope2_Estimate=parameterDF$slope2_N_Estimate
+    parameterDF$midPointDistance_Estimate=parameterDF$midPointDistance_N_Estimate
+    }
+  return(parameterDF)
+}

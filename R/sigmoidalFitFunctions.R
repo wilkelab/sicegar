@@ -24,7 +24,7 @@
 #'#intensity with Noise
 #'noise_parameter=0.1
 #'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
-#'intensity=sigmoidalFitFormula(time, maximum=1, slope=1, midPoint=8)
+#'intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
 #'intensity=intensity+intensity_noise
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
@@ -34,17 +34,16 @@
 #'
 #'#Check the results
 #'if(parameterVector$isThisaFit){
-#'time=dataInput2$timeIntensityData$time
 #'intensityTheoretical=sigmoidalFitFormula(time,
 #'                                         maximum=parameterVector$maximum_Estimate,
 #'                                         slope=parameterVector$slope_Estimate,
 #'                                         midPoint=parameterVector$midPoint_Estimate)
 #'
-#'comparisonData=cbind(dataInput2$timeIntensityData,intensityTheoretical)
+#'comparisonData=cbind(dataInput,intensityTheoretical)
 #'ggplot(comparisonData)+
 #'  geom_point(aes(x=time, y=intensity))+
 #'  geom_line(aes(x=time,y=intensityTheoretical))+
-#'  ylim(c(0,1.04))+xlim(c(0,1.04))}
+#'  expand_limits(x = 0, y = 0)}
 #'
 #'if(!parameterVector$isThisaFit){print(parameterVector)}
 #'
@@ -83,9 +82,9 @@ sigmoidalFunction<-function(dataInput,
     colnames(parameterMatrix)<-c("Estimate","Std_Error","t_value","Pr_t")
 
     parameterVector=c(t(parameterMatrix))
-    names(parameterVector)<- c("maximum_Estimate","maximum_Std_Error","maximum_t_value","maximum_Pr_t",
-                               "slope_Estimate","slope_Std_Error","slope_t_value","slope_Pr_t",
-                               "midPoint_Estimate","midPoint_Std_Error","midPoint_t_value","midPoint_Pr_t")
+    names(parameterVector)<- c("maximum_N_Estimate","maximum_Std_Error","maximum_t_value","maximum_Pr_t",
+                               "slope_N_Estimate","slope_Std_Error","slope_t_value","slope_Pr_t",
+                               "midPoint_N_Estimate","midPoint_Std_Error","midPoint_t_value","midPoint_Pr_t")
 
     parameterVector<-c(parameterVector,
                        residual_Sum_of_Squares=sum((as.vector(resid(theFitResult)))^2)[1],
@@ -100,7 +99,9 @@ sigmoidalFunction<-function(dataInput,
     parameterList$model="sigmoidal"
 
     parameterDf=as.data.frame(parameterList)
-    return(parameterDf)
+    #Renormalize Parameters
+    parameterDf=sigmoidalRenormalizeParameters(parameterDf,isalist)
+
   }
 
   if(class(theFitResult)=="try-error")
@@ -123,9 +124,13 @@ sigmoidalFunction<-function(dataInput,
     parameterList$model="sigmoidal"
 
     parameterDf=as.data.frame(parameterList)
-    return(parameterDf)
+    #Renormalize Parameters
+    parameterDf=sigmoidalRenormalizeParameters(parameterDf,isalist)
+
+
   }
 
+  return(parameterDf)
 }
 
 
@@ -143,3 +148,19 @@ sigmoidalFunction<-function(dataInput,
 sigmoidalFitFormula<-function(x, maximum, slope, midPoint){
   y=(0 + (maximum - 0)/(1 + exp((-slope)*(x - midPoint))));
   return(y)}
+
+#' @export
+sigmoidalRenormalizeParameters<-function(parameterDF,isalist)
+{
+  if(isalist){
+    parameterDF$maximum_Estimate=parameterDF$maximum_N_Estimate*parameterDF$dataScalingParameters.intensityRatio+parameterDF$dataScalingParameters.intensityMin
+    parameterDF$slope_Estimate=parameterDF$slope_N_Estimate/parameterDF$dataScalingParameters.timeRatio
+    parameterDF$midPoint_Estimate=parameterDF$midPoint_N_Estimate*parameterDF$dataScalingParameters.timeRatio
+  }
+  if(!isalist){
+    parameterDF$maximum_Estimate=parameterDF$maximum_N_Estimate
+    parameterDF$slope1_Estimate=parameterDF$slope_N_Estimate
+    parameterDF$midPoint_Estimate=parameterDF$midPoint_N_Estimate
+  }
+  return(parameterDF)
+}

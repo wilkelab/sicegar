@@ -43,7 +43,7 @@ time=seq(3,24,0.5)
 #intensity with Noise
 noise_parameter=0.1
 intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
-intensity=sigmoidalFitFormula(time, maximum=1, slope=1, midPoint=8)
+intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)
@@ -53,17 +53,16 @@ parameterVector<-sigmoidalFunction(dataInput2,tryCounter=2)
 
 #Check the results
 if(parameterVector$isThisaFit){
-time=dataInput2$timeIntensityData$time
 intensityTheoretical=sigmoidalFitFormula(time,
                                         maximum=parameterVector$maximum_Estimate,
                                         slope=parameterVector$slope_Estimate,
                                         midPoint=parameterVector$midPoint_Estimate)
 
-comparisonData=cbind(dataInput2$timeIntensityData,intensityTheoretical)
+comparisonData=cbind(dataInput,intensityTheoretical)
 ggplot(comparisonData)+
  geom_point(aes(x=time, y=intensity))+
  geom_line(aes(x=time,y=intensityTheoretical))+
- ylim(c(0,1.04))+xlim(c(0,1.04))}
+ expand_limits(x = 0, y = 0)}
 
 if(!parameterVector$isThisaFit){print(parameterVector)}
 }

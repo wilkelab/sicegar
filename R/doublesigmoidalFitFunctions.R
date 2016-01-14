@@ -97,7 +97,6 @@ doublesigmoidalFitFunction<-function(dataInput,
                            "midPointDistance")
     counterDependentStartVector=randomVector*(upperBounds-lowerBounds)+lowerBounds
     counterDependentStartList=as.list(counterDependentStartVector)}
-  print(counterDependentStartVector)
 
 
   theFitResult <- try(minpack.lm::nlsLM(intensity ~ sicegar::doublesigmoidalFitFormula(time,
@@ -112,7 +111,7 @@ doublesigmoidalFitFunction<-function(dataInput,
                                         control = list(maxiter = n_iterations, minFactor = min_Factor),
                                         lower = lowerBounds,
                                         upper = upperBounds,
-                                        trace=F))
+                                        trace=F),silent = TRUE)
 
   if(class(theFitResult)!="try-error")
   {

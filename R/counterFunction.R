@@ -1,4 +1,4 @@
-#' @title Counter function
+?lin#' @title Counter function
 #'
 #' @param data Normalized input data that will be fitted transferred into related functions
 #' @param model type of fit function that will be used. Can be "linear", "sigmoidal", "double_sigmoidal", "test"
@@ -65,13 +65,102 @@
 #'                                 n_runs_min=5,
 #'                                 n_runs_max=15)
 #'
+#'# Example 5 (sigmoidal function with normalization)
+#'# Initial Command to Reset the System
+#'rm(list = ls())
+#'if (is.integer(dev.list())){dev.off()}
+#'cat("\014")
+#'
+#'time=seq(3,24,0.5)
+#'
+#'#intensity with Noise
+#'noise_parameter=2.5
+#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+#'intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
+#'intensity=intensity+intensity_noise
+#'
+#'dataInput=data.frame(intensity=intensity,time=time)
+#'dataOutput = normalizeData(dataInput)
+#'dataInput2=dataOutput
+#'parameterVector=counterFunction(data=dataInput2,
+#'                                model="sigmoidal",
+#'                                n_runs_min=20,
+#'                                n_runs_max=500)
+#'
+#'#Check the results
+#'if(parameterVector$isThisaFit){
+#'  intensityTheoretical=sigmoidalFitFormula(time,
+#'                                           maximum=parameterVector$maximum_Estimate,
+#'                                           slope=parameterVector$slope_Estimate,
+#'                                           midPoint=parameterVector$midPoint_Estimate)
+#'
+#'  comparisonData=cbind(dataInput,intensityTheoretical)
+#'
+#'  print(parameterVector$residual_Sum_of_Squares)
+#'  ggplot(comparisonData)+
+#'    geom_point(aes(x=time, y=intensity))+
+#'    geom_line(aes(x=time,y=intensityTheoretical),color="orange")+
+#'    expand_limits(x = 0, y = 0)}
+#'
+#'
+#'
+#'if(!parameterVector$isThisaFit){print(parameterVector)}
+#'
+#'
+#'
+#' # Example 6 (doublesigmoidal function with normalization)
+#'# Initial Command to Reset the System
+#'rm(list = ls())
+#'if (is.integer(dev.list())){dev.off()}
+#'cat("\014")
+#'
+#'time=seq(3,24,0.1)
+#'
+#'#intensity with Noise
+#'noise_parameter=0.2
+#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+#'intensity=doublesigmoidalFitFormula(time,
+#'                                    finalAsymptoteIntensity=.3,
+#'                                    maximum=4,
+#'                                    slope1=1,
+#'                                    midPoint1=7,
+#'                                    slope2=1,
+#'                                    midPointDistance=8)
+#'intensity=intensity+intensity_noise
+#'
+#'dataInput=data.frame(intensity=intensity,time=time)
+#'dataOutput = normalizeData(dataInput)
+#'dataInput2=dataOutput
+#'parameterVector=counterFunction(data=dataInput2,
+#'                                model="doublesigmoidal",
+#'                                n_runs_min=20,
+#'                                n_runs_max=500)
+#'
+#'
+#'#Check the results
+#'if(parameterVector$isThisaFit){
+#'  intensityTheoretical=doublesigmoidalFitFormula(time,
+#'                                                 finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+#'                                                 maximum=parameterVector$maximum_Estimate,
+#'                                                 slope1=parameterVector$slope1_Estimate,
+#'                                                 midPoint1=parameterVector$midPoint1_Estimate,
+#'                                                 slope2=parameterVector$slope2_Estimate,
+#'                                                 midPointDistance=parameterVector$midPointDistance_Estimate)
+#'
+#'  comparisonData=cbind(dataInput,intensityTheoretical)
+#'  ggplot(comparisonData)+
+#'    geom_point(aes(x=time, y=intensity))+
+#'    geom_line(aes(x=time,y=intensityTheoretical),color="orange")+
+#'    expand_limits(x = 0, y = 0)}
+#'
+#'if(!parameterVector$isThisaFit){print(parameterVector)}
 counterFunction <-
   function(dataInput,model, n_runs_min, n_runs_max, ...)
   {
     dataInputCheck=dataCheck(dataInput)
 
-    if(!(model %in% c("linear", "sigmoidal", "double_sigmoidal", "test")) )
-    {stop("model should be one of linear, sigmoidal, double_sigmoidal, test")}
+    if(!(model %in% c("linear", "sigmoidal", "doublesigmoidal", "test")) )
+    {stop("model should be one of linear, sigmoidal, doublesigmoidal, test")}
 
     counterBetterFit=0
     counterCorrectFit=0
@@ -82,11 +171,11 @@ counterFunction <-
 
     while(counterCorrectFit<n_runs_min & counterTotalFit<n_runs_max)
     {
-
       counterTotalFit=counterTotalFit+1
       if(model == "test"){modelOutput=exampleFitFunction(randomParameter)}
       if(model == "linear"){modelOutput=lineFitFunction(dataInput=dataInput,tryCounter=counterTotalFit)}
       if(model == "sigmoidal"){modelOutput=sigmoidalFitFunction(dataInput=dataInput,tryCounter=counterTotalFit)}
+      if(model == "doublesigmoidal"){modelOutput=doublesigmoidalFitFunction(dataInput=dataInput,tryCounter=counterTotalFit)}
 
       if(modelOutput[["isThisaFit"]]){
         counterCorrectFit=counterCorrectFit+1
@@ -97,13 +186,14 @@ counterFunction <-
         }
       }
 
-      print(c(counterBetterFit,
-              counterCorrectFit,
-              counterTotalFit,
-              modelOutput$residual_Sum_of_Squares))
+      print(c(betterFit=counterBetterFit,
+              correctFit=counterCorrectFit,
+              totalFit=counterTotalFit,
+              currentOutput=modelOutput$residual_Sum_of_Squares,
+              bestOutput=storedModelOutput$residual_Sum_of_Squares))
 
     }
-    return(modelOutput)
+    return(storedModelOutput)
   }
 
 #' exampleFitFunction

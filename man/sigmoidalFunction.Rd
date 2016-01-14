@@ -32,6 +32,12 @@ sigmoidalFunction
 }
 \examples{
 # related examples
+
+# Initial Command to Reset the System
+rm(list = ls())
+if (is.integer(dev.list())){dev.off()}
+cat("\\014")
+
 time=seq(3,24,0.5)
 
 #intensity with Noise
@@ -46,6 +52,7 @@ dataInput2=dataOutput
 parameterVector<-sigmoidalFunction(dataInput2,tryCounter=2)
 
 #Check the results
+if(parameterVector$isThisaFit){
 time=dataInput2$timeIntensityData$time
 intensityTheoretical=sigmoidalFitFormula(time,
                                         maximum=parameterVector$maximum_Estimate,
@@ -56,6 +63,8 @@ comparisonData=cbind(dataInput2$timeIntensityData,intensityTheoretical)
 ggplot(comparisonData)+
  geom_point(aes(x=time, y=intensity))+
  geom_line(aes(x=time,y=intensityTheoretical))+
- ylim(c(0,1.04))+xlim(c(0,1.04))
+ ylim(c(0,1.04))+xlim(c(0,1.04))}
+
+if(!parameterVector$isThisaFit){print(parameterVector)}
 }
 

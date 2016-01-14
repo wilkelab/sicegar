@@ -13,6 +13,12 @@
 #'
 #' @examples
 #' # Related example
+#'
+#' # Initial Command to Reset the System
+#'rm(list = ls())
+#'if (is.integer(dev.list())){dev.off()}
+#'cat("\014")
+#'
 #'time=seq(3,24,0.1)
 #'
 #'#intensity with Noise
@@ -34,6 +40,7 @@
 #'
 #'
 #'#Check the results
+#'if(parameterVector$isThisaFit){
 #'time=dataInput2$timeIntensityData$time
 #'intensityTheoretical=doublesigmoidalFitFormula(time,
 #'                                               finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
@@ -47,7 +54,9 @@
 #'ggplot(comparisonData)+
 #'  geom_point(aes(x=time, y=intensity))+
 #'  geom_line(aes(x=time,y=intensityTheoretical))+
-#'  ylim(c(0,1.04))+xlim(c(0,1.04))
+#'  ylim(c(0,1.04))+xlim(c(0,1.04))}
+#'
+#'if(!parameterVector$isThisaFit){print(parameterVector)}
 #'
 doublesigmoidalFitFunction<-function(dataInput,
                                   tryCounter,
@@ -92,46 +101,76 @@ doublesigmoidalFitFunction<-function(dataInput,
   print(counterDependentStartVector)
 
 
-  theFitResult <- minpack.lm::nlsLM(intensity ~ sicegar::doublesigmoidalFitFormula(time,
-                                                                                   finalAsymptoteIntensity,
-                                                                                   maximum,
-                                                                                   slope1,
-                                                                                   midPoint1,
-                                                                                   slope2,
-                                                                                   midPointDistance),
-                                    dataFrameInput,
-                                    start=counterDependentStartList,
-                                    control = list(maxiter = n_iterations, minFactor = min_Factor),
-                                    lower = lowerBounds,
-                                    upper = upperBounds,
-                                    trace=F)
+  theFitResult <- try(minpack.lm::nlsLM(intensity ~ sicegar::doublesigmoidalFitFormula(time,
+                                                                                       finalAsymptoteIntensity,
+                                                                                       maximum,
+                                                                                       slope1,
+                                                                                       midPoint1,
+                                                                                       slope2,
+                                                                                       midPointDistance),
+                                        dataFrameInput,
+                                        start=counterDependentStartList,
+                                        control = list(maxiter = n_iterations, minFactor = min_Factor),
+                                        lower = lowerBounds,
+                                        upper = upperBounds,
+                                        trace=F))
 
+  if(class(theFitResult)!="try-error")
+  {
+    parameterMatrix=summary(theFitResult)$parameters
+    colnames(parameterMatrix)<-c("Estimate","Std_Error","t_value","Pr_t")
 
-  parameterMatrix=summary(theFitResult)$parameters
-  colnames(parameterMatrix)<-c("Estimate","Std_Error","t_value","Pr_t")
+    parameterVector=c(t(parameterMatrix))
+    names(parameterVector)<- c("finalAsymptoteIntensity_Estimate","finalAsymptoteIntensity_Std_Error","finalAsymptoteIntensity_t_value","finalAsymptoteIntensity_Pr_t",
+                               "maximum_Estimate","maximum_Std_Error","maximum_t_value","maximum_Pr_t",
+                               "slope1_Estimate","slope1_Std_Error","slope1_t_value","slope1_Pr_t",
+                               "midPoint1_Estimate","midPoint1_Std_Error","midPoint1_t_value","midPoint1_Pr_t",
+                               "slope2_Estimate","slope2_Std_Error","slope2_t_value","slope2_Pr_t",
+                               "midPointDistance_Estimate","midPointDistance_Std_Error","midPointDistance_t_value","midPointDistance_Pr_t")
 
-  parameterVector=c(t(parameterMatrix))
-  names(parameterVector)<- c("finalAsymptoteIntensity_Estimate","finalAsymptoteIntensity_Std_Error","finalAsymptoteIntensity_t_value","finalAsymptoteIntensity_Pr_t",
-                             "maximum_Estimate","maximum_Std_Error","maximum_t_value","maximum_Pr_t",
-                             "slope1_Estimate","slope1_Std_Error","slope1_t_value","slope1_Pr_t",
-                             "midPoint1_Estimate","midPoint1_Std_Error","midPoint1_t_value","midPoint1_Pr_t",
-                             "slope2_Estimate","slope2_Std_Error","slope2_t_value","slope2_Pr_t",
-                             "midPointDistance_Estimate","midPointDistance_Std_Error","midPointDistance_t_value","midPointDistance_Pr_t")
+    parameterVector<-c(parameterVector,
+                       residual_Sum_of_Squares=sum((as.vector(resid(theFitResult)))^2)[1],
+                       log_likelihood=as.vector(logLik(theFitResult))[1],
+                       AIC_value=as.vector(AIC(theFitResult))[1],
+                       BIC_value=as.vector(BIC(theFitResult))[1])
 
-  parameterVector<-c(parameterVector,
-                     residual_Sum_of_Squares=sum((as.vector(resid(theFitResult)))^2)[1],
-                     log_likelihood=as.vector(logLik(theFitResult))[1],
-                     AIC_value=as.vector(AIC(theFitResult))[1],
-                     BIC_value=as.vector(BIC(theFitResult))[1])
+    parameterList=as.list(parameterVector)
+    parameterList$isThisaFit=TRUE
+    parameterList$startVector=counterDependentStartList
+    if(isalist){parameterList$dataScalingParameters=as.list(dataInput$dataScalingParameters)}
+    parameterList$model="doublesigmoidal"
 
-  parameterList=as.list(parameterVector)
-  parameterList$isThisaFit=TRUE
-  parameterList$startVector=counterDependentStartList
-  if(isalist){parameterList$dataScalingParameters=as.list(dataInput$dataScalingParameters)}
-  parameterList$model="doublesigmoidal"
+    parameterDf=as.data.frame(parameterList)
+    return(parameterDf)
+  }
 
-  parameterDf=as.data.frame(parameterList)
-  return(parameterDf)
+  if(class(theFitResult)=="try-error")
+  {
+    parameterVector=rep(NA, 24)
+    names(parameterVector)<- c("finalAsymptoteIntensity_N_Estimate","finalAsymptoteIntensity_Std_Error","finalAsymptoteIntensity_t_value","finalAsymptoteIntensity_Pr_t",
+                               "maximum_N_Estimate","maximum_Std_Error","maximum_t_value","maximum_Pr_t",
+                               "slope1_N_Estimate","slope1_Std_Error","slope1_t_value","slope1_Pr_t",
+                               "midPoint1_N_Estimate","midPoint1_Std_Error","midPoint1_t_value","midPoint1_Pr_t",
+                               "slope2_N_Estimate","slope2_Std_Error","slope2_t_value","slope2_Pr_t",
+                               "midPointDistance_N_Estimate","midPointDistance_Std_Error","midPointDistance_t_value","midPointDistance_Pr_t")
+
+    parameterVector<-c(parameterVector,
+                       residual_Sum_of_Squares=Inf,
+                       log_likelihood=NA,
+                       AIC_value=NA,
+                       BIC_value=NA)
+
+    parameterList=as.list(parameterVector)
+    parameterList$isThisaFit=FALSE
+    parameterList$startVector=counterDependentStartList
+    if(isalist){parameterList$dataScalingParameters=as.list(dataInput$dataScalingParameters)}
+    parameterList$model="doublesigmoidal"
+
+    #Renormalize Parameters
+
+    parameterDf=as.data.frame(parameterList)
+    return(parameterDf)
+  }
 
 }
 

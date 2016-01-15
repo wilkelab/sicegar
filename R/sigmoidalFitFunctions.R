@@ -51,7 +51,7 @@ sigmoidalFitFunction<-function(dataInput,
                                tryCounter,
                                startList=list(maximum = 1, slope = 1, midPoint = 0.3333333),
                                lowerBounds=c(maximum=0.3, slope=0.01,  midPoint=0.3125-0.8333333),
-                               upperBounds=c(maximum=1.5, slope=150,  midPoint=0.3125+0.8333333),
+                               upperBounds=c(maximum=1.5, slope=120,  midPoint=0.3125+0.8333333),
                                min_Factor=1/2^20,
                                n_iterations=500)
 {

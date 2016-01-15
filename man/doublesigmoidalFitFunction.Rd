@@ -9,8 +9,8 @@ doublesigmoidalFitFunction(dataInput, tryCounter,
   midPoint1 = 0.3333333, slope2 = 1, midPointDistance = 0.2916667),
   lowerBounds = c(finalAsymptoteIntensity = 0, maximum = 0.3, slope1 = 0.01,
   midPoint1 = -0.5208333, slope2 = 0.01, midPointDistance = 0.04166667),
-  upperBounds = c(finalAsymptoteIntensity = 1, maximum = 1.5, slope1 = 50,
-  midPoint1 = 1.145833, slope2 = 50, midPointDistance = 0.625),
+  upperBounds = c(finalAsymptoteIntensity = 1, maximum = 1.5, slope1 = 120,
+  midPoint1 = 1.145833, slope2 = 120, midPointDistance = 0.625),
   min_Factor = 1/2^20, n_iterations = 500)
 }
 \arguments{

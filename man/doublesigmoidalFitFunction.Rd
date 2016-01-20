@@ -73,6 +73,7 @@ if(parameterVector$isThisaFit){
                                                 midPointDistance=parameterVector$midPointDistance_Estimate)
 
  comparisonData=cbind(dataInput,intensityTheoretical)
+ require(ggplot2)
  ggplot(comparisonData)+
    geom_point(aes(x=time, y=intensity))+
    geom_line(aes(x=time,y=intensityTheoretical))+

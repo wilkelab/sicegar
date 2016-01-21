@@ -4,7 +4,8 @@
 \alias{fitFunction}
 \title{fit function}
 \usage{
-fitFunction(dataInput, model, n_runs_min, n_runs_max, ...)
+fitFunction(dataInput, model, n_runs_min, n_runs_max, showDetails = FALSE,
+  ...)
 }
 \arguments{
 \item{model}{type of fit function that will be used. Can be "linear", "sigmoidal", "double_sigmoidal", "test"}
@@ -12,6 +13,8 @@ fitFunction(dataInput, model, n_runs_min, n_runs_max, ...)
 \item{n_runs_min}{number of minimum runs that the algorithm can run}
 
 \item{n_runs_max}{number of maximum runs that the algorithm can run}
+
+\item{showDetails}{If set to True (default is false) prints details of intermediate steps of individual fits}
 
 \item{data}{Normalized input data that will be fitted transferred into related functions}
 }
@@ -175,7 +178,8 @@ dataInput2=dataOutput
 parameterVector=fitFunction(data=dataInput2,
                                model="doublesigmoidal",
                                n_runs_min=20,
-                               n_runs_max=500)
+                               n_runs_max=500,
+                               showDetails=FALSE)
 
 
 #Check the results

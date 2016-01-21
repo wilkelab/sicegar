@@ -4,6 +4,7 @@
 #' @param model type of fit function that will be used. Can be "linear", "sigmoidal", "double_sigmoidal", "test"
 #' @param n_runs_max number of maximum runs that the algorithm can run
 #' @param n_runs_min number of minimum runs that the algorithm can run
+#' @param showDetails If set to True (default is false) prints details of intermediate steps of individual fits
 #'
 #' @details the algorithm calls the fitting algorithms. to make the fits with random initial parameters. This multiple runs are necessary to avoid local minimums that LM fits can stuck. Fitting algorithms can either gives a fit with related parameters and isThisaFit=TRUE value or just give isThisaFit=FALSE corresponding to not a fit. n_runs_min represent minimum number of fits that are necessary to give a result, n_runs_max limits the number of runs (successful or unsuccessful) that the it algorithm can run
 #' @return The function returns the parameters related with fitted curve to input data
@@ -160,7 +161,8 @@
 #'parameterVector=fitFunction(data=dataInput2,
 #'                                model="doublesigmoidal",
 #'                                n_runs_min=20,
-#'                                n_runs_max=500)
+#'                                n_runs_max=500,
+#'                                showDetails=FALSE)
 #'
 #'
 #'#Check the results
@@ -182,7 +184,7 @@
 #'
 #'if(!parameterVector$isThisaFit){print(parameterVector)}
 fitFunction <-
-  function(dataInput,model, n_runs_min, n_runs_max, ...)
+  function(dataInput,model, n_runs_min, n_runs_max, showDetails=FALSE, ...)
   {
     dataInputCheck=dataCheck(dataInput)
 
@@ -213,11 +215,12 @@ fitFunction <-
         }
       }
 
-      print(c(betterFit=counterBetterFit,
-              correctFit=counterCorrectFit,
-              totalFit=counterTotalFit,
-              currentOutput=modelOutput$residual_Sum_of_Squares,
-              bestOutput=storedModelOutput$residual_Sum_of_Squares))
+      if(showDetails){
+        print(c(betterFit=counterBetterFit,
+                correctFit=counterCorrectFit,
+                totalFit=counterTotalFit,
+                currentOutput=modelOutput$residual_Sum_of_Squares,
+                bestOutput=storedModelOutput$residual_Sum_of_Squares))}
 
     }
     return(storedModelOutput)

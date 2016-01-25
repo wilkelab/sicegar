@@ -5,6 +5,7 @@
 #' @param n_runs_max number of maximum runs that the algorithm can run
 #' @param n_runs_min number of minimum runs that the algorithm can run
 #' @param showDetails If set to True (default is false) prints details of intermediate steps of individual fits
+#' @param dataInputName is the input name carrier with a default of 'NA'. The functions will be used with massive for loops so put a personal data indicator might be a good idea.
 #'
 #' @details the algorithm calls the fitting algorithms. to make the fits with random initial parameters. This multiple runs are necessary to avoid local minimums that LM fits can stuck. Fitting algorithms can either gives a fit with related parameters and isThisaFit=TRUE value or just give isThisaFit=FALSE corresponding to not a fit. n_runs_min represent minimum number of fits that are necessary to give a result, n_runs_max limits the number of runs (successful or unsuccessful) that the it algorithm can run
 #' @return The function returns the parameters related with fitted curve to input data
@@ -20,7 +21,7 @@
 #' # b- generate "random Parameter" for model "test"
 #' randomParameter=0.7 # it should be a parameter between 0 and 1
 #' # c- use the function "test"
-#' parameterOutput=fitFunction(data=dataInput,model="test",n_runs_min=5,n_runs_max=15)
+#' parameterOutput=fitFunction(dataInput=dataInput,model="test",n_runs_min=5,n_runs_max=15)
 #'
 #' # Example 2 (test function with normalization)
 #' # data sent to algorithm after normalization
@@ -34,10 +35,10 @@
 #' randomParameter=0.7 # it should be a parameter between 0 and 1
 #' # d- use the function "test"
 #' dataInput2=dataOutput
-#' parameterOutput=fitFunction(data=dataInput2,
-#'                                 model="test",
-#'                                 n_runs_min=5,
-#'                                 n_runs_max=15)
+#' parameterOutput=fitFunction(dataInput==dataInput2,
+#'                             model="test",
+#'                             n_runs_min=5,
+#'                             n_runs_max=15)
 #'
 #' # Example 3 (linear function without normalization)
 #' # data sent to algorithm directly as data frame
@@ -46,10 +47,10 @@
 #' intensity=runif(length(time), 3.0, 7.5)
 #' dataInput = data.frame(time,intensity)
 #' # b- use the function "linear"
-#' parameterOutput=fitFunction(data=dataInput,
-#'                                 model="linear",
-#'                                 n_runs_min=5,
-#'                                 n_runs_max=15)
+#' parameterOutput=fitFunction(dataInput==dataInput,
+#'                             model="linear",
+#'                             n_runs_min=5,
+#'                             n_runs_max=15)
 #'
 #'
 #'# Example 4 (linear function with normalization)
@@ -69,10 +70,10 @@
 #'dataInput=data.frame(intensity=intensity,time=time)
 #'dataOutput = normalizeData(dataInput)
 #'dataInput2=dataOutput
-#'parameterVector=fitFunction(data=dataInput2,
-#'                                model="linear",
-#'                                 n_runs_min=5,
-#'                                 n_runs_max=15)
+#'parameterVector=fitFunction(dataInput==dataInput2,
+#'                            model="linear",
+#'                            n_runs_min=5,
+#'                            n_runs_max=15)
 #'
 #'#Check the results
 #'if(parameterVector$isThisaFit){
@@ -106,12 +107,12 @@
 #'intensity=intensity+intensity_noise
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
-#'dataOutput = normalizeData(dataInput)
+#'dataOutput = normalizeData(dataInput, dataInputName="batch_01_21_2016_samp007623")
 #'dataInput2=dataOutput
-#'parameterVector=fitFunction(data=dataInput2,
-#'                                model="sigmoidal",
-#'                                n_runs_min=20,
-#'                                n_runs_max=500)
+#'parameterVector=fitFunction(dataInput==dataInput2,
+#'                            model="sigmoidal",
+#'                            n_runs_min=20,
+#'                            n_runs_max=500)
 #'
 #'#Check the results
 #'if(parameterVector$isThisaFit){
@@ -158,11 +159,12 @@
 #'dataInput=data.frame(intensity=intensity,time=time)
 #'dataOutput = normalizeData(dataInput)
 #'dataInput2=dataOutput
-#'parameterVector=fitFunction(data=dataInput2,
-#'                                model="doublesigmoidal",
-#'                                n_runs_min=20,
-#'                                n_runs_max=500,
-#'                                showDetails=FALSE)
+#'parameterVector=fitFunction(dataInput==dataInput2,
+#'                            dataInputName="batch_01_21_2016_samp007623",
+#'                            model="doublesigmoidal",
+#'                            n_runs_min=20,
+#'                            n_runs_max=500,
+#'                            showDetails=FALSE)
 #'
 #'
 #'#Check the results
@@ -184,7 +186,7 @@
 #'
 #'if(!parameterVector$isThisaFit){print(parameterVector)}
 fitFunction <-
-  function(dataInput,model, n_runs_min, n_runs_max, showDetails=FALSE, ...)
+  function(dataInput, dataInputName=NA, model, n_runs_min, n_runs_max, showDetails=FALSE, ...)
   {
     dataInputCheck=dataCheck(dataInput)
 
@@ -205,6 +207,41 @@ fitFunction <-
       if(model == "linear"){modelOutput=lineFitFunction(dataInput=dataInput,tryCounter=counterTotalFit)}
       if(model == "sigmoidal"){modelOutput=sigmoidalFitFunction(dataInput=dataInput,tryCounter=counterTotalFit)}
       if(model == "doublesigmoidal"){modelOutput=doublesigmoidalFitFunction(dataInput=dataInput,tryCounter=counterTotalFit)}
+
+      if(is.na(dataInputName))
+      {
+        isalist=(is.list(dataInput) & !is.data.frame(dataInput))
+        if(isalist)
+        {
+          modelOutput$dataInputName=dataInput$dataInputName
+        }
+        if(!isalist)
+        {
+          modelOutput$dataInputName=NA
+        }
+      }
+
+      if(!is.na(dataInputName))
+      {
+        isalist=(is.list(dataInput) & !is.data.frame(dataInput))
+        if(isalist)
+        {
+          if(is.na(dataInput$dataInputName))
+          {
+            modelOutput$dataInputName=dataInputName
+          }
+          if(!is.na(dataInput$dataInputName))
+          {
+            if(dataInput$dataInputName!=dataInputName)
+              {stop("the input data has already have a name")}
+            if(dataInput$dataInputName==dataInputName)
+            {modelOutput$dataInputName=dataInputName}
+          }
+        }
+        if(!isalist)
+        {modelOutput$dataInputName=dataInputName}
+      }
+
 
       if(modelOutput[["isThisaFit"]]){
         counterCorrectFit=counterCorrectFit+1

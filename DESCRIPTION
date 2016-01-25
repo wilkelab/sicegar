@@ -6,7 +6,8 @@ Date: 2015-12-17
 Authors@R: c( person("M. Umut", "Caglar", role = c("aut", "cre"), email =
     "umut.caglar@gmail.com"), person("Claus O.", "Wilke", role = c("aut"), email =
     "wilke@austin.utexas.edu") )
-Description: Need a detailed description here. Origin of the package name: sicegar = SIngle CEll Growth Analysis in R
+Description: Need a detailed description here. Origin of the package name:
+    sicegar = SIngle CEll Growth Analysis in R
 URL: https://github.com/wilkelab/sicegar
 Imports:
     dplyr,
@@ -19,11 +20,12 @@ Suggests:
 VignetteBuilder: knitr
 BugReports: https://github.com/wilkelab/sicegar/issues
 Collate:
-  'clusterFunction.R'
-  'mainFunctions.R'
-  'lineFitFunctions.R'
-  'sigmoidalFitFunctions.R'
-  'doublesigmoidalFitFunctions.R'
-  'normalizationFunction.R'
-  'sicegar.R'
-  'dataInputCheck.R'
+    'clusterFunction.R'
+    'mainFunctions.R'
+    'lineFitFunctions.R'
+    'sigmoidalFitFunctions.R'
+    'doublesigmoidalFitFunctions.R'
+    'normalizationFunction.R'
+    'sicegar.R'
+    'dataInputCheck.R'
+RoxygenNote: 5.0.1

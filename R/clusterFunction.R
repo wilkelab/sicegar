@@ -1,33 +1,292 @@
-#' Title
+#' Title Determining he category of the input data
 #'
-#' @param clusterNo
-#' @param all_fP
-#' @param all_long_fP
+#' @param lineFitVector is the output of lineFitFunction
+#' @param sigmoidalFitVector is the output of sigmoidalFitFunction
+#' @param doubleSigmoidalFitVector is the output of double sigmoidal fit function
+#' @param threshold_line_slope minimum for line slope
+#' @param threshold_intensity_interval minimum for intensity range
+#' @param threshold_difference_AIC choice between sigmoidal and double sigmoidal by using AIC values
+#' @param threshold_lysis_finalAsymptoteIntensity minimum amound of decrease for double sigmoidal
+#' @param threshold_AIC maximum AIC values in order to have a meaningful fit
 #'
-#' @return Describe here what the function returns.
+#'
+#' @return Function simply returns one of the three text outputs. "no_signal", "infection", "infection&lysis"
+#' @details The function uses results of all 3 fit algorithms, line fit, sigmoidal fit and double sigmoidal fit and make a decision of the class of the data. Parameters in this function is chosen by try error and experience
 #' @export
 #'
 #' @examples
-#' # add usage examples here
-clusterFunction <-
-function(clusterNo, all_fP, all_long_fP){
+#'# Example 1 with double sigmoidal data
+#'# Initial Command to Reset the System
+#'rm(list = ls())
+#'if (is.integer(dev.list())){dev.off()}
+#'cat("\014")
+#'
+#'time=seq(3,24,0.1)
+#'
+#'#intensity with Noise
+#'noise_parameter=0.2
+#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+#'intensity=doublesigmoidalFitFormula(time,
+#'                                    finalAsymptoteIntensity=.3,
+#'                                    maximum=4,
+#'                                    slope1=1,
+#'                                    midPoint1=7,
+#'                                    slope2=1,
+#'                                    midPointDistance=8)
+#'intensity=intensity+intensity_noise
+#'
+#'dataInput=data.frame(intensity=intensity,time=time)
+#'dataOutput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
+#'dataInput2=dataOutput
+#'
+#'
+#'# Do the line fit
+#'parameterVectorLinear=fitFunction(dataInput=dataInput2,
+#'                                  model="linear",
+#'                                  n_runs_min=20,
+#'                                  n_runs_max=500,
+#'                                  showDetails=FALSE)
+#'
+#'# Do the sigmoidal fit
+#'parameterVectorSigmoidal=fitFunction(dataInput=dataInput2,
+#'                                     model="sigmoidal",
+#'                                     n_runs_min=20,
+#'                                     n_runs_max=500,
+#'                                     showDetails=FALSE)
+#'
+#'# Do the double sigmoidal fit
+#'parameterVectorDoubleSigmoidal=fitFunction(dataInput=dataInput2,
+#'                                           model="doublesigmoidal",
+#'                                           n_runs_min=20,
+#'                                           n_runs_max=500,
+#'                                           showDetails=FALSE)
+#'
+#'
+#'outputCluster=clusterFunction(parameterVectorLinear=parameterVectorLinear,
+#'                              parameterVectorSigmoidal=parameterVectorSigmoidal,
+#'                              parameterVectorDoubleSigmoidal=parameterVectorDoubleSigmoidal)
+#'
+#' #Print the results
+#' if(is.na(outputCluster$classification)){print(outputCluster)}
+#' if(outputCluster$classification=="ambiguous"){print(outputCluster)}
+#' if(outputCluster$classification=="no_signal"){print(outputCluster)}
+#' if(outputCluster$classification=="infection")
+#' {
+#'  intensityTheoretical=sigmoidalFitFormula(time,
+#'                                         maximum=parameterVectorSigmoidal$maximum_Estimate,
+#'                                         slope=parameterVectorSigmoidal$slope_Estimate,
+#'                                         midPoint=parameterVectorSigmoidal$midPoint_Estimate)
+#'
+#'  comparisonData=cbind(dataInput,intensityTheoretical)
+#'  require(ggplot2)
+#'  ggplot(comparisonData)+
+#'    geom_point(aes(x=time, y=intensity))+
+#'    geom_line(aes(x=time,y=intensityTheoretical))+
+#'    expand_limits(x = 0, y = 0)
+#' }
+#' if(outputCluster$classification=="infection&lysis")
+#' {
+#' intensityTheoretical=doublesigmoidalFitFormula(time,
+#'                                                 finalAsymptoteIntensity=parameterVectorDoubleSigmoidal$finalAsymptoteIntensity_Estimate,
+#'                                                 maximum=parameterVectorDoubleSigmoidal$maximum_Estimate,
+#'                                                 slope1=parameterVectorDoubleSigmoidal$slope1_Estimate,
+#'                                                 midPoint1=parameterVectorDoubleSigmoidal$midPoint1_Estimate,
+#'                                                 slope2=parameterVectorDoubleSigmoidal$slope2_Estimate,
+#'                                                 midPointDistance=parameterVectorDoubleSigmoidal$midPointDistance_Estimate)
+#'
+#'  comparisonData=cbind(dataInput,intensityTheoretical)
+#'  require(ggplot2)
+#'  ggplot(comparisonData)+
+#'    geom_point(aes(x=time, y=intensity))+
+#'    geom_line(aes(x=time,y=intensityTheoretical))+
+#'    expand_limits(x = 0, y = 0)
+#' }
+#'
+#'
+#'# Example 2 with sigmoidal data
+#'# Initial Command to Reset the System
+#'rm(list = ls())
+#'if (is.integer(dev.list())){dev.off()}
+#'cat("\014")
+#'
+#'time=seq(3,24,0.1)
+#'
+#'#intensity with Noise
+#'noise_parameter=0.2
+#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+#'intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
+#'intensity=intensity+intensity_noise
+#'
+#'dataInput=data.frame(intensity=intensity,time=time)
+#'dataOutput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
+#'dataInput2=dataOutput
+#'
+#'
+#'# Do the line fit
+#'parameterVectorLinear=fitFunction(dataInput=dataInput2,
+#'                                  model="linear",
+#'                                  n_runs_min=20,
+#'                                  n_runs_max=500,
+#'                                  showDetails=FALSE)
+#'
+#'# Do the sigmoidal fit
+#'parameterVectorSigmoidal=fitFunction(dataInput=dataInput2,
+#'                                     model="sigmoidal",
+#'                                     n_runs_min=20,
+#'                                     n_runs_max=500,
+#'                                     showDetails=FALSE)
+#'
+#'# Do the double sigmoidal fit
+#'parameterVectorDoubleSigmoidal=fitFunction(dataInput=dataInput2,
+#'                                           model="doublesigmoidal",
+#'                                           n_runs_min=20,
+#'                                           n_runs_max=500,
+#'                                           showDetails=FALSE)
+#'
+#'
+#'outputCluster=clusterFunction(parameterVectorLinear=parameterVectorLinear,
+#'                              parameterVectorSigmoidal=parameterVectorSigmoidal,
+#'                              parameterVectorDoubleSigmoidal=parameterVectorDoubleSigmoidal)
+#'
+#' #Print the results
+#' if(is.na(outputCluster$classification)){print(outputCluster)}
+#' if(outputCluster$classification=="ambiguous"){print(outputCluster)}
+#' if(outputCluster$classification=="no_signal"){print(outputCluster)}
+#' if(outputCluster$classification=="infection")
+#' {
+#'  intensityTheoretical=sigmoidalFitFormula(time,
+#'                                         maximum=parameterVectorSigmoidal$maximum_Estimate,
+#'                                         slope=parameterVectorSigmoidal$slope_Estimate,
+#'                                         midPoint=parameterVectorSigmoidal$midPoint_Estimate)
+#'
+#'  comparisonData=cbind(dataInput,intensityTheoretical)
+#'  require(ggplot2)
+#'  ggplot(comparisonData)+
+#'    geom_point(aes(x=time, y=intensity))+
+#'    geom_line(aes(x=time,y=intensityTheoretical))+
+#'    expand_limits(x = 0, y = 0)
+#' }
+#' if(outputCluster$classification=="infection&lysis")
+#' {
+#' intensityTheoretical=doublesigmoidalFitFormula(time,
+#'                                                 finalAsymptoteIntensity=parameterVectorDoubleSigmoidal$finalAsymptoteIntensity_Estimate,
+#'                                                 maximum=parameterVectorDoubleSigmoidal$maximum_Estimate,
+#'                                                 slope1=parameterVectorDoubleSigmoidal$slope1_Estimate,
+#'                                                 midPoint1=parameterVectorDoubleSigmoidal$midPoint1_Estimate,
+#'                                                 slope2=parameterVectorDoubleSigmoidal$slope2_Estimate,
+#'                                                 midPointDistance=parameterVectorDoubleSigmoidal$midPointDistance_Estimate)
+#'
+#'  comparisonData=cbind(dataInput,intensityTheoretical)
+#'  require(ggplot2)
+#'  ggplot(comparisonData)+
+#'    geom_point(aes(x=time, y=intensity))+
+#'    geom_line(aes(x=time,y=intensityTheoretical))+
+#'    expand_limits(x = 0, y = 0)
+#' }
+clusterFunction<-
+  function(parameterVectorLinear,
+           parameterVectorSigmoidal,
+           parameterVectorDoubleSigmoidal,
+           threshold_line_slope=0.01*24,
+           threshold_intensity_interval=0.1,
+           threshold_difference_AIC=0,
+           threshold_lysis_finalAsymptoteIntensity=0.75,
+           threshold_AIC=-10)
+  {
+    # First Part Define NA
+    # If for any one of the 3 fits isThisaFit==False then print NA
+    if(!parameterVectorLinear$isThisaFit|
+       !parameterVectorSigmoidal$isThisaFit|
+       !parameterVectorDoubleSigmoidal$isThisaFit)
+    {
+      output=as.data.frame(t(c(classification=NA)))
+      return(output)
+    }
 
-  if (clusterNo==1){
-    trashold_noSignal_x=0.01
-    trashold_noSignal_y=0.1
-    trashold_lysis_a<-0
-    trashold_lysis_b<-0.75
-    trashold_AIC=-10
-    temp<-dplyr::summarize(all_fP , cluster =
-                             if (is.na(linear_slope_Estimate_Corr) | is.na(dif_AIC_value) | is.na(mod10_A2_Estimate)){"NA"}
-                           else if (linear_slope_Estimate_Corr<trashold_noSignal_x & (max_nRat-min_nRat)<trashold_noSignal_y){"no signal"}
-                           else if (mod05_AIC_value>trashold_AIC & mod10_AIC_value>trashold_AIC) {"ambiguous"}
-                           else if (dif_AIC_value>trashold_lysis_a & mod10_A2_Estimate<trashold_lysis_b & mod10_M1_Estimate-0.5*4/mod10_B1_Estimate<0){"ambiguous"}
-                           else if (dif_AIC_value>trashold_lysis_a & mod10_A2_Estimate<trashold_lysis_b){"infection & lysis"}
-                           else if (mod05_M1_Estimate-0.5*1.5*mod05_Ka_Estimate/mod05_B1_Estimate<0){"ambiguous"}
-                           else if (mod05_M1_Estimate+0.5*1.5*mod05_Ka_Estimate/mod05_B1_Estimate>24){"ambiguous"}
-                           else {"infection"})
+
+    # new names for parameters if they exist
+    data_intensity_interval=parameterVectorLinear$dataScalingParameters.intensityRatio
+
+    line_slope=parameterVectorLinear$slope_Estimate
+
+    sigmoidal_AIC=parameterVectorSigmoidal$AIC_value
+    doubleSigmoidal_AIC=parameterVectorDoubleSigmoidal$AIC_value
+    difference_AIC=sigmoidal_AIC-doubleSigmoidal_AIC
+
+    doubleSigmoidal_finalAsymptoteIntensity_Estimate=
+      parameterVectorDoubleSigmoidal$finalAsymptoteIntensity_Estimate
+    doubleSigmoidal_slope1_Estimate=parameterVectorDoubleSigmoidal$slope1_Estimate
+    doubleSigmoidal_midPoint1_Estimate=parameterVectorDoubleSigmoidal$midPoint1_Estimate
+
+    sigmoidal_slope_Estimate=parameterVectorSigmoidal$slope_Estimate
+    sigmoidal_maximum_Estimate=parameterVectorSigmoidal$maximum_Estimate
+    sigmoidal_midPoint_Estimate=parameterVectorSigmoidal$midPoint_Estimate
+
+    # First Part Define NA
+    # If for any one of the 3 fits isThisaFit==False then print NA
+    if(!parameterVectorLinear$isThisaFit|
+       !parameterVectorSigmoidal$isThisaFit|
+       !parameterVectorDoubleSigmoidal$isThisaFit)
+    {output=as.data.frame(t(c(classification=NA)))}
+
+    # else if the range of y is smaller than threshold_noSignal_y or
+    #      if line slope of the y axis is smaller than threshold_noSignal_x there is no sigal
+    else if (line_slope<threshold_line_slope &
+             data_intensity_interval<threshold_intensity_interval)
+      {output=as.data.frame(t(c(classification="no_signal")))}
+
+    # if both of the AIC values for sigmoidal and double sigmoidal fit
+    # are above threshold_AIC than the data is ambiguous
+    else if (sigmoidal_AIC>threshold_AIC & doubleSigmoidal_AIC>threshold_AIC)
+      {output=as.data.frame(t(c(classification="ambiguous")))}
+
+    # if the difference between AIC values is above the threshold_lysis_a (it more looks like double sigmoidal)
+    # and start point of infection is below time 0 wrt double sigmoidal model it is ambiguous
+    else if (difference_AIC>threshold_difference_AIC &
+             doubleSigmoidal_finalAsymptoteIntensity_Estimate<threshold_lysis_finalAsymptoteIntensity &
+             doubleSigmoidal_midPoint1_Estimate-0.5*4/doubleSigmoidal_slope1_Estimate<0)
+      {output=as.data.frame(t(c(classification="ambiguous")))}
+
+    # if it at the end decreases significantly and
+    # double sigmoidal AIC is bigger it is infection and lysis
+    else if (difference_AIC>threshold_difference_AIC &
+             doubleSigmoidal_finalAsymptoteIntensity_Estimate<threshold_lysis_finalAsymptoteIntensity)
+    {output=as.data.frame(t(c(classification="infection&lysis")))}
+
+    # start point of infection is below time 0 wrt sigmoidal model it is ambiguous
+    else if (sigmoidal_midPoint_Estimate-0.5*1.5*sigmoidal_maximum_Estimate/sigmoidal_slope_Estimate<0)
+    {output=as.data.frame(t(c(classification="ambiguous")))}
+
+    # end point of infection is above time 0 wrt sigmoidal model it is ambiguous
+    else if (sigmoidal_midPoint_Estimate+0.5*1.5*sigmoidal_maximum_Estimate/sigmoidal_slope_Estimate>24)
+    {output=as.data.frame(t(c(classification="ambiguous")))}
+
+    # if not any of them it is infection
+    else {output=as.data.frame(t(c(classification="infection")))}
+
+    return(output)
   }
 
-  return(temp)
-}
+# old cluster function
+# clusterFunction <-
+# function(clusterNo, all_fP, all_long_fP){
+#
+#   if (clusterNo==1){
+#     trashold_noSignal_x=0.01
+#     trashold_noSignal_y=0.1
+#     trashold_lysis_a<-0
+#     trashold_lysis_b<-0.75
+#     trashold_AIC=-10
+#     temp<-dplyr::summarize(all_fP , cluster =
+#                              if (is.na(linear_slope_Estimate_Corr) | is.na(dif_AIC_value) | is.na(mod10_A2_Estimate)){"NA"}
+#                            else if (linear_slope_Estimate_Corr<trashold_noSignal_x & (max_nRat-min_nRat)<trashold_noSignal_y){"no signal"}
+#                            else if (mod05_AIC_value>trashold_AIC & mod10_AIC_value>trashold_AIC) {"ambiguous"}
+#                            else if (dif_AIC_value>trashold_lysis_a & mod10_A2_Estimate<trashold_lysis_b & mod10_M1_Estimate-0.5*4/mod10_B1_Estimate<0){"ambiguous"}
+#                            else if (dif_AIC_value>trashold_lysis_a & mod10_A2_Estimate<trashold_lysis_b){"infection & lysis"}
+#                            else if (mod05_M1_Estimate-0.5*1.5*mod05_Ka_Estimate/mod05_B1_Estimate<0){"ambiguous"}
+#                            else if (mod05_M1_Estimate+0.5*1.5*mod05_Ka_Estimate/mod05_B1_Estimate>24){"ambiguous"}
+#                            else {"infection"})
+#   }
+#
+#   return(temp)
+# }

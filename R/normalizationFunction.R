@@ -1,6 +1,7 @@
 #' Title Normalization of given data
 #'
 #' @param dataInput dataInput should be a data frame composed of two columns. One is for time other is for intensity
+#' @param dataInputName is the input name carrier with a default of 'NA'. The functions will be used with massive for loops so put a personal data indicator might be a good idea.
 #' @return Function returns another data frame, scaling factors and scaling constants for time and intensity. The other data frame includes 2 columns one is for normalized time and the other is for noralized intensity. The whole time is distributed between 0 and 1 and similarly the whole intensity is distributed between 0 and 1. The time and intensity constants and scaling factors are the parameters to transform data from given set to scaled set.
 #' @details Function maps the given time-intensity data into a recaled frame where time is between [x,1] and intensity is between [0,1]
 #'
@@ -14,10 +15,10 @@
 #' dataInput = data.frame(time,intensity)
 #'
 #' # Normalize Data
-#' dataOutput = normalizeData(dataInput)
+#' dataOutput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
 #'
 normalizeData <-
-  function(dataInput)
+  function(dataInput,dataInputName=NA)
   {
     dataInputCheckVariable=dataCheck(dataInput)
 
@@ -27,6 +28,7 @@ normalizeData <-
     timeData=timeData/timeRatio
 
     intensityMin=min(dataInput$intensity)
+    intensityMax=max(dataInput$intensity)
     intensityData=dataInput$intensity-intensityMin
     intensityRatio=max(intensityData)
     intensityData=intensityData/intensityRatio
@@ -35,7 +37,9 @@ normalizeData <-
     return(list(timeIntensityData=dataOutput,
                 dataScalingParameters=c(timeRatio=timeRatio,
                                         intensityMin=intensityMin,
-                                        intensityRatio=intensityRatio)))
+                                        intensityMax=intensityMax,
+                                        intensityRatio=intensityRatio),
+                dataInputName=dataInputName))
   }
 
 

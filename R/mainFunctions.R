@@ -35,7 +35,7 @@
 #' randomParameter=0.7 # it should be a parameter between 0 and 1
 #' # d- use the function "test"
 #' dataInput2=dataOutput
-#' parameterOutput=fitFunction(dataInput==dataInput2,
+#' parameterOutput=fitFunction(dataInput=dataInput2,
 #'                             model="test",
 #'                             n_runs_min=5,
 #'                             n_runs_max=15)
@@ -47,7 +47,7 @@
 #' intensity=runif(length(time), 3.0, 7.5)
 #' dataInput = data.frame(time,intensity)
 #' # b- use the function "linear"
-#' parameterOutput=fitFunction(dataInput==dataInput,
+#' parameterOutput=fitFunction(dataInput=dataInput,
 #'                             model="linear",
 #'                             n_runs_min=5,
 #'                             n_runs_max=15)
@@ -70,7 +70,7 @@
 #'dataInput=data.frame(intensity=intensity,time=time)
 #'dataOutput = normalizeData(dataInput)
 #'dataInput2=dataOutput
-#'parameterVector=fitFunction(dataInput==dataInput2,
+#'parameterVector=fitFunction(dataInput=dataInput2,
 #'                            model="linear",
 #'                            n_runs_min=5,
 #'                            n_runs_max=15)
@@ -109,7 +109,7 @@
 #'dataInput=data.frame(intensity=intensity,time=time)
 #'dataOutput = normalizeData(dataInput, dataInputName="batch_01_21_2016_samp007623")
 #'dataInput2=dataOutput
-#'parameterVector=fitFunction(dataInput==dataInput2,
+#'parameterVector=fitFunction(dataInput=dataInput2,
 #'                            model="sigmoidal",
 #'                            n_runs_min=20,
 #'                            n_runs_max=500)
@@ -159,7 +159,7 @@
 #'dataInput=data.frame(intensity=intensity,time=time)
 #'dataOutput = normalizeData(dataInput)
 #'dataInput2=dataOutput
-#'parameterVector=fitFunction(dataInput==dataInput2,
+#'parameterVector=fitFunction(dataInput=dataInput2,
 #'                            dataInputName="batch_01_21_2016_samp007623",
 #'                            model="doublesigmoidal",
 #'                            n_runs_min=20,

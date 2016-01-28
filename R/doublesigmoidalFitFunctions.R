@@ -177,8 +177,10 @@ doublesigmoidalFitFunction<-function(dataInput,
   return(parameterDf)
 
 }
+#**************************************
 
 
+#**************************************
 # @title doublesigmoidalFitFormula
 #
 # @param x is the "time" (time) column of the dataframe
@@ -206,7 +208,11 @@ doublesigmoidalFitFormula<-function(x,
   if(finalAsymptoteIntensity<0 | finalAsymptoteIntensity>1){stop("finalAsymptoteIntensity should be a number between 0 and 1")}
   if(maximum<0){stop("maximum should be a positive number")}
 
-  xmax <- optimize(f1, c(0,30), tol=0.0001,
+  optimizeIntervalMin=midPoint1-2*midPointDistance
+  optimizeIntervalMax=midPoint1+3*midPointDistance
+  xmax <- optimize(f1,
+                   c(optimizeIntervalMin,optimizeIntervalMax),
+                   tol=0.0001,
                    B1=slope1, M1=midPoint1, B2=slope2, L=midPointDistance, maximum = TRUE);
   argumentt=xmax$maximum;
   constt=f0(argumentt, slope1, midPoint1, slope2, midPointDistance);
@@ -216,7 +222,10 @@ doublesigmoidalFitFormula<-function(x,
        slope2, midPointDistance,
        constt, argumentt);
   return(y)}
+#**************************************
 
+
+#**************************************
 #' @export
 f0 <- function (x, B1, M1, B2, L) {
   (1/( ( 1+exp(-B1*(x-M1)) ) * ( 1+exp(B2*(x-(M1+L))) ) ))}
@@ -227,7 +236,147 @@ f1 <- function (x, B1, M1, B2, L) {
 f2 <- function (x, A2, Ka, B1, M1, B2, L, const, argument)
 { fBasics::Heaviside(x-argument)* ( f0(x, B1, M1, B2, L)* ((Ka-A2*Ka)/(const)) + A2*Ka) +
     (1-fBasics::Heaviside(x-argument))* ( f0(x, B1, M1, B2, L)* ((Ka-0*Ka)/(const)) + 0*Ka)}
+#' @export
+f0mid <- function (x, B1, M1, B2, L,const) {
+  -const/2+1/( ( 1+exp(-B1*(x-M1)) ) * ( 1+exp(B2*(x-(M1+L))) ) )}
+#**************************************
 
+
+#**************************************
+#' @title f_argmax_doublesigmoidal
+#' @return return the x value of the maximum
+#' @export
+f_argmax_doublesigmoidal <- function(parameterVector){
+
+  max_x = parameterVector$dataScalingParameters.timeRatio
+  xmax <- optimize(f1,
+                   c(0,max_x),
+                   tol=0.0001,
+                   B1=parameterVector$slope1_Estimate,
+                   M1=parameterVector$midPoint1_Estimate,
+                   B2=parameterVector$slope2_Estimate ,
+                   L=parameterVector$midPointDistance_Estimate,
+                   maximum = TRUE);
+  argumentt=xmax$maximum;
+  return(argumentt)}
+#**************************************
+
+
+#**************************************
+#' @title f_mid1_doublesigmoidal
+#' @return return the x values of midpoint1, by assuming the y of midpoint1 is the half of the maximum value it reaches
+#' @export
+f_mid1_doublesigmoidal <- function(parameterVector){
+
+  max_x = parameterVector$dataScalingParameters.timeRatio
+  xmax <- optimize(f1,
+                   interval=c(-0.5208333*max_x,max_x*(1.145833+0.625)),
+                   tol=0.0001,
+                   B1=parameterVector$slope1_Estimate,
+                   M1=parameterVector$midPoint1_Estimate,
+                   B2=parameterVector$slope2_Estimate ,
+                   L=parameterVector$midPointDistance_Estimate,
+                   maximum = TRUE);
+  argumentt=xmax$maximum;
+  constt=f0(argumentt,
+            B1=parameterVector$slope1_Estimate,
+            M1=parameterVector$midPoint1_Estimate,
+            B2=parameterVector$slope2_Estimate ,
+            L=parameterVector$midPointDistance_Estimate);
+
+  mid1x <- uniroot(f0mid,
+                   interval=c(-0.5208333*max_x,argumentt),
+                   tol=0.0001,
+                   B1=parameterVector$slope1_Estimate,
+                   M1=parameterVector$midPoint1_Estimate,
+                   B2=parameterVector$slope2_Estimate ,
+                   L=parameterVector$midPointDistance_Estimate,
+                   const=constt);
+  mid1x=mid1x$root
+  return(mid1x)}
+#**************************************
+
+
+#**************************************
+#' @title f_mid2_doublesigmoidal
+#' @return return the x values of midpoint2, by assuming the y of midpoint2 is the half of the distance between maximum value it reaches and final asymptote
+#' @export
+f_mid2_doublesigmoidal <- function(parameterVector){
+
+  max_x = parameterVector$dataScalingParameters.timeRatio
+  xmax <- optimize(f1,
+                   interval=c(-0.5208333*max_x,max_x*(1.145833+0.625)),
+                   tol=0.0001,
+                   B1=parameterVector$slope1_Estimate,
+                   M1=parameterVector$midPoint1_Estimate,
+                   B2=parameterVector$slope2_Estimate ,
+                   L=parameterVector$midPointDistance_Estimate,
+                   maximum = TRUE);
+
+  argumentt=xmax$maximum;
+  constt=f0(argumentt,
+            B1=parameterVector$slope1_Estimate,
+            M1=parameterVector$midPoint1_Estimate,
+            B2=parameterVector$slope2_Estimate ,
+            L=parameterVector$midPointDistance_Estimate);
+
+  mid2x <- uniroot(f0mid, interval=c(argumentt,max_x*(1.145833+0.625)),
+                   tol=0.0001,
+                   B1=parameterVector$slope1_Estimate,
+                   M1=parameterVector$midPoint1_Estimate,
+                   B2=parameterVector$slope2_Estimate ,
+                   L=parameterVector$midPointDistance_Estimate,
+                   const=constt);
+  mid2x=mid2x$root
+  return(mid2x)}
+#**************************************
+
+
+#**************************************
+# calculate slope (5 points derivative)
+#' @title Numerical Slope of Double Sigmoidal
+#' @return return the numerical slope of double sigmoidal for the given x value
+#' @export
+fslope_doublesigmoidal <- function(x, parameterVector, timeStep=0.00001){
+
+  fxp2h=doublesigmoidalFitFormula(x=x+2*timeStep,
+                                  finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+                                  maximum=parameterVector$maximum_Estimate,
+                                  slope1=parameterVector$slope1_Estimate,
+                                  midPoint1=parameterVector$midPoint1_Estimate,
+                                  slope2=parameterVector$slope2_Estimate,
+                                  midPointDistance=parameterVector$midPointDistance_Estimate)
+  fxph=doublesigmoidalFitFormula(x=x+timeStep,
+                                  finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+                                  maximum=parameterVector$maximum_Estimate,
+                                  slope1=parameterVector$slope1_Estimate,
+                                  midPoint1=parameterVector$midPoint1_Estimate,
+                                  slope2=parameterVector$slope2_Estimate,
+                                  midPointDistance=parameterVector$midPointDistance_Estimate)
+
+  fxmh=doublesigmoidalFitFormula(x=x-timeStep,
+                                  finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+                                  maximum=parameterVector$maximum_Estimate,
+                                  slope1=parameterVector$slope1_Estimate,
+                                  midPoint1=parameterVector$midPoint1_Estimate,
+                                  slope2=parameterVector$slope2_Estimate,
+                                  midPointDistance=parameterVector$midPointDistance_Estimate)
+
+  fxm2h=doublesigmoidalFitFormula(x=x-2*timeStep,
+                                  finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+                                  maximum=parameterVector$maximum_Estimate,
+                                  slope1=parameterVector$slope1_Estimate,
+                                  midPoint1=parameterVector$midPoint1_Estimate,
+                                  slope2=parameterVector$slope2_Estimate,
+                                  midPointDistance=parameterVector$midPointDistance_Estimate)
+
+  der=(-1*fxp2h+8*fxph-8*fxmh+1*fxm2h)/(12*timeStep)
+  return(der)
+}
+#**************************************
+
+
+#**************************************
 #' @export
 doublesigmoidalRenormalizeParameters<-function(parameterDF,isalist)
 {
@@ -249,3 +398,4 @@ doublesigmoidalRenormalizeParameters<-function(parameterDF,isalist)
     }
   return(parameterDF)
 }
+#**************************************

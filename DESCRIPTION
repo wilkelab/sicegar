@@ -20,7 +20,7 @@ Suggests:
 VignetteBuilder: knitr
 BugReports: https://github.com/wilkelab/sicegar/issues
 Collate:
-    'clusterFunction.R'
+    'categorize.R'
     'mainFunctions.R'
     'lineFitFunctions.R'
     'sigmoidalFitFunctions.R'
@@ -28,4 +28,5 @@ Collate:
     'normalizationFunction.R'
     'sicegar.R'
     'dataInputCheck.R'
+    'numericalReCalculation.R'
 RoxygenNote: 5.0.1

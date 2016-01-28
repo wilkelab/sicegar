@@ -136,7 +136,7 @@
 #'
 #'
 #'
-#' # Example 6 (doublesigmoidal function with normalization)
+#'# Example 6 (doublesigmoidal function with normalization)
 #'# Initial Command to Reset the System
 #'rm(list = ls())
 #'if (is.integer(dev.list())){dev.off()}

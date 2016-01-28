@@ -62,9 +62,9 @@
 #'                                           showDetails=FALSE)
 #'
 #'
-#'outputCluster=clusterFunction(parameterVectorLinear=parameterVectorLinear,
-#'                              parameterVectorSigmoidal=parameterVectorSigmoidal,
-#'                              parameterVectorDoubleSigmoidal=parameterVectorDoubleSigmoidal)
+#'outputCluster=categorize(parameterVectorLinear=parameterVectorLinear,
+#'                         parameterVectorSigmoidal=parameterVectorSigmoidal,
+#'                         parameterVectorDoubleSigmoidal=parameterVectorDoubleSigmoidal)
 #'
 #' #Print the results
 #' if(is.na(outputCluster$classification)){print(outputCluster)}
@@ -144,9 +144,9 @@
 #'                                           showDetails=FALSE)
 #'
 #'
-#'outputCluster=clusterFunction(parameterVectorLinear=parameterVectorLinear,
-#'                              parameterVectorSigmoidal=parameterVectorSigmoidal,
-#'                              parameterVectorDoubleSigmoidal=parameterVectorDoubleSigmoidal)
+#'outputCluster=categorize(parameterVectorLinear=parameterVectorLinear,
+#'                         parameterVectorSigmoidal=parameterVectorSigmoidal,
+#'                         parameterVectorDoubleSigmoidal=parameterVectorDoubleSigmoidal)
 #'
 #' #Print the results
 #' if(is.na(outputCluster$classification)){print(outputCluster)}
@@ -183,7 +183,7 @@
 #'    geom_line(aes(x=time,y=intensityTheoretical))+
 #'    expand_limits(x = 0, y = 0)
 #' }
-clusterFunction<-
+categorize<-
   function(parameterVectorLinear,
            parameterVectorSigmoidal,
            parameterVectorDoubleSigmoidal,
@@ -193,6 +193,23 @@ clusterFunction<-
            threshold_lysis_finalAsymptoteIntensity=0.75,
            threshold_AIC=-10)
   {
+    # does these 3 input comes from same source
+    doTheyComeFromSameSource=FALSE
+    if(is.na(parameterVectorLinear$dataInputName) &
+       is.na(parameterVectorSigmoidal$dataInputName) &
+       is.na(parameterVectorDoubleSigmoidal$dataInputName))
+    {
+      doTheyComeFromSameSource=TRUE
+    }
+    else if((parameterVectorDoubleSigmoidal$dataInputName ==
+                              parameterVectorSigmoidal$dataInputName)
+            & (parameterVectorSigmoidal$dataInputName==
+                              parameterVectorLinear$dataInputName))
+    {
+      doTheyComeFromSameSource=TRUE
+    }
+    if(!doTheyComeFromSameSource){stop("inputs should come from same source")}
+
     # First Part Define NA
     # If for any one of the 3 fits isThisaFit==False then print NA
     if(!parameterVectorLinear$isThisaFit|
@@ -264,6 +281,7 @@ clusterFunction<-
     # if not any of them it is infection
     else {output=as.data.frame(t(c(classification="infection")))}
 
+    output=cbind(output,dataInputName=parameterVectorLinear$dataInputName)
     return(output)
   }
 

@@ -7,15 +7,15 @@
 numericalReCalculation(parameterVector, stepSize = 1e-05)
 }
 \arguments{
-\item{parameterVector}{is the output of fitFunction}
+\item{parameterVector}{is the output of fitFunction or a simple df that gives the variables related with double sigmoidal fit}
 
 \item{stepSize}{arrange the precission of simulation. Default is 10000. Bigger is better smaller is faster}
 }
 \value{
 The function returns the parameters related with fitted curve to input data
 }
-\details{
-the algorithm calls the fitting algorithms. to make the fits with random initial parameters. This multiple runs are necessary to avoid local minimums that LM fits can stuck. Fitting algorithms can either gives a fit with related parameters and isThisaFit=TRUE value or just give isThisaFit=FALSE corresponding to not a fit. n_runs_min represent minimum number of fits that are necessary to give a result, n_runs_max limits the number of runs (successful or unsuccessful) that the it algorithm can run
+\description{
+The algorithm calls the fitting algorithms. to make the fits with random initial parameters. This multiple runs are necessary to avoid local minimums that LM fits can stuck. Fitting algorithms can either gives a fit with related parameters and isThisaFit=TRUE value or just give isThisaFit=FALSE corresponding to not a fit. n_runs_min represent minimum number of fits that are necessary to give a result, n_runs_max limits the number of runs (successful or unsuccessful) that the it algorithm can run
 }
 \examples{
 
@@ -41,13 +41,15 @@ initialParameterVector=data.frame(dataScalingParameters.timeRatio=24,
 
 initialParameterVector = numericalReCalculation(initialParameterVector, stepSize=0.00001)
 
-intensity=doublesigmoidalFitFormula(time,
-                                   finalAsymptoteIntensity=initialParameterVector$finalAsymptoteIntensity_Estimate,
-                                   maximum=initialParameterVector$maximum_Estimate,
-                                   slope1=initialParameterVector$slope1_Estimate,
-                                   midPoint1=initialParameterVector$midPoint1_Estimate,
-                                   slope2=initialParameterVector$slope2_Estimate,
-                                   midPointDistance=initialParameterVector$midPointDistance_Estimate)
+intensity=
+ doublesigmoidalFitFormula(
+         time,
+         finalAsymptoteIntensity=initialParameterVector$finalAsymptoteIntensity_Estimate,
+         maximum=initialParameterVector$maximum_Estimate,
+         slope1=initialParameterVector$slope1_Estimate,
+         midPoint1=initialParameterVector$midPoint1_Estimate,
+         slope2=initialParameterVector$slope2_Estimate,
+         midPointDistance=initialParameterVector$midPointDistance_Estimate)
 
 
 intensity=intensity+intensity_noise
@@ -73,29 +75,35 @@ if(parameterVector$isThisaFit){
  time=seq(0,
           initialParameterVector$dataScalingParameters.timeRatio,
           initialParameterVector$dataScalingParameters.timeRatio/1000)
- intensityTheoretical=doublesigmoidalFitFormula(time,
-                                                finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
-                                                maximum=parameterVector$maximum_Estimate,
-                                                slope1=parameterVector$slope1_Estimate,
-                                                midPoint1=parameterVector$midPoint1_Estimate,
-                                                slope2=parameterVector$slope2_Estimate,
-                                                midPointDistance=parameterVector$midPointDistance_Estimate)
+ intensityTheoretical=
+     doublesigmoidalFitFormula(
+               time,
+               finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+               maximum=parameterVector$maximum_Estimate,
+               slope1=parameterVector$slope1_Estimate,
+               midPoint1=parameterVector$midPoint1_Estimate,
+               slope2=parameterVector$slope2_Estimate,
+               midPointDistance=parameterVector$midPointDistance_Estimate)
 
- dataOutput2$midPoint1_y_Estimate=doublesigmoidalFitFormula(parameterVector$midPoint1_Estimate,
-                                                            finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
-                                                            maximum=parameterVector$maximum_Estimate,
-                                                            slope1=parameterVector$slope1_Estimate,
-                                                            midPoint1=parameterVector$midPoint1_Estimate,
-                                                            slope2=parameterVector$slope2_Estimate,
-                                                            midPointDistance=parameterVector$midPointDistance_Estimate)
+ dataOutput2$midPoint1_y_Estimate=
+       doublesigmoidalFitFormula(
+             parameterVector$midPoint1_Estimate,
+             finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+             maximum=parameterVector$maximum_Estimate,
+             slope1=parameterVector$slope1_Estimate,
+             midPoint1=parameterVector$midPoint1_Estimate,
+             slope2=parameterVector$slope2_Estimate,
+              midPointDistance=parameterVector$midPointDistance_Estimate)
 
- dataOutput2$midPoint2_y_Estimate=doublesigmoidalFitFormula(parameterVector$midPoint1_Estimate+parameterVector$midPointDistance_Estimate,
-                                                            finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
-                                                            maximum=parameterVector$maximum_Estimate,
-                                                            slope1=parameterVector$slope1_Estimate,
-                                                            midPoint1=parameterVector$midPoint1_Estimate,
-                                                            slope2=parameterVector$slope2_Estimate,
-                                                            midPointDistance=parameterVector$midPointDistance_Estimate)
+ dataOutput2$midPoint2_y_Estimate=
+       doublesigmoidalFitFormula(
+             parameterVector$midPoint1_Estimate+parameterVector$midPointDistance_Estimate,
+             finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+             maximum=parameterVector$maximum_Estimate,
+             slope1=parameterVector$slope1_Estimate,
+             midPoint1=parameterVector$midPoint1_Estimate,
+             slope2=parameterVector$slope2_Estimate,
+             midPointDistance=parameterVector$midPointDistance_Estimate)
 
 
 
@@ -152,15 +160,21 @@ if(parameterVector$isThisaFit){
                       dataOutput2$maximum_Estimate/(dataOutput2$numerical.slope1_Estimate*2),
                     y = 0,
                     xend = dataOutput2$numerical.midPoint1_x_Estimate +
-                      dataOutput2$maximum_Estimate/(dataOutput2$numerical.slope1_Estimate*2),
+                               dataOutput2$maximum_Estimate/
+                                     (dataOutput2$numerical.slope1_Estimate*2),
                     yend = dataOutput2$maximum_Estimate),
                 colour="#bdbdbd",size=0.5,linetype="longdash")+
    geom_segment(aes(x = dataOutput2$numerical.midPoint2_x_Estimate -
-                      dataOutput2$maximum_Estimate*(1-dataOutput2$finalAsymptoteIntensity_Estimate)/(-dataOutput2$numerical.slope2_Estimate*2),
+                            dataOutput2$maximum_Estimate*
+                                (1-dataOutput2$finalAsymptoteIntensity_Estimate)/
+                                              (-dataOutput2$numerical.slope2_Estimate*2),
                     y = dataOutput2$maximum_Estimate,
                     xend = dataOutput2$numerical.midPoint2_x_Estimate +
-                      dataOutput2$maximum_Estimate*(1-dataOutput2$finalAsymptoteIntensity_Estimate)/(-dataOutput2$numerical.slope2_Estimate*2),
-                    yend = dataOutput2$maximum_Estimate*dataOutput2$finalAsymptoteIntensity_Estimate),
+                               dataOutput2$maximum_Estimate*
+                                      (1-dataOutput2$finalAsymptoteIntensity_Estimate)/
+                                            (-dataOutput2$numerical.slope2_Estimate*2),
+                    yend = dataOutput2$maximum_Estimate*
+                             dataOutput2$finalAsymptoteIntensity_Estimate),
                 colour="#bdbdbd",size=0.5,linetype="longdash")+
    geom_line(aes(x=time,y=intensityTheoretical),color="orange",size=1.5)+
    expand_limits(x = 0, y = 0)+

@@ -28,6 +28,9 @@ sigmoidalFitFunction(dataInput, tryCounter, startList = list(maximum = 1,
 \value{
 Function returns fitted parameters for lineFit. The slope, intersection and parameters related with quality of the fit
 }
+\description{
+the function fits a sigmoidal curve to given data by using likelihood maximization (LM) and gives the parameters (maximum, slope and midpoint) describing the sigmoidal fit as output. It also provides information about goodness of the fit as AIC, BIC values, residual_Sum_of_Squares and log_likelihood
+}
 \examples{
 # related examples
 

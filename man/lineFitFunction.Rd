@@ -26,6 +26,9 @@ lineFitFunction(dataInput, tryCounter, startList = list(slope = 0,
 \value{
 Function returns fitted parameters for lineFit. The slope, intersection and parameters related with quality of the fit
 }
+\description{
+the function fits a line to given data by using likelihood maximization (LM) and gives the parameters (slope and intersection) describing the line as output. It also provides information about goodness of the fit as AIC, BIC values, residual_Sum_of_Squares and log_likelihood
+}
 \examples{
 # related examples
 # Initial Command to Reset the System

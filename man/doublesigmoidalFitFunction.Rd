@@ -31,6 +31,9 @@ doublesigmoidalFitFunction(dataInput, tryCounter,
 \value{
 Function returns fitted parameters for lineFit. The slope, intersection and parameters related with quality of the fit
 }
+\description{
+the function fits a double-sigmoidal curve to given data by using likelihood maximization (LM) and gives the parameters (maximum, final asymptote intensity, slope1, midpoint1, slope2 and mid point distance) describing the double-sigmoidal fit as output. It also provides information about goodness of the fit as AIC, BIC values, residual_Sum_of_Squares and log_likelihood.
+}
 \examples{
 # Related example
 
@@ -61,13 +64,15 @@ parameterVector<-doublesigmoidalFitFunction(dataInput2,tryCounter=2)
 
 #Check the results
 if(parameterVector$isThisaFit){
- intensityTheoretical=doublesigmoidalFitFormula(time,
-                                                finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
-                                                maximum=parameterVector$maximum_Estimate,
-                                                slope1=parameterVector$slope1_Estimate,
-                                                midPoint1=parameterVector$midPoint1_Estimate,
-                                                slope2=parameterVector$slope2_Estimate,
-                                                midPointDistance=parameterVector$midPointDistance_Estimate)
+    intensityTheoretical=
+         doublesigmoidalFitFormula(
+             time,
+             finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+             maximum=parameterVector$maximum_Estimate,
+             slope1=parameterVector$slope1_Estimate,
+             midPoint1=parameterVector$midPoint1_Estimate,
+             slope2=parameterVector$slope2_Estimate,
+             midPointDistance=parameterVector$midPointDistance_Estimate)
 
  comparisonData=cbind(dataInput,intensityTheoretical)
  require(ggplot2)

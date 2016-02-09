@@ -19,6 +19,9 @@ printInfectionCurves(dataInput, sigmoidalFitVector = NULL,
 \value{
 The function returns infection curve figures by using ggplot
 }
+\description{
+The aim of the function is to generate figures by using ggplot that shows input data and fit curves.
+}
 \examples{
 # Example 1 with double sigmoidal data
 # Initial Command to Reset the System

@@ -2,7 +2,7 @@
 #'
 #' @param data it is the input data file. In can be either a list that contains a data frame in .$timeIntensityData or a data frame by itself.
 #'
-#' @details The dataCheck checks if the input data is appropirate and covert it into an appropirate form. Data frame should contain two columns named time and intensity for timeData and intensityData. If the data frame is in a list its name in the list should be $timeIntensityData
+#' @description The dataCheck checks if the input data is appropirate and covert it into an appropirate form. Data frame should contain two columns named time and intensity for timeData and intensityData. If the data frame is in a list its name in the list should be $timeIntensityData
 #' @export
 #'
 #' @examples

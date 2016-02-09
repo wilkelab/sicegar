@@ -6,8 +6,7 @@ Date: 2015-12-17
 Authors@R: c( person("M. Umut", "Caglar", role = c("aut", "cre"), email =
     "umut.caglar@gmail.com"), person("Claus O.", "Wilke", role = c("aut"), email =
     "wilke@austin.utexas.edu") )
-Description: Need a detailed description here. Origin of the package name:
-    sicegar = SIngle CEll Growth Analysis in R
+Description: SICEGAR aims to classify data related with viral growth in bacteria. The viral growth probably detected with a floresance protein and the data will be intensity (proportioal to viral production) versus time. It categorize data into the following categories ambiguous, no signal, infection and infection & lysis. Origin of the package name came from "SIngle CEll Growth Analysis in R".
 URL: https://github.com/wilkelab/sicegar
 Imports:
     dplyr,

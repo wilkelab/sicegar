@@ -5,6 +5,7 @@
 #' @param doubleSigmoidalFitVector is the output of double sigmoidal fit function. Default is NULL
 #' @param showParameterRelatedLines show parameter related lines on the curves
 #'
+#' @description The aim of the function is to generate figures by using ggplot that shows input data and fit curves.
 #' @return The function returns infection curve figures by using ggplot
 #' @export
 #'
@@ -122,7 +123,7 @@ printInfectionCurves<-function(dataInput,
   # DOUBLE SIGMOIDAL
   if(!is.null(doubleSigmoidalFitVector))
   {
-    if(!parameterVectorDoubleSigmoidal$model=="doublesigmoidal")
+    if(!doubleSigmoidalFitVector$model=="doublesigmoidal")
     {stop("provided doubleSigmoidalFitVector is not a double sigmoidal fit vector")}
     if(!doubleSigmoidalFitVector$isThisaFit)
     {warning("provided double sigmoidal fit vector does not include a fit!")}
@@ -145,7 +146,7 @@ printInfectionCurves<-function(dataInput,
   }
 
   output=ggplot2::ggplot(dataFrameInput)+
-    ggplot2::geom_point(ggplot2::aes(x=time, y=intensity))+
+    ggplot2::geom_point(ggplot2::aes(x=dataFrameInput$time, y=dataFrameInput$intensity))+
     ggplot2::expand_limits(x = 0, y = 0)+
     ggplot2::theme_bw()+
     ggplot2::theme(panel.grid.minor = ggplot2::element_blank())
@@ -159,21 +160,21 @@ printInfectionCurves<-function(dataInput,
       {
         # Points related with the sigmoidal fit line
         output=output+
-          ggplot2::geom_point(ggplot2::aes(x=parameterVectorSigmoidal$midPoint_Estimate,
-                                           y=(parameterVectorSigmoidal$maximum_Estimate)/2),
+          ggplot2::geom_point(ggplot2::aes(x=sigmoidalFitVector$midPoint_Estimate,
+                                           y=(sigmoidalFitVector$maximum_Estimate)/2),
                               colour="red",size=6,shape=13)
 
         # Lines related with the sigmoidal fit line
         output=output+
           ggplot2::geom_hline(ggplot2::aes(yintercept=0),colour="#bdbdbd",size=0.5,linetype="longdash")+
-          ggplot2::geom_hline(ggplot2::aes(yintercept=parameterVectorSigmoidal$maximum_Estimate),
+          ggplot2::geom_hline(ggplot2::aes(yintercept=sigmoidalFitVector$maximum_Estimate),
                               colour="#bdbdbd",size=0.5,linetype="longdash")+
-          ggplot2::geom_segment(ggplot2::aes(x = parameterVectorSigmoidal$midPoint_Estimate -
-                                               parameterVectorSigmoidal$maximum_Estimate/(parameterVectorSigmoidal$slope_Estimate*2),
+          ggplot2::geom_segment(ggplot2::aes(x = sigmoidalFitVector$midPoint_Estimate -
+                                               sigmoidalFitVector$maximum_Estimate/(sigmoidalFitVector$slope_Estimate*2),
                                              y = 0,
-                                             xend = parameterVectorSigmoidal$midPoint_Estimate +
-                                               parameterVectorSigmoidal$maximum_Estimate/(parameterVectorSigmoidal$slope_Estimate*2),
-                                             yend = parameterVectorSigmoidal$maximum_Estimate),
+                                             xend = sigmoidalFitVector$midPoint_Estimate +
+                                               sigmoidalFitVector$maximum_Estimate/(sigmoidalFitVector$slope_Estimate*2),
+                                             yend = sigmoidalFitVector$maximum_Estimate),
                                 colour="#bdbdbd",size=0.5,linetype="longdash")
       }
     }
@@ -186,47 +187,47 @@ printInfectionCurves<-function(dataInput,
       output=output+ggplot2::geom_line(ggplot2::aes(x=time,y=intensityTheoreticalDoubleSigmoidal),color="orange",size=1.5)
       if(showParameterRelatedLines)
       {
-        if(!parameterVectorDoubleSigmoidal$numericalParameters)
+        if(!doubleSigmoidalFitVector$numericalParameters)
         {stop("to show parameter related lines one needs to run numericalReCalculation for doubleSigmoidalModel ")}
-        if(parameterVectorDoubleSigmoidal$numericalParameters)
+        if(doubleSigmoidalFitVector$numericalParameters)
         {
           # Points related with the double sigmoidal fit line (with numerical correction)
           output=output+
-            ggplot2::geom_point(ggplot2::aes(x=parameterVectorDoubleSigmoidal$numerical.maximum_x_Estimate,
-                                             y=parameterVectorDoubleSigmoidal$numerical.maximum_y_Estimate),
+            ggplot2::geom_point(ggplot2::aes(x=doubleSigmoidalFitVector$numerical.maximum_x_Estimate,
+                                             y=doubleSigmoidalFitVector$numerical.maximum_y_Estimate),
                                 colour="red",size=6,shape=13)+
-            ggplot2::geom_point(ggplot2::aes(x=parameterVectorDoubleSigmoidal$numerical.midPoint1_x_Estimate,
-                                             y=parameterVectorDoubleSigmoidal$numerical.midPoint1_y_Estimate),
+            ggplot2::geom_point(ggplot2::aes(x=doubleSigmoidalFitVector$numerical.midPoint1_x_Estimate,
+                                             y=doubleSigmoidalFitVector$numerical.midPoint1_y_Estimate),
                                 colour="red",size=6,shape=13)+
-            ggplot2::geom_point(ggplot2::aes(x=parameterVectorDoubleSigmoidal$numerical.midPoint2_x_Estimate,
-                                             y=parameterVectorDoubleSigmoidal$numerical.midPoint2_y_Estimate),
+            ggplot2::geom_point(ggplot2::aes(x=doubleSigmoidalFitVector$numerical.midPoint2_x_Estimate,
+                                             y=doubleSigmoidalFitVector$numerical.midPoint2_y_Estimate),
                                 colour="red",size=6,shape=13)
 
           # Lines related with the double sigmoidal fit line (with numerical correction)
           output=output+
             ggplot2::geom_hline(ggplot2::aes(yintercept=0),colour="#bdbdbd",size=0.5,linetype="longdash")+
-            ggplot2::geom_hline(ggplot2::aes(yintercept=parameterVectorDoubleSigmoidal$numerical.maximum_y_Estimate),
+            ggplot2::geom_hline(ggplot2::aes(yintercept=doubleSigmoidalFitVector$numerical.maximum_y_Estimate),
                                 colour="#bdbdbd",size=0.5,linetype="longdash")+
-            ggplot2::geom_segment(ggplot2::aes(x = parameterVectorDoubleSigmoidal$numerical.maximum_x_Estimate,
-                                               y = parameterVectorDoubleSigmoidal$numerical.maximum_y_Estimate*
-                                                 parameterVectorDoubleSigmoidal$finalAsymptoteIntensity_Estimate,
+            ggplot2::geom_segment(ggplot2::aes(x = doubleSigmoidalFitVector$numerical.maximum_x_Estimate,
+                                               y = doubleSigmoidalFitVector$numerical.maximum_y_Estimate*
+                                                 doubleSigmoidalFitVector$finalAsymptoteIntensity_Estimate,
                                                xend = Inf,
-                                               yend = parameterVectorDoubleSigmoidal$numerical.maximum_y_Estimate*
-                                                 parameterVectorDoubleSigmoidal$finalAsymptoteIntensity_Estimate),
+                                               yend = doubleSigmoidalFitVector$numerical.maximum_y_Estimate*
+                                                 doubleSigmoidalFitVector$finalAsymptoteIntensity_Estimate),
                                   colour="#bdbdbd",size=0.5,linetype="longdash")+
-            ggplot2::geom_segment(ggplot2::aes(x = parameterVectorDoubleSigmoidal$numerical.midPoint1_x_Estimate -
-                                                 parameterVectorDoubleSigmoidal$maximum_Estimate/(parameterVectorDoubleSigmoidal$numerical.slope1_Estimate*2),
+            ggplot2::geom_segment(ggplot2::aes(x = doubleSigmoidalFitVector$numerical.midPoint1_x_Estimate -
+                                                 doubleSigmoidalFitVector$maximum_Estimate/(doubleSigmoidalFitVector$numerical.slope1_Estimate*2),
                                                y = 0,
-                                               xend = parameterVectorDoubleSigmoidal$numerical.midPoint1_x_Estimate +
-                                                 parameterVectorDoubleSigmoidal$maximum_Estimate/(parameterVectorDoubleSigmoidal$numerical.slope1_Estimate*2),
-                                               yend = parameterVectorDoubleSigmoidal$maximum_Estimate),
+                                               xend = doubleSigmoidalFitVector$numerical.midPoint1_x_Estimate +
+                                                 doubleSigmoidalFitVector$maximum_Estimate/(doubleSigmoidalFitVector$numerical.slope1_Estimate*2),
+                                               yend = doubleSigmoidalFitVector$maximum_Estimate),
                                   colour="#bdbdbd",size=0.5,linetype="longdash")+
-            ggplot2::geom_segment(ggplot2::aes(x = parameterVectorDoubleSigmoidal$numerical.midPoint2_x_Estimate -
-                                                 parameterVectorDoubleSigmoidal$maximum_Estimate*(1-parameterVectorDoubleSigmoidal$finalAsymptoteIntensity_Estimate)/(-parameterVectorDoubleSigmoidal$numerical.slope2_Estimate*2),
-                                               y = parameterVectorDoubleSigmoidal$maximum_Estimate,
-                                               xend = parameterVectorDoubleSigmoidal$numerical.midPoint2_x_Estimate +
-                                                 parameterVectorDoubleSigmoidal$maximum_Estimate*(1-parameterVectorDoubleSigmoidal$finalAsymptoteIntensity_Estimate)/(-parameterVectorDoubleSigmoidal$numerical.slope2_Estimate*2),
-                                               yend = parameterVectorDoubleSigmoidal$maximum_Estimate*parameterVectorDoubleSigmoidal$finalAsymptoteIntensity_Estimate),
+            ggplot2::geom_segment(ggplot2::aes(x = doubleSigmoidalFitVector$numerical.midPoint2_x_Estimate -
+                                                 doubleSigmoidalFitVector$maximum_Estimate*(1-doubleSigmoidalFitVector$finalAsymptoteIntensity_Estimate)/(-doubleSigmoidalFitVector$numerical.slope2_Estimate*2),
+                                               y = doubleSigmoidalFitVector$maximum_Estimate,
+                                               xend = doubleSigmoidalFitVector$numerical.midPoint2_x_Estimate +
+                                                 doubleSigmoidalFitVector$maximum_Estimate*(1-doubleSigmoidalFitVector$finalAsymptoteIntensity_Estimate)/(-doubleSigmoidalFitVector$numerical.slope2_Estimate*2),
+                                               yend = doubleSigmoidalFitVector$maximum_Estimate*doubleSigmoidalFitVector$finalAsymptoteIntensity_Estimate),
                                   colour="#bdbdbd",size=0.5,linetype="longdash")
 
         }
@@ -246,6 +247,7 @@ printInfectionCurves<-function(dataInput,
 #' @param sigmoidalFitVector is the output of sigmoidalFitFunction. Default is NULL
 #' @param doubleSigmoidalFitVector is the output of double sigmoidal fit function. Default is NULL
 #'
+#' @description The aim of the function is to check if the provied data and provided models came from same source by looking to ".dataInputName" columns of the inputs.
 #' @return The function checks if the data and models came from the same source
 #' @export
 #'

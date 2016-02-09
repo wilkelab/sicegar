@@ -1,13 +1,15 @@
 #' @title fit function
 #'
-#' @param data Normalized input data that will be fitted transferred into related functions
+#' @param dataInput Normalized input data that will be fitted transferred into related functions
 #' @param model type of fit function that will be used. Can be "linear", "sigmoidal", "double_sigmoidal", "test"
 #' @param n_runs_max number of maximum runs that the algorithm can run
 #' @param n_runs_min number of minimum runs that the algorithm can run
 #' @param showDetails If set to True (default is false) prints details of intermediate steps of individual fits
-#' @param dataInputName is the input name carrier with a default of 'NA'. The functions will be used with massive for loops so put a personal data indicator might be a good idea.
+#' @param dataInputName is the input name container with a default of 'NA'. The functions will be used with massive for loops so put a personal data indicator might be a good idea.
+#' @param randomParameter is a paramter that is needed to run the test model. Default is 'NA'
+#' @param ... all other arguments that model functions ("exampleFitFunction", "lineFitFunction", "sigmoidalFitFunction", "doublesigmoidalFitFunction") may need
 #'
-#' @details the algorithm calls the fitting algorithms. to make the fits with random initial parameters. This multiple runs are necessary to avoid local minimums that LM fits can stuck. Fitting algorithms can either gives a fit with related parameters and isThisaFit=TRUE value or just give isThisaFit=FALSE corresponding to not a fit. n_runs_min represent minimum number of fits that are necessary to give a result, n_runs_max limits the number of runs (successful or unsuccessful) that the it algorithm can run
+#' @description The algorithm calls the fitting algorithms. to make the fits with random initial parameters. This multiple runs are necessary to avoid local minimums that LM fits can stuck. Fitting algorithms can either gives a fit with related parameters and isThisaFit=TRUE value or just give isThisaFit=FALSE corresponding to not a fit. n_runs_min represent minimum number of fits that are necessary to give a result, n_runs_max limits the number of runs (successful or unsuccessful) that the it algorithm can run
 #' @return The function returns the parameters related with fitted curve to input data
 #' @export
 #'
@@ -19,9 +21,13 @@
 #' intensity=runif(length(time), 3.0, 7.5)
 #' dataInput = data.frame(time,intensity)
 #' # b- generate "random Parameter" for model "test"
-#' randomParameter=0.7 # it should be a parameter between 0 and 1
+#' randomParameterValue=0.7 # it should be a parameter between 0 and 1
 #' # c- use the function "test"
-#' parameterOutput=fitFunction(dataInput=dataInput,model="test",n_runs_min=5,n_runs_max=15)
+#' parameterOutput=fitFunction(dataInput=dataInput,
+#'                             model="test",
+#'                             n_runs_min=5,
+#'                             n_runs_max=15,
+#'                             randomParameter=randomParameterValue)
 #'
 #' # Example 2 (test function with normalization)
 #' # data sent to algorithm after normalization
@@ -38,7 +44,8 @@
 #' parameterOutput=fitFunction(dataInput=dataInput2,
 #'                             model="test",
 #'                             n_runs_min=5,
-#'                             n_runs_max=15)
+#'                             n_runs_max=15,
+#'                             randomParameter=randomParameterValue)
 #'
 #' # Example 3 (linear function without normalization)
 #' # data sent to algorithm directly as data frame
@@ -169,13 +176,15 @@
 #'
 #'#Check the results
 #'if(parameterVector$isThisaFit){
-#'  intensityTheoretical=doublesigmoidalFitFormula(time,
-#'                                                 finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
-#'                                                 maximum=parameterVector$maximum_Estimate,
-#'                                                 slope1=parameterVector$slope1_Estimate,
-#'                                                 midPoint1=parameterVector$midPoint1_Estimate,
-#'                                                 slope2=parameterVector$slope2_Estimate,
-#'                                                 midPointDistance=parameterVector$midPointDistance_Estimate)
+#'  intensityTheoretical=
+#'          doublesigmoidalFitFormula(
+#'                  time,
+#'                  finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+#'                  maximum=parameterVector$maximum_Estimate,
+#'                  slope1=parameterVector$slope1_Estimate,
+#'                  midPoint1=parameterVector$midPoint1_Estimate,
+#'                  slope2=parameterVector$slope2_Estimate,
+#'                  midPointDistance=parameterVector$midPointDistance_Estimate)
 #'
 #'  comparisonData=cbind(dataInput,intensityTheoretical)
 #'  require(ggplot2)
@@ -186,7 +195,13 @@
 #'
 #'if(!parameterVector$isThisaFit){print(parameterVector)}
 fitFunction <-
-  function(dataInput, dataInputName=NA, model, n_runs_min, n_runs_max, showDetails=FALSE, ...)
+  function(dataInput,
+           dataInputName=NA,
+           model,
+           n_runs_min,
+           n_runs_max,
+           showDetails=FALSE,
+           randomParameter=NA, ...)
   {
     dataInputCheck=dataCheck(dataInput)
 
@@ -203,10 +218,10 @@ fitFunction <-
     while(counterCorrectFit<n_runs_min & counterTotalFit<n_runs_max)
     {
       counterTotalFit=counterTotalFit+1
-      if(model == "test"){modelOutput=exampleFitFunction(randomParameter)}
-      if(model == "linear"){modelOutput=lineFitFunction(dataInput=dataInput,tryCounter=counterTotalFit)}
-      if(model == "sigmoidal"){modelOutput=sigmoidalFitFunction(dataInput=dataInput,tryCounter=counterTotalFit)}
-      if(model == "doublesigmoidal"){modelOutput=doublesigmoidalFitFunction(dataInput=dataInput,tryCounter=counterTotalFit)}
+      if(model == "test"){modelOutput=exampleFitFunction(randomParameter,...)}
+      if(model == "linear"){modelOutput=lineFitFunction(dataInput=dataInput,tryCounter=counterTotalFit,...)}
+      if(model == "sigmoidal"){modelOutput=sigmoidalFitFunction(dataInput=dataInput,tryCounter=counterTotalFit,...)}
+      if(model == "doublesigmoidal"){modelOutput=doublesigmoidalFitFunction(dataInput=dataInput,tryCounter=counterTotalFit,...)}
 
       if(is.na(dataInputName))
       {
@@ -263,10 +278,10 @@ fitFunction <-
     return(storedModelOutput)
   }
 
-#' exampleFitFunction
+#' @title exampleFitFunction
 #'
 #' @param randomParameter This parameter defines the probability that the exampleFitFunction returns TRUE values for isThisaFit parameter. The aparemeter should be in the interval of 0 and 1
-#' @details This is the exampleFitFunction that generates TRUE values for isThisaFit parameter whit given probability
+#' @description This is the exampleFitFunction that generates TRUE values for isThisaFit parameter whit given probability
 #' @return The function returns TRUE or FALSE for isThisaFit parameter and also residual_Sum_of_Squares parameter that determines the goodness of the fit
 #'
 #' @examples

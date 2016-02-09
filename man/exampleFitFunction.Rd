@@ -13,9 +13,6 @@ exampleFitFunction(randomParameter)
 The function returns TRUE or FALSE for isThisaFit parameter and also residual_Sum_of_Squares parameter that determines the goodness of the fit
 }
 \description{
-exampleFitFunction
-}
-\details{
 This is the exampleFitFunction that generates TRUE values for isThisaFit parameter whit given probability
 }
 \examples{

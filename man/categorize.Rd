@@ -2,7 +2,7 @@
 % Please edit documentation in R/categorize.R
 \name{categorize}
 \alias{categorize}
-\title{Title Determining he category of the input data}
+\title{categorize. This function is written for determining the category of the input data}
 \usage{
 categorize(parameterVectorLinear, parameterVectorSigmoidal,
   parameterVectorDoubleSigmoidal, threshold_line_slope = 0.01 * 24,
@@ -10,6 +10,12 @@ categorize(parameterVectorLinear, parameterVectorSigmoidal,
   threshold_lysis_finalAsymptoteIntensity = 0.75, threshold_AIC = -10)
 }
 \arguments{
+\item{parameterVectorLinear}{is the output of lineFitFunction}
+
+\item{parameterVectorSigmoidal}{is the output of sigmoidalFitFunction}
+
+\item{parameterVectorDoubleSigmoidal}{is the output of double sigmoidal fit function}
+
 \item{threshold_line_slope}{minimum for line slope}
 
 \item{threshold_intensity_interval}{minimum for intensity range}
@@ -19,20 +25,11 @@ categorize(parameterVectorLinear, parameterVectorSigmoidal,
 \item{threshold_lysis_finalAsymptoteIntensity}{minimum amound of decrease for double sigmoidal}
 
 \item{threshold_AIC}{maximum AIC values in order to have a meaningful fit}
-
-\item{lineFitVector}{is the output of lineFitFunction}
-
-\item{sigmoidalFitVector}{is the output of sigmoidalFitFunction}
-
-\item{doubleSigmoidalFitVector}{is the output of double sigmoidal fit function}
 }
 \value{
 Function simply returns one of the three text outputs. "no_signal", "infection", "infection&lysis"
 }
 \description{
-Title Determining he category of the input data
-}
-\details{
 The function uses results of all 3 fit algorithms, line fit, sigmoidal fit and double sigmoidal fit and make a decision of the class of the data. Parameters in this function is chosen by try error and experience
 }
 \examples{
@@ -107,13 +104,15 @@ if(outputCluster$classification=="infection")
 }
 if(outputCluster$classification=="infection&lysis")
 {
-intensityTheoretical=doublesigmoidalFitFormula(time,
-                                                finalAsymptoteIntensity=parameterVectorDoubleSigmoidal$finalAsymptoteIntensity_Estimate,
-                                                maximum=parameterVectorDoubleSigmoidal$maximum_Estimate,
-                                                slope1=parameterVectorDoubleSigmoidal$slope1_Estimate,
-                                                midPoint1=parameterVectorDoubleSigmoidal$midPoint1_Estimate,
-                                                slope2=parameterVectorDoubleSigmoidal$slope2_Estimate,
-                                                midPointDistance=parameterVectorDoubleSigmoidal$midPointDistance_Estimate)
+intensityTheoretical=
+ doublesigmoidalFitFormula(
+     time,
+     finalAsymptoteIntensity=parameterVectorDoubleSigmoidal$finalAsymptoteIntensity_Estimate,
+     maximum=parameterVectorDoubleSigmoidal$maximum_Estimate,
+     slope1=parameterVectorDoubleSigmoidal$slope1_Estimate,
+     midPoint1=parameterVectorDoubleSigmoidal$midPoint1_Estimate,
+     slope2=parameterVectorDoubleSigmoidal$slope2_Estimate,
+     midPointDistance=parameterVectorDoubleSigmoidal$midPointDistance_Estimate)
 
  comparisonData=cbind(dataInput,intensityTheoretical)
  require(ggplot2)
@@ -189,13 +188,15 @@ if(outputCluster$classification=="infection")
 }
 if(outputCluster$classification=="infection&lysis")
 {
-intensityTheoretical=doublesigmoidalFitFormula(time,
-                                                finalAsymptoteIntensity=parameterVectorDoubleSigmoidal$finalAsymptoteIntensity_Estimate,
-                                                maximum=parameterVectorDoubleSigmoidal$maximum_Estimate,
-                                                slope1=parameterVectorDoubleSigmoidal$slope1_Estimate,
-                                                midPoint1=parameterVectorDoubleSigmoidal$midPoint1_Estimate,
-                                                slope2=parameterVectorDoubleSigmoidal$slope2_Estimate,
-                                                midPointDistance=parameterVectorDoubleSigmoidal$midPointDistance_Estimate)
+intensityTheoretical=
+ doublesigmoidalFitFormula(
+     time,
+     finalAsymptoteIntensity=parameterVectorDoubleSigmoidal$finalAsymptoteIntensity_Estimate,
+     maximum=parameterVectorDoubleSigmoidal$maximum_Estimate,
+     slope1=parameterVectorDoubleSigmoidal$slope1_Estimate,
+     midPoint1=parameterVectorDoubleSigmoidal$midPoint1_Estimate,
+     slope2=parameterVectorDoubleSigmoidal$slope2_Estimate,
+     midPointDistance=parameterVectorDoubleSigmoidal$midPointDistance_Estimate)
 
  comparisonData=cbind(dataInput,intensityTheoretical)
  require(ggplot2)

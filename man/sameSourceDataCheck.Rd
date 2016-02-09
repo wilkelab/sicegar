@@ -16,4 +16,7 @@ sameSourceDataCheck(dataInput, sigmoidalFitVector, doubleSigmoidalFitVector)
 \value{
 The function checks if the data and models came from the same source
 }
+\description{
+The aim of the function is to check if the provied data and provided models came from same source by looking to ".dataInputName" columns of the inputs.
+}
 

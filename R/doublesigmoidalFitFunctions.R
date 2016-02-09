@@ -8,6 +8,7 @@
 #' @param min_Factor define minimum step size in the iterations
 #' @param n_iterations define maximum number of iterations for a run
 #'
+#' @description the function fits a double-sigmoidal curve to given data by using likelihood maximization (LM) and gives the parameters (maximum, final asymptote intensity, slope1, midpoint1, slope2 and mid point distance) describing the double-sigmoidal fit as output. It also provides information about goodness of the fit as AIC, BIC values, residual_Sum_of_Squares and log_likelihood.
 #' @return Function returns fitted parameters for lineFit. The slope, intersection and parameters related with quality of the fit
 #' @export
 #'
@@ -41,13 +42,15 @@
 #'
 #'#Check the results
 #'if(parameterVector$isThisaFit){
-#'  intensityTheoretical=doublesigmoidalFitFormula(time,
-#'                                                 finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
-#'                                                 maximum=parameterVector$maximum_Estimate,
-#'                                                 slope1=parameterVector$slope1_Estimate,
-#'                                                 midPoint1=parameterVector$midPoint1_Estimate,
-#'                                                 slope2=parameterVector$slope2_Estimate,
-#'                                                 midPointDistance=parameterVector$midPointDistance_Estimate)
+#'     intensityTheoretical=
+#'          doublesigmoidalFitFormula(
+#'              time,
+#'              finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+#'              maximum=parameterVector$maximum_Estimate,
+#'              slope1=parameterVector$slope1_Estimate,
+#'              midPoint1=parameterVector$midPoint1_Estimate,
+#'              slope2=parameterVector$slope2_Estimate,
+#'              midPointDistance=parameterVector$midPointDistance_Estimate)
 #'
 #'  comparisonData=cbind(dataInput,intensityTheoretical)
 #'  require(ggplot2)
@@ -182,18 +185,70 @@ doublesigmoidalFitFunction<-function(dataInput,
 
 
 #**************************************
-# @title doublesigmoidalFitFormula
-#
-# @param x is the "time" (time) column of the dataframe
-#
-# @param finalAsymptoteIntensity represents the intensity value at time is infinite.
-# @param maximum is the maximum value that the sigmoidal function can reach
-# @param slope1 is the slope of the sigmoidal function at the steppest point
-# @param midPoint1 is the x axis value of the steppest point in the function
-#
-# @return the function returns the predicted intensities for given time points in the double-sigmoidal fit model
-#
-# @examples
+#' @title doublesigmoidalFitFormula
+#'
+#' @param x is the "time" (time) column of the dataframe
+#'
+#' @param finalAsymptoteIntensity represents the intensity value at time is infinite.
+#' @param maximum is the maximum value that the sigmoidal function can reach
+#' @param slope1 is the slope of the sigmoidal function at the steppest point in the exponential phase of the viral production. i.e when the signal intensity is increasing
+#' @param midPoint1 is the x axis value of the steppest point in the function
+#' @param slope2 is the slope of the sigmoidal function at the steppest point in the lysis phase of the viral production. i.e when the signal intensity is decreasing
+#' @param midPointDistance is the distance between the time of steppest increase and steppest decrease in the intensity data. In other words the distance between the x axis values of arguments of slope1 and slope2
+#'
+#' @description The aim of the function is to calculate intesities for given time points (x) by using double-sigmoidal fit model & parameters (maximum, final asymptote intensity, slope1, midpoint1, slope2 and mid point distance)
+#' @return the function returns the predicted intensities for given time points with given the double-sigmoidal fit parameters for double sigmoidal fit
+#'
+#' @examples
+#' # Related example
+#'
+#'# Initial Command to Reset the System
+#'rm(list = ls())
+#'if (is.integer(dev.list())){dev.off()}
+#'cat("\014")
+#'
+#'time=seq(3,24,0.1)
+#'
+#'#intensity with Noise
+#'noise_parameter=0.2
+#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+#'intensity=doublesigmoidalFitFormula(time,
+#'                                    finalAsymptoteIntensity=.3,
+#'                                    maximum=4,
+#'                                    slope1=1,
+#'                                    midPoint1=7,
+#'                                    slope2=1,
+#'                                    midPointDistance=8)
+#'intensity=intensity+intensity_noise
+#'
+#'dataInput=data.frame(intensity=intensity,time=time)
+#'dataOutput = normalizeData(dataInput)
+#'dataInput2=dataOutput
+#'parameterVector<-doublesigmoidalFitFunction(dataInput2,tryCounter=2)
+#'
+#'
+#'#Check the results
+#'if(parameterVector$isThisaFit){
+#'  intensityTheoretical=
+#'        doublesigmoidalFitFormula(
+#'                time,
+#'                finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+#'                maximum=parameterVector$maximum_Estimate,
+#'                slope1=parameterVector$slope1_Estimate,
+#'                midPoint1=parameterVector$midPoint1_Estimate,
+#'                slope2=parameterVector$slope2_Estimate,
+#'                midPointDistance=parameterVector$midPointDistance_Estimate)
+#'
+#'  comparisonData=cbind(dataInput,intensityTheoretical)
+#'  require(ggplot2)
+#'  ggplot(comparisonData)+
+#'    geom_point(aes(x=time, y=intensity))+
+#'    geom_line(aes(x=time,y=intensityTheoretical))+
+#'    expand_limits(x = 0, y = 0)}
+#'
+#'if(!parameterVector$isThisaFit){print(parameterVector)}
+#'
+#'
 #' @export
 doublesigmoidalFitFormula<-function(x,
                                     finalAsymptoteIntensity,
@@ -227,17 +282,26 @@ doublesigmoidalFitFormula<-function(x,
 
 
 #**************************************
-#' @export
+# Those four functions are necessary internal steps for double sigmoidal model
+# All four are internal functions
+# Name convention is different than the rest of the package
+#     A2 correspond to finalAsymptoteIntensity
+#     Ka correspond to maximum
+#     B1 correspond to slope1
+#     B2 correspond to slope2
+#     M1 correspond to midpoint1
+#     L correspond to midPointDistance
+#     argument correspond to maximum_x (i.e the time when intensity reaches maximum with
+#                                       respoect to double sigmoidal model)
+#     const correspond to the maximum value the function reaches when the input data intensity
+#           is normalized between 0,1
 f0 <- function (x, B1, M1, B2, L) {
   (1/( ( 1+exp(-B1*(x-M1)) ) * ( 1+exp(B2*(x-(M1+L))) ) ))}
-#' @export
 f1 <- function (x, B1, M1, B2, L) {
   log((1/( ( 1+exp(-B1*(x-M1)) ) * ( 1+exp(B2*(x-(M1+L))) ) )))}
-#' @export
 f2 <- function (x, A2, Ka, B1, M1, B2, L, const, argument)
 { fBasics::Heaviside(x-argument)* ( f0(x, B1, M1, B2, L)* ((Ka-A2*Ka)/(const)) + A2*Ka) +
     (1-fBasics::Heaviside(x-argument))* ( f0(x, B1, M1, B2, L)* ((Ka-0*Ka)/(const)) + 0*Ka)}
-#' @export
 f0mid <- function (x, B1, M1, B2, L,const) {
   -const/2+1/( ( 1+exp(-B1*(x-M1)) ) * ( 1+exp(B2*(x-(M1+L))) ) )}
 #**************************************
@@ -245,18 +309,53 @@ f0mid <- function (x, B1, M1, B2, L,const) {
 
 #**************************************
 #' @title f_argmax_doublesigmoidal
-#' @return return the x value of the maximum
+#'
+#' @param parameterDf is a dataFrame that includes columns with names:
+#'
+#' *"dataScalingParameters.timeRatio" that represents maximum time of intensity measurements,
+#'
+#' parameters of double sigmoidal model:
+#'  *"slope1_Estimate",
+#'  *"midPoint1_Estimate",
+#'  *"slope2_Estimate",
+#'  *"midPointDistance_Estimate".
+#'  (Note: additional parameters in Df does not cause problems)
+#'
+#' finally a column with the used model information model="doublesigmoidal".
+#' @description This function is designed to compansate the small distribuncy in numerical parameters in double sigmoidal model numerically. Function is called from numericalReCalculation function.
+#' @return return the x value of the maximum in between time 0 and maximum time measured in sample intensities. In other words the time that double sigmoidal function reaches its maximum
 #' @export
-f_argmax_doublesigmoidal <- function(parameterVector){
+#'
+#' @examples
+#' # Related example
+#'
+#'# Initial Command to Reset the System
+#'rm(list = ls())
+#'if (is.integer(dev.list())){dev.off()}
+#'cat("\014")
+#'
+#'# Generate a parameters DF
+#'parameterDf=data.frame(dataScalingParameters.timeRatio=24,
+#'                       slope1_Estimate=1,
+#'                       midPoint1_Estimate=7,
+#'                       slope2_Estimate=1,
+#'                       midPointDistance_Estimate=8,
+#'                       model="doublesigmoidal")
+#'
+#' # Find the x value of the maximum for this model
+#' # with in the range of [0, dataScalingParameters.timeRatio]
+#' maximum_x=f_argmax_doublesigmoidal(parameterDf)
+#'
+f_argmax_doublesigmoidal <- function(parameterDf){
 
-  max_x = parameterVector$dataScalingParameters.timeRatio
+  max_x = parameterDf$dataScalingParameters.timeRatio
   xmax <- optimize(f1,
                    c(0,max_x),
                    tol=0.0001,
-                   B1=parameterVector$slope1_Estimate,
-                   M1=parameterVector$midPoint1_Estimate,
-                   B2=parameterVector$slope2_Estimate ,
-                   L=parameterVector$midPointDistance_Estimate,
+                   B1=parameterDf$slope1_Estimate,
+                   M1=parameterDf$midPoint1_Estimate,
+                   B2=parameterDf$slope2_Estimate ,
+                   L=parameterDf$midPointDistance_Estimate,
                    maximum = TRUE);
   argumentt=xmax$maximum;
   return(argumentt)}
@@ -265,33 +364,69 @@ f_argmax_doublesigmoidal <- function(parameterVector){
 
 #**************************************
 #' @title f_mid1_doublesigmoidal
-#' @return return the x values of midpoint1, by assuming the y of midpoint1 is the half of the maximum value it reaches
+#'
+#' @param parameterDf is a dataFrame that includes columns with names:
+#'
+#' *"dataScalingParameters.timeRatio" that represents maximum time of intensity measurements,
+#'
+#' parameters of double sigmoidal model:
+#'  *"slope1_Estimate",
+#'  *"midPoint1_Estimate",
+#'  *"slope2_Estimate",
+#'  *"midPointDistance_Estimate".
+#'  (Note: additional parameters in Df does not cause problems)
+#'
+#' finally a column with the used model information model="doublesigmoidal".
+#'
+#' @description  This function is designed to compansate the small distribuncy in numerical parameters in double sigmoidal model numerically. Function is called from numericalReCalculation function.
+#' @return Function returns the x values of midpoint1, by assuming the y of midpoint1 is the half of the maximum value it reaches
 #' @export
-f_mid1_doublesigmoidal <- function(parameterVector){
+#'
+#' @examples
+#' # Related example
+#'
+#'# Initial Command to Reset the System
+#'rm(list = ls())
+#'if (is.integer(dev.list())){dev.off()}
+#'cat("\014")
+#'
+#'# Generate a parameters DF
+#'parameterDf=data.frame(dataScalingParameters.timeRatio=24,
+#'                       slope1_Estimate=1,
+#'                       midPoint1_Estimate=7,
+#'                       slope2_Estimate=1,
+#'                       midPointDistance_Estimate=8,
+#'                       model="doublesigmoidal")
+#'
+#' # Find the x value of the maximum for this model
+#' # with in the range of [0, dataScalingParameters.timeRatio]
+#' midPoint1_x=f_mid1_doublesigmoidal(parameterDf)
+#'
+f_mid1_doublesigmoidal <- function(parameterDf){
 
-  max_x = parameterVector$dataScalingParameters.timeRatio
+  max_x = parameterDf$dataScalingParameters.timeRatio
   xmax <- optimize(f1,
                    interval=c(-0.5208333*max_x,max_x*(1.145833+0.625)),
                    tol=0.0001,
-                   B1=parameterVector$slope1_Estimate,
-                   M1=parameterVector$midPoint1_Estimate,
-                   B2=parameterVector$slope2_Estimate ,
-                   L=parameterVector$midPointDistance_Estimate,
+                   B1=parameterDf$slope1_Estimate,
+                   M1=parameterDf$midPoint1_Estimate,
+                   B2=parameterDf$slope2_Estimate ,
+                   L=parameterDf$midPointDistance_Estimate,
                    maximum = TRUE);
   argumentt=xmax$maximum;
   constt=f0(argumentt,
-            B1=parameterVector$slope1_Estimate,
-            M1=parameterVector$midPoint1_Estimate,
-            B2=parameterVector$slope2_Estimate ,
-            L=parameterVector$midPointDistance_Estimate);
+            B1=parameterDf$slope1_Estimate,
+            M1=parameterDf$midPoint1_Estimate,
+            B2=parameterDf$slope2_Estimate ,
+            L=parameterDf$midPointDistance_Estimate);
 
   mid1x <- uniroot(f0mid,
                    interval=c(-0.5208333*max_x,argumentt),
                    tol=0.0001,
-                   B1=parameterVector$slope1_Estimate,
-                   M1=parameterVector$midPoint1_Estimate,
-                   B2=parameterVector$slope2_Estimate ,
-                   L=parameterVector$midPointDistance_Estimate,
+                   B1=parameterDf$slope1_Estimate,
+                   M1=parameterDf$midPoint1_Estimate,
+                   B2=parameterDf$slope2_Estimate ,
+                   L=parameterDf$midPointDistance_Estimate,
                    const=constt);
   mid1x=mid1x$root
   return(mid1x)}
@@ -300,33 +435,69 @@ f_mid1_doublesigmoidal <- function(parameterVector){
 
 #**************************************
 #' @title f_mid2_doublesigmoidal
+#'
+#' @param parameterDf is a dataFrame that includes columns with names:
+#'
+#' *"dataScalingParameters.timeRatio" that represents maximum time of intensity measurements,
+#'
+#' parameters of double sigmoidal model:
+#'  *"slope1_Estimate",
+#'  *"midPoint1_Estimate",
+#'  *"slope2_Estimate",
+#'  *"midPointDistance_Estimate".
+#'  (Note: additional parameters in Df does not cause problems)
+#'
+#' finally a column with the used model information model="doublesigmoidal".
+#'
+#' @description This function is designed to compansate the small distribuncy in numerical parameters in double sigmoidal model numerically. Function is called from numericalReCalculation function.
 #' @return return the x values of midpoint2, by assuming the y of midpoint2 is the half of the distance between maximum value it reaches and final asymptote
 #' @export
-f_mid2_doublesigmoidal <- function(parameterVector){
+#'
+#' @examples
+#' # Related example
+#'
+#'# Initial Command to Reset the System
+#'rm(list = ls())
+#'if (is.integer(dev.list())){dev.off()}
+#'cat("\014")
+#'
+#'# Generate a parameters DF
+#'parameterDf=data.frame(dataScalingParameters.timeRatio=24,
+#'                       slope1_Estimate=1,
+#'                       midPoint1_Estimate=7,
+#'                       slope2_Estimate=1,
+#'                       midPointDistance_Estimate=8,
+#'                       model="doublesigmoidal")
+#'
+#' # Find the x value of the maximum for this model
+#' # with in the range of [0, dataScalingParameters.timeRatio]
+#' midPoint2_x=f_mid2_doublesigmoidal(parameterDf)
+#'
+f_mid2_doublesigmoidal <- function(parameterDf){
 
-  max_x = parameterVector$dataScalingParameters.timeRatio
+  max_x = parameterDf$dataScalingParameters.timeRatio
   xmax <- optimize(f1,
                    interval=c(-0.5208333*max_x,max_x*(1.145833+0.625)),
                    tol=0.0001,
-                   B1=parameterVector$slope1_Estimate,
-                   M1=parameterVector$midPoint1_Estimate,
-                   B2=parameterVector$slope2_Estimate ,
-                   L=parameterVector$midPointDistance_Estimate,
+                   B1=parameterDf$slope1_Estimate,
+                   M1=parameterDf$midPoint1_Estimate,
+                   B2=parameterDf$slope2_Estimate ,
+                   L=parameterDf$midPointDistance_Estimate,
                    maximum = TRUE);
 
   argumentt=xmax$maximum;
   constt=f0(argumentt,
-            B1=parameterVector$slope1_Estimate,
-            M1=parameterVector$midPoint1_Estimate,
-            B2=parameterVector$slope2_Estimate ,
-            L=parameterVector$midPointDistance_Estimate);
+            B1=parameterDf$slope1_Estimate,
+            M1=parameterDf$midPoint1_Estimate,
+            B2=parameterDf$slope2_Estimate ,
+            L=parameterDf$midPointDistance_Estimate);
 
   mid2x <- uniroot(f0mid, interval=c(argumentt,max_x*(1.145833+0.625)),
                    tol=0.0001,
-                   B1=parameterVector$slope1_Estimate,
-                   M1=parameterVector$midPoint1_Estimate,
-                   B2=parameterVector$slope2_Estimate ,
-                   L=parameterVector$midPointDistance_Estimate,
+                   B1=parameterDf$slope1_Estimate,
+                   M1=parameterDf$midPoint1_Estimate,
+                   B2=parameterDf$slope2_Estimate ,
+                   L=parameterDf$midPointDistance_Estimate,
                    const=constt);
   mid2x=mid2x$root
   return(mid2x)}
@@ -334,42 +505,109 @@ f_mid2_doublesigmoidal <- function(parameterVector){
 
 
 #**************************************
-# calculate slope (5 points derivative)
-#' @title Numerical Slope of Double Sigmoidal
+#' @title f_slope_doublesigmoidal
+#' @param x as a single time point or a sequence of time points that one wants to calculate deritive.
+#' @param parameterDf is a dataFrame that includes columns with names:
+#'
+#' *"dataScalingParameters.timeRatio" that represents maximum time of intensity measurements,
+#'
+#' parameters of double sigmoidal model:
+#'  *"finalAsymptoteIntensity_Estimate",
+#'  *"maximum_Estimate",
+#'  *"slope1_Estimate",
+#'  *"midPoint1_Estimate",
+#'  *"slope2_Estimate",
+#'  *"midPointDistance_Estimate".
+#'
+#' finally a column with the used model information model="doublesigmoidal".
+#' @param timeStep is the time step for the derivative calculation increment "h". Default value is 0.00001
+#'
+#'
+#' @description The function calculates numerical slope of double sigmoidal function with given parameters by using 5 points derivative. It is designed to compansate the small distribuncy in numerical parameters in double sigmoidal model numerically. Function is called from numericalReCalculation function.
 #' @return return the numerical slope of double sigmoidal for the given x value
 #' @export
-fslope_doublesigmoidal <- function(x, parameterVector, timeStep=0.00001){
+#'
+#' @examples
+#' # Related examples
+#'
+#'# Example 1
+#'# Initial Command to Reset the System
+#'rm(list = ls())
+#'if (is.integer(dev.list())){dev.off()}
+#'cat("\014")
+#'
+#'# Generate a parameters DF
+#'parameterDataframe=data.frame(dataScalingParameters.timeRatio=24,
+#'                              finalAsymptoteIntensity_Estimate=.3,
+#'                              maximum_Estimate=4,
+#'                              slope1_Estimate=1,
+#'                              midPoint1_Estimate=7,
+#'                              slope2_Estimate=1,
+#'                              midPointDistance_Estimate=8,
+#'                              model="doublesigmoidal")
+#'
+#' # Find the x value of the maximum for this model
+#' # with in the range of [0, dataScalingParameters.timeRatio]
+#' slope_Estimate=f_slope_doublesigmoidal(x=6.5,
+#'                                        parameterDf=parameterDataframe,
+#'                                        timeStep=0.00001)
+#'# Example 2
+#'# x might be vector as well
+#'# Initial Command to Reset the System
+#'rm(list = ls())
+#'if (is.integer(dev.list())){dev.off()}
+#'cat("\014")
+#'
+#'# Generate a parameters DF
+#'parameterDataframe=data.frame(dataScalingParameters.timeRatio=24,
+#'                              finalAsymptoteIntensity_Estimate=.3,
+#'                              maximum_Estimate=4,
+#'                              slope1_Estimate=1,
+#'                              midPoint1_Estimate=7,
+#'                              slope2_Estimate=1,
+#'                              midPointDistance_Estimate=8,
+#'                              model="doublesigmoidal")
+#'
+#' # Find the x value of the maximum for this model
+#' # with in the range of [0, dataScalingParameters.timeRatio]
+#' slope_Estimate=f_slope_doublesigmoidal(x=seq(-6.5,50,0.5),
+#'                                        parameterDf=parameterDataframe,
+#'                                        timeStep=0.00001)
+#'# Note that some points in the x sequence are out of the range of
+#'# time = [0, dataScalingParameters.timeRatio]
+#'
+f_slope_doublesigmoidal <- function(x, parameterDf, timeStep=0.00001){
 
   fxp2h=doublesigmoidalFitFormula(x=x+2*timeStep,
-                                  finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
-                                  maximum=parameterVector$maximum_Estimate,
-                                  slope1=parameterVector$slope1_Estimate,
-                                  midPoint1=parameterVector$midPoint1_Estimate,
-                                  slope2=parameterVector$slope2_Estimate,
-                                  midPointDistance=parameterVector$midPointDistance_Estimate)
+                                  finalAsymptoteIntensity=parameterDf$finalAsymptoteIntensity_Estimate,
+                                  maximum=parameterDf$maximum_Estimate,
+                                  slope1=parameterDf$slope1_Estimate,
+                                  midPoint1=parameterDf$midPoint1_Estimate,
+                                  slope2=parameterDf$slope2_Estimate,
+                                  midPointDistance=parameterDf$midPointDistance_Estimate)
   fxph=doublesigmoidalFitFormula(x=x+timeStep,
-                                  finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
-                                  maximum=parameterVector$maximum_Estimate,
-                                  slope1=parameterVector$slope1_Estimate,
-                                  midPoint1=parameterVector$midPoint1_Estimate,
-                                  slope2=parameterVector$slope2_Estimate,
-                                  midPointDistance=parameterVector$midPointDistance_Estimate)
+                                  finalAsymptoteIntensity=parameterDf$finalAsymptoteIntensity_Estimate,
+                                  maximum=parameterDf$maximum_Estimate,
+                                  slope1=parameterDf$slope1_Estimate,
+                                  midPoint1=parameterDf$midPoint1_Estimate,
+                                  slope2=parameterDf$slope2_Estimate,
+                                  midPointDistance=parameterDf$midPointDistance_Estimate)
 
   fxmh=doublesigmoidalFitFormula(x=x-timeStep,
-                                  finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
-                                  maximum=parameterVector$maximum_Estimate,
-                                  slope1=parameterVector$slope1_Estimate,
-                                  midPoint1=parameterVector$midPoint1_Estimate,
-                                  slope2=parameterVector$slope2_Estimate,
-                                  midPointDistance=parameterVector$midPointDistance_Estimate)
+                                  finalAsymptoteIntensity=parameterDf$finalAsymptoteIntensity_Estimate,
+                                  maximum=parameterDf$maximum_Estimate,
+                                  slope1=parameterDf$slope1_Estimate,
+                                  midPoint1=parameterDf$midPoint1_Estimate,
+                                  slope2=parameterDf$slope2_Estimate,
+                                  midPointDistance=parameterDf$midPointDistance_Estimate)
 
   fxm2h=doublesigmoidalFitFormula(x=x-2*timeStep,
-                                  finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
-                                  maximum=parameterVector$maximum_Estimate,
-                                  slope1=parameterVector$slope1_Estimate,
-                                  midPoint1=parameterVector$midPoint1_Estimate,
-                                  slope2=parameterVector$slope2_Estimate,
-                                  midPointDistance=parameterVector$midPointDistance_Estimate)
+                                  finalAsymptoteIntensity=parameterDf$finalAsymptoteIntensity_Estimate,
+                                  maximum=parameterDf$maximum_Estimate,
+                                  slope1=parameterDf$slope1_Estimate,
+                                  midPoint1=parameterDf$midPoint1_Estimate,
+                                  slope2=parameterDf$slope2_Estimate,
+                                  midPointDistance=parameterDf$midPointDistance_Estimate)
 
   der=(-1*fxp2h+8*fxph-8*fxmh+1*fxm2h)/(12*timeStep)
   return(der)
@@ -378,7 +616,21 @@ fslope_doublesigmoidal <- function(x, parameterVector, timeStep=0.00001){
 
 
 #**************************************
-#' @export
+# @title sigmoidalRenormalizeParameters (This is an internal function)
+# @param parametersDf it is the parameter data frame generated by sigmoidal fit function
+#        includes the parameters named
+#        *maximum_N_Estimate (normalized Maximum Estimate)
+#        *finalAsymptoteIntensity_N_Estimate (Normalized final asymtote intensity estimate)
+#        *slope1_N_Estimate (normalzied Slope1 Estimate)
+#        *midPoint1_N_Estimate (normalized Midpoint1 Estimate)
+#        *slope2_N_Estimate (normalzied Slope2 Estimate)
+#        *midPointDistance_N_Estimate (normalized distance between midpoints estimate)
+#        *dataScalingParameters.intensityRatio the range of initial unnormalized intensity. Provieded if the data is normalized
+#        *parameterDF$dataScalingParameters.intensityMin the minimum of unnormalized intensity. Provieded if the data is normalized
+#        *parameterDF$dataScalingParameters.timeRatio tha maximum time that the experiment reach. Provieded if the data is normalized
+# @param isalist defines if the input is provided as a list (i.e normalized) or as a data frame (i.e not normalized)
+# @details If the fit was done in normalized data frame then the found fit parameters will belong to normalized data.
+#          This function generates unnormalized counterparts of those parameters.
 doublesigmoidalRenormalizeParameters<-function(parameterDF,isalist)
 {
   if(isalist){

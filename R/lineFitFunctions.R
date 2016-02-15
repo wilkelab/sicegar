@@ -60,9 +60,9 @@ lineFitFunction<-function(dataInput,
 {
 
   isalist=(is.list(dataInput) & !is.data.frame(dataInput))
-  if(isalist){dataFrameInput=dataInput$timeIntensityData; print("is a list")}
+  if(isalist){dataFrameInput=dataInput$timeIntensityData}
   isadataframe=(is.data.frame(dataInput))
-  if(isadataframe){dataFrameInput=dataInput; print("is a data frame")}
+  if(isadataframe){dataFrameInput=dataInput}
 
   if(tryCounter==1){counterDependentStartList=startList}
   if(tryCounter!=1){

@@ -3,11 +3,12 @@
 #' @param parameterVectorLinear is the output of lineFitFunction
 #' @param parameterVectorSigmoidal is the output of sigmoidalFitFunction
 #' @param parameterVectorDoubleSigmoidal is the output of double sigmoidal fit function
-#' @param threshold_line_slope minimum for line slope
-#' @param threshold_intensity_interval minimum for intensity range
-#' @param threshold_difference_AIC choice between sigmoidal and double sigmoidal by using AIC values
-#' @param threshold_lysis_finalAsymptoteIntensity minimum amound of decrease for double sigmoidal
-#' @param threshold_AIC maximum AIC values in order to have a meaningful fit
+
+#' @param threshold_line_slope_parameter minimum for line slope (Default is 0.01)
+#' @param threshold_intensity_interval minimum for intensity range (Default is 0.1)
+#' @param threshold_difference_AIC choice between sigmoidal and double sigmoidal by using AIC values (Default is 0)
+#' @param threshold_lysis_finalAsymptoteIntensity minimum amound of decrease for double sigmoidal (Default is 0.75)
+#' @param threshold_AIC maximum AIC values in order to have a meaningful fit (Default is 10)
 #'
 #'
 #' @return Function simply returns one of the three text outputs. "no_signal", "infection", "infection&lysis"
@@ -191,12 +192,14 @@ categorize<-
   function(parameterVectorLinear,
            parameterVectorSigmoidal,
            parameterVectorDoubleSigmoidal,
-           threshold_line_slope=0.01*24,
+           threshold_line_slope_parameter=0.01,
            threshold_intensity_interval=0.1,
            threshold_difference_AIC=0,
            threshold_lysis_finalAsymptoteIntensity=0.75,
            threshold_AIC=-10)
   {
+
+    #************************************************
     # does these 3 input comes from same source
     doTheyComeFromSameSource=FALSE
     if(is.na(parameterVectorLinear$dataInputName) &
@@ -206,14 +209,17 @@ categorize<-
       doTheyComeFromSameSource=TRUE
     }
     else if((parameterVectorDoubleSigmoidal$dataInputName ==
-                              parameterVectorSigmoidal$dataInputName)
+             parameterVectorSigmoidal$dataInputName)
             & (parameterVectorSigmoidal$dataInputName==
-                              parameterVectorLinear$dataInputName))
+               parameterVectorLinear$dataInputName))
     {
       doTheyComeFromSameSource=TRUE
     }
     if(!doTheyComeFromSameSource){stop("inputs should come from same source")}
+    #************************************************
 
+
+    #************************************************
     # First Part Define NA
     # If for any one of the 3 fits isThisaFit==False then print NA
     if(!parameterVectorLinear$isThisaFit|
@@ -223,8 +229,10 @@ categorize<-
       output=as.data.frame(t(c(classification=NA)))
       return(output)
     }
+    #************************************************
 
 
+    #************************************************
     # new names for parameters if they exist
     data_intensity_interval=parameterVectorLinear$dataScalingParameters.intensityRatio
 
@@ -242,31 +250,27 @@ categorize<-
     sigmoidal_slope_Estimate=parameterVectorSigmoidal$slope_Estimate
     sigmoidal_maximum_Estimate=parameterVectorSigmoidal$maximum_Estimate
     sigmoidal_midPoint_Estimate=parameterVectorSigmoidal$midPoint_Estimate
+    #************************************************
 
-    # First Part Define NA
-    # If for any one of the 3 fits isThisaFit==False then print NA
-    if(!parameterVectorLinear$isThisaFit|
-       !parameterVectorSigmoidal$isThisaFit|
-       !parameterVectorDoubleSigmoidal$isThisaFit)
-    {output=as.data.frame(t(c(classification=NA)))}
 
+    #************************************************
     # else if the range of y is smaller than threshold_noSignal_y or
     #      if line slope of the y axis is smaller than threshold_noSignal_x there is no sigal
-    else if (line_slope<threshold_line_slope &
-             data_intensity_interval<threshold_intensity_interval)
-      {output=as.data.frame(t(c(classification="no_signal")))}
+    if (line_slope<threshold_line_slope_parameter * parameterVectorLinear$dataScalingParameters.timeRatio &
+        data_intensity_interval<threshold_intensity_interval)
+    {output=as.data.frame(t(c(classification="no_signal")))}
 
     # if both of the AIC values for sigmoidal and double sigmoidal fit
     # are above threshold_AIC than the data is ambiguous
     else if (sigmoidal_AIC>threshold_AIC & doubleSigmoidal_AIC>threshold_AIC)
-      {output=as.data.frame(t(c(classification="ambiguous")))}
+    {output=as.data.frame(t(c(classification="ambiguous")))}
 
     # if the difference between AIC values is above the threshold_lysis_a (it more looks like double sigmoidal)
     # and start point of infection is below time 0 wrt double sigmoidal model it is ambiguous
     else if (difference_AIC>threshold_difference_AIC &
              doubleSigmoidal_finalAsymptoteIntensity_Estimate<threshold_lysis_finalAsymptoteIntensity &
              doubleSigmoidal_midPoint1_Estimate-0.5*4/doubleSigmoidal_slope1_Estimate<0)
-      {output=as.data.frame(t(c(classification="ambiguous")))}
+    {output=as.data.frame(t(c(classification="ambiguous")))}
 
     # if it at the end decreases significantly and
     # double sigmoidal AIC is bigger it is infection and lysis
@@ -279,12 +283,146 @@ categorize<-
     {output=as.data.frame(t(c(classification="ambiguous")))}
 
     # end point of infection is above time 0 wrt sigmoidal model it is ambiguous
-    else if (sigmoidal_midPoint_Estimate+0.5*1.5*sigmoidal_maximum_Estimate/sigmoidal_slope_Estimate>24)
+    else if (sigmoidal_midPoint_Estimate+0.5*1.5*sigmoidal_maximum_Estimate/sigmoidal_slope_Estimate>parameterVectorLinear$dataScalingParameters.timeRatio)
     {output=as.data.frame(t(c(classification="ambiguous")))}
 
     # if not any of them it is infection
     else {output=as.data.frame(t(c(classification="infection")))}
+    #************************************************
 
+
+    #************************************************
     output=cbind(output,dataInputName=parameterVectorLinear$dataInputName)
     return(output)
+    #************************************************
+  }
+
+#************************************************
+
+
+#************************************************
+
+#' @title categorize_nosignal. This function is written for determining if the data is no-signal or not
+#'
+#' @param parameterVectorLinear is the output of lineFitFunction
+#' @param threshold_line_slope_parameter minimum for line slope (Default is 0.01)
+#' @param threshold_intensity_interval minimum for intensity range (Default is 0.1)
+#'
+#'
+#' @return Function simply returns one of the three text outputs. "no_signal", "NOT no_signal"
+#' @description The decision of no_signal or NOT no_signal does not depend on sigmoidal or double_sigmoidal fits. Most of the time a high percent of the data is composed of no signal cells. So labelling no_signal cells without doing sigmoidal and double sigmoidal fit make all process faster. This function is designed to do that.
+#' @export
+#'
+#' @examples
+#'# Example 1 with double sigmoidal data
+#'# Initial Command to Reset the System
+#'rm(list = ls())
+#'if (is.integer(dev.list())){dev.off()}
+#'cat("\014")
+#'
+#'time=seq(3,24,0.1)
+#'
+#'#intensity with Noise
+#'noise_parameter=0.2
+#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+#'intensity=doublesigmoidalFitFormula(time,
+#'                                    finalAsymptoteIntensity=.3,
+#'                                    maximum=4,
+#'                                    slope1=1,
+#'                                    midPoint1=7,
+#'                                    slope2=1,
+#'                                    midPointDistance=8)
+#'intensity=intensity+intensity_noise
+#'
+#'dataInput=data.frame(intensity=intensity,time=time)
+#'dataOutput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
+#'dataInput2=dataOutput
+#'
+#'
+#'# Do the line fit
+#'parameterVectorLinear=fitFunction(dataInput=dataInput2,
+#'                                  model="linear",
+#'                                  n_runs_min=20,
+#'                                  n_runs_max=500,
+#'                                  showDetails=FALSE)
+#'
+#'isThis_nosignal=categorize_nosignal(parameterVectorLinear=parameterVectorLinear)
+#'
+#'
+#'
+#'# Example 2 with no_signal data
+#'# Initial Command to Reset the System
+#'rm(list = ls())
+#'if (is.integer(dev.list())){dev.off()}
+#'cat("\014")
+#'
+#'time=seq(3,24,0.1)
+#'
+#'#intensity with Noise
+#'noise_parameter=0.05
+#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter*2e-04
+#'intensity=doublesigmoidalFitFormula(time,
+#'                                    finalAsymptoteIntensity=.3,
+#'                                    maximum=2e-04,
+#'                                    slope1=1,
+#'                                    midPoint1=7,
+#'                                    slope2=1,
+#'                                    midPointDistance=8)
+#'intensity=intensity+intensity_noise
+#'
+#'dataInput=data.frame(intensity=intensity,time=time)
+#'dataOutput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
+#'dataInput2=dataOutput
+#'
+#'
+#'# Do the line fit
+#'parameterVectorLinear=fitFunction(dataInput=dataInput2,
+#'                                  model="linear",
+#'                                  n_runs_min=20,
+#'                                  n_runs_max=500,
+#'                                  showDetails=FALSE)
+#'
+#'isThis_nosignal=categorize_nosignal(parameterVectorLinear=parameterVectorLinear)
+#'
+
+
+categorize_nosignal<-
+  function(parameterVectorLinear,
+           threshold_line_slope_parameter=0.01,
+           threshold_intensity_interval=0.1)
+  {
+    #************************************************
+    # First Part Define NA
+    # If for any one of the 3 fits isThisaFit==False then print NA
+    if(!parameterVectorLinear$isThisaFit)
+    {
+      output=as.data.frame(t(c(classification=NA)))
+      return(output)
+    }
+    #************************************************
+
+
+    #************************************************
+    # new names for parameters if they exist
+    data_intensity_interval=parameterVectorLinear$dataScalingParameters.intensityRatio
+    line_slope=parameterVectorLinear$slope_Estimate
+    #************************************************
+
+
+    #************************************************
+    # else if the range of y is smaller than threshold_noSignal_y or
+    #      if line slope of the y axis is smaller than threshold_noSignal_x there is no sigal
+    if (line_slope<threshold_line_slope_parameter * parameterVectorLinear$dataScalingParameters.timeRatio &
+        data_intensity_interval<threshold_intensity_interval)
+    {output=as.data.frame(t(c(classification_nosignal="no_signal")))}
+
+    # if not it is not no_signal
+    else {output=as.data.frame(t(c(classification_nosignal="not_no_signal")))}
+    #************************************************
+
+
+    #************************************************
+    output=cbind(output,dataInputName=parameterVectorLinear$dataInputName)
+    return(output)
+    #************************************************
   }

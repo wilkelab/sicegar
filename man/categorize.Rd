@@ -5,7 +5,7 @@
 \title{categorize. This function is written for determining the category of the input data}
 \usage{
 categorize(parameterVectorLinear, parameterVectorSigmoidal,
-  parameterVectorDoubleSigmoidal, threshold_line_slope = 0.01 * 24,
+  parameterVectorDoubleSigmoidal, threshold_line_slope_parameter = 0.01,
   threshold_intensity_interval = 0.1, threshold_difference_AIC = 0,
   threshold_lysis_finalAsymptoteIntensity = 0.75, threshold_AIC = -10)
 }
@@ -16,15 +16,15 @@ categorize(parameterVectorLinear, parameterVectorSigmoidal,
 
 \item{parameterVectorDoubleSigmoidal}{is the output of double sigmoidal fit function}
 
-\item{threshold_line_slope}{minimum for line slope}
+\item{threshold_line_slope_parameter}{minimum for line slope (Default is 0.01)}
 
-\item{threshold_intensity_interval}{minimum for intensity range}
+\item{threshold_intensity_interval}{minimum for intensity range (Default is 0.1)}
 
-\item{threshold_difference_AIC}{choice between sigmoidal and double sigmoidal by using AIC values}
+\item{threshold_difference_AIC}{choice between sigmoidal and double sigmoidal by using AIC values (Default is 0)}
 
-\item{threshold_lysis_finalAsymptoteIntensity}{minimum amound of decrease for double sigmoidal}
+\item{threshold_lysis_finalAsymptoteIntensity}{minimum amound of decrease for double sigmoidal (Default is 0.75)}
 
-\item{threshold_AIC}{maximum AIC values in order to have a meaningful fit}
+\item{threshold_AIC}{maximum AIC values in order to have a meaningful fit (Default is 10)}
 }
 \value{
 Function simply returns one of the three text outputs. "no_signal", "infection", "infection&lysis"

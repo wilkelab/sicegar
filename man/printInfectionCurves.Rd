@@ -14,7 +14,7 @@ printInfectionCurves(dataInput, sigmoidalFitVector = NULL,
 
 \item{doubleSigmoidalFitVector}{is the output of double sigmoidal fit function. Default is NULL}
 
-\item{showParameterRelatedLines}{show parameter related lines on the curves}
+\item{showParameterRelatedLines}{if equal to TRUE, figure will show parameter related lines on the curves. Default is FALSE}
 }
 \value{
 The function returns infection curve figures by using ggplot

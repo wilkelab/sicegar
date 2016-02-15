@@ -4,10 +4,12 @@
 \alias{dataCheck}
 \title{DataCheck Function}
 \usage{
-dataCheck(data)
+dataCheck(data, showDetails = TRUE)
 }
 \arguments{
 \item{data}{it is the input data file. In can be either a list that contains a data frame in .$timeIntensityData or a data frame by itself.}
+
+\item{showDetails}{If TRUE the function will provide the printout "check done" when everything is OK. Default is FALSE}
 }
 \description{
 The dataCheck checks if the input data is appropirate and covert it into an appropirate form. Data frame should contain two columns named time and intensity for timeData and intensityData. If the data frame is in a list its name in the list should be $timeIntensityData

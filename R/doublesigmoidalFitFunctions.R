@@ -268,7 +268,7 @@ doublesigmoidalFitFormula<-function(x,
   optimizeIntervalMax=midPoint1+3*midPointDistance
   xmax <- optimize(f1,
                    c(optimizeIntervalMin,optimizeIntervalMax),
-                   tol=0.001,
+                   tol=0.0001,
                    B1=slope1, M1=midPoint1, B2=slope2, L=midPointDistance, maximum = TRUE);
   argumentt=xmax$maximum;
   constt=f0(argumentt, slope1, midPoint1, slope2, midPointDistance);
@@ -351,7 +351,7 @@ f_argmax_doublesigmoidal <- function(parameterDf){
   max_x = parameterDf$dataScalingParameters.timeRatio
   xmax <- optimize(f1,
                    c(0,max_x),
-                   tol=0.001,
+                   tol=0.0001,
                    B1=parameterDf$slope1_Estimate,
                    M1=parameterDf$midPoint1_Estimate,
                    B2=parameterDf$slope2_Estimate ,
@@ -406,8 +406,8 @@ f_mid1_doublesigmoidal <- function(parameterDf){
 
   max_x = parameterDf$dataScalingParameters.timeRatio
   xmax <- optimize(f1,
-                   interval=c(-0.5208333*max_x,max_x*(1.145833+0.625)),
-                   tol=0.001,
+                   interval=c(-1.125*max_x,max_x*3),
+                   tol=0.0001,
                    B1=parameterDf$slope1_Estimate,
                    M1=parameterDf$midPoint1_Estimate,
                    B2=parameterDf$slope2_Estimate ,
@@ -421,8 +421,8 @@ f_mid1_doublesigmoidal <- function(parameterDf){
             L=parameterDf$midPointDistance_Estimate);
 
   mid1x <- uniroot(f0mid,
-                   interval=c(-0.5208333*max_x,argumentt),
-                   tol=0.001,
+                   interval=c(-1.125*max_x,argumentt),
+                   tol=0.0001,
                    B1=parameterDf$slope1_Estimate,
                    M1=parameterDf$midPoint1_Estimate,
                    B2=parameterDf$slope2_Estimate ,
@@ -477,8 +477,8 @@ f_mid2_doublesigmoidal <- function(parameterDf){
 
   max_x = parameterDf$dataScalingParameters.timeRatio
   xmax <- optimize(f1,
-                   interval=c(-0.5208333*max_x,max_x*(1.145833+0.625)),
-                   tol=0.001,
+                   interval=c(-1.125*max_x,max_x*3),
+                   tol=0.0001,
                    B1=parameterDf$slope1_Estimate,
                    M1=parameterDf$midPoint1_Estimate,
                    B2=parameterDf$slope2_Estimate ,
@@ -492,8 +492,8 @@ f_mid2_doublesigmoidal <- function(parameterDf){
             B2=parameterDf$slope2_Estimate ,
             L=parameterDf$midPointDistance_Estimate);
 
-  mid2x <- uniroot(f0mid, interval=c(argumentt,max_x*(1.145833+0.625)),
-                   tol=0.001,
+  mid2x <- uniroot(f0mid, interval=c(argumentt,max_x*(3)),
+                   tol=0.0001,
                    B1=parameterDf$slope1_Estimate,
                    M1=parameterDf$midPoint1_Estimate,
                    B2=parameterDf$slope2_Estimate ,

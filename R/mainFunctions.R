@@ -275,6 +275,14 @@ fitFunction <-
                 bestOutput=storedModelOutput$residual_Sum_of_Squares))}
 
     }
+
+    # add number off independent runs to outputs
+    # might be important for quality checks
+    storedModelOutput=c(storedModelOutput,
+                        betterFit=counterBetterFit,
+                        correctFit=counterCorrectFit,
+                        totalFit=counterTotalFit)
+
     return(storedModelOutput)
   }
 

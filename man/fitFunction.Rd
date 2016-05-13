@@ -35,7 +35,7 @@ The algorithm calls the fitting algorithms. to make the fits with random initial
 # data sent to algorithm directly as data frame
 # a- Generate data
 time = seq(3,48,0.5)
-intensity=runif(length(time), 3.0, 7.5)
+intensity=stats::runif(length(time), 3.0, 7.5)
 dataInput = data.frame(time,intensity)
 # b- generate "random Parameter" for model "test"
 randomParameterValue=0.7 # it should be a parameter between 0 and 1
@@ -50,7 +50,7 @@ parameterOutput=fitFunction(dataInput=dataInput,
 # data sent to algorithm after normalization
 # a- Generate data
 time = seq(3,48,0.5)
-intensity=runif(length(time), 3.0, 7.5)
+intensity=stats::runif(length(time), 3.0, 7.5)
 dataInput = data.frame(time,intensity)
 # b- normalize data
 dataOutput = normalizeData(dataInput)
@@ -68,7 +68,7 @@ parameterOutput=fitFunction(dataInput=dataInput2,
 # data sent to algorithm directly as data frame
 # a- Generate data
 time = seq(3,48,0.5)
-intensity=runif(length(time), 3.0, 7.5)
+intensity=stats::runif(length(time), 3.0, 7.5)
 dataInput = data.frame(time,intensity)
 # b- use the function "linear"
 parameterOutput=fitFunction(dataInput=dataInput,
@@ -87,7 +87,7 @@ time=seq(3,24,0.5)
 
 #intensity with Noise
 noise_parameter=20
-intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=lineFitFormula(time, slope=4, intersection=-2)
 intensity=intensity+intensity_noise
 
@@ -126,7 +126,7 @@ time=seq(3,24,0.5)
 
 #intensity with Noise
 noise_parameter=2.5
-intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
 intensity=intensity+intensity_noise
 
@@ -170,7 +170,7 @@ time=seq(3,24,0.1)
 
 #intensity with Noise
 noise_parameter=0.2
-intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=doublesigmoidalFitFormula(time,
                                    finalAsymptoteIntensity=.3,
                                    maximum=4,

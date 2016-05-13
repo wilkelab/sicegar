@@ -40,7 +40,7 @@ time=seq(3,24,0.5)
 
 #intensity with Noise
 noise_parameter=.2
-intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=lineFitFormula(time, slope=4, intersection=-2)
 intensity=intensity+intensity_noise
 

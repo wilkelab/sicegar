@@ -18,7 +18,7 @@
 #' # data sent to algorithm directly as data frame
 #' # a- Generate data
 #' time = seq(3,48,0.5)
-#' intensity=runif(length(time), 3.0, 7.5)
+#' intensity=stats::runif(length(time), 3.0, 7.5)
 #' dataInput = data.frame(time,intensity)
 #' # b- generate "random Parameter" for model "test"
 #' randomParameterValue=0.7 # it should be a parameter between 0 and 1
@@ -33,7 +33,7 @@
 #' # data sent to algorithm after normalization
 #' # a- Generate data
 #' time = seq(3,48,0.5)
-#' intensity=runif(length(time), 3.0, 7.5)
+#' intensity=stats::runif(length(time), 3.0, 7.5)
 #' dataInput = data.frame(time,intensity)
 #' # b- normalize data
 #' dataOutput = normalizeData(dataInput)
@@ -51,7 +51,7 @@
 #' # data sent to algorithm directly as data frame
 #' # a- Generate data
 #' time = seq(3,48,0.5)
-#' intensity=runif(length(time), 3.0, 7.5)
+#' intensity=stats::runif(length(time), 3.0, 7.5)
 #' dataInput = data.frame(time,intensity)
 #' # b- use the function "linear"
 #' parameterOutput=fitFunction(dataInput=dataInput,
@@ -70,7 +70,7 @@
 #'
 #'#intensity with Noise
 #'noise_parameter=20
-#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+#'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 #'intensity=lineFitFormula(time, slope=4, intersection=-2)
 #'intensity=intensity+intensity_noise
 #'
@@ -109,7 +109,7 @@
 #'
 #'#intensity with Noise
 #'noise_parameter=2.5
-#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+#'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 #'intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
 #'intensity=intensity+intensity_noise
 #'
@@ -153,7 +153,7 @@
 #'
 #'#intensity with Noise
 #'noise_parameter=0.2
-#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+#'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 #'intensity=doublesigmoidalFitFormula(time,
 #'                                    finalAsymptoteIntensity=.3,
 #'                                    maximum=4,
@@ -299,8 +299,8 @@ exampleFitFunction<-
   {
     if(randomParameter<0 | randomParameter>1)
       {stop("the random parameter for model test should be between 0 and 1")}
-    randomNumber=runif(1, 0, 1)
-    if(randomNumber<randomParameter){isThisaFit=TRUE; residual_Sum_of_Squares=runif(1, 0, 1)}
+    randomNumber=stats::runif(1, 0, 1)
+    if(randomNumber<randomParameter){isThisaFit=TRUE; residual_Sum_of_Squares=stats::runif(1, 0, 1)}
     if(randomNumber>randomParameter){isThisaFit=FALSE; residual_Sum_of_Squares=NA}
     outputList=list(isThisaFit=isThisaFit,
                     randomParameter=randomParameter,

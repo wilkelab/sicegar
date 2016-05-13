@@ -23,7 +23,7 @@
 #'
 #'#intensity with Noise
 #'noise_parameter=.2
-#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+#'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 #'intensity=lineFitFormula(time, slope=4, intersection=-2)
 #'intensity=intensity+intensity_noise
 #'
@@ -66,7 +66,7 @@ lineFitFunction<-function(dataInput,
 
   if(tryCounter==1){counterDependentStartList=startList}
   if(tryCounter!=1){
-    randomVector=runif(length(startList), 0, 1)
+    randomVector=stats::runif(length(startList), 0, 1)
     names(randomVector)<-c("slope","intersection")
     counterDependentStartVector=randomVector*(upperBounds-lowerBounds)+lowerBounds
     counterDependentStartList=as.list(counterDependentStartVector)}
@@ -91,10 +91,10 @@ lineFitFunction<-function(dataInput,
                                "intersection_N_Estimate","intersection_Std_Error","intersection_t_value","intersection_Pr_t")
 
     parameterVector<-c(parameterVector,
-                       residual_Sum_of_Squares=sum((as.vector(resid(theFitResult)))^2)[1],
-                       log_likelihood=as.vector(logLik(theFitResult))[1],
-                       AIC_value=as.vector(AIC(theFitResult))[1],
-                       BIC_value=as.vector(BIC(theFitResult))[1])
+                       residual_Sum_of_Squares=sum((as.vector(stats::resid(theFitResult)))^2)[1],
+                       log_likelihood=as.vector(stats::logLik(theFitResult))[1],
+                       AIC_value=as.vector(stats::AIC(theFitResult))[1],
+                       BIC_value=as.vector(stats::BIC(theFitResult))[1])
 
     parameterList=as.list(parameterVector)
     parameterList$isThisaFit=TRUE
@@ -157,7 +157,7 @@ lineFitFunction<-function(dataInput,
 #'
 #'#intensity with Noise
 #'noise_parameter=.2
-#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+#'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 #'intensity=lineFitFormula(time, slope=4, intersection=-2)
 #'intensity=intensity+intensity_noise
 #'

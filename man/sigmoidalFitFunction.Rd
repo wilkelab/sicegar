@@ -43,7 +43,7 @@ time=seq(3,24,0.5)
 
 #intensity with Noise
 noise_parameter=0.1
-intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
 intensity=intensity+intensity_noise
 

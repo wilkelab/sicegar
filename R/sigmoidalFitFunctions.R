@@ -24,7 +24,7 @@
 #'
 #'#intensity with Noise
 #'noise_parameter=0.1
-#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+#'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 #'intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
 #'intensity=intensity+intensity_noise
 #'
@@ -65,7 +65,7 @@ sigmoidalFitFunction<-function(dataInput,
 
   if(tryCounter==1){counterDependentStartList=startList}
   if(tryCounter!=1){
-    randomVector=runif(length(startList), 0, 1)
+    randomVector=stats::runif(length(startList), 0, 1)
     names(randomVector)<-c("maximum", "slope", "midPoint")
     counterDependentStartVector=randomVector*(upperBounds-lowerBounds)+lowerBounds
     counterDependentStartList=as.list(counterDependentStartVector)}
@@ -89,10 +89,10 @@ sigmoidalFitFunction<-function(dataInput,
                                "midPoint_N_Estimate","midPoint_Std_Error","midPoint_t_value","midPoint_Pr_t")
 
     parameterVector<-c(parameterVector,
-                       residual_Sum_of_Squares=sum((as.vector(resid(theFitResult)))^2)[1],
-                       log_likelihood=as.vector(logLik(theFitResult))[1],
-                       AIC_value=as.vector(AIC(theFitResult))[1],
-                       BIC_value=as.vector(BIC(theFitResult))[1])
+                       residual_Sum_of_Squares=sum((as.vector(stats::resid(theFitResult)))^2)[1],
+                       log_likelihood=as.vector(stats::logLik(theFitResult))[1],
+                       AIC_value=as.vector(stats::AIC(theFitResult))[1],
+                       BIC_value=as.vector(stats::BIC(theFitResult))[1])
 
     parameterList=as.list(parameterVector)
     parameterList$isThisaFit=TRUE
@@ -158,7 +158,7 @@ sigmoidalFitFunction<-function(dataInput,
 #'
 #'#intensity with Noise
 #'noise_parameter=0.1
-#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+#'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 #'intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
 #'intensity=intensity+intensity_noise
 #'

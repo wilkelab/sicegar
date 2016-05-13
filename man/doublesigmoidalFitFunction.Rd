@@ -46,7 +46,7 @@ time=seq(3,24,0.1)
 
 #intensity with Noise
 noise_parameter=0.2
-intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=doublesigmoidalFitFormula(time,
                                    finalAsymptoteIntensity=.3,
                                    maximum=4,

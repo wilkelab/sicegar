@@ -77,12 +77,12 @@ doublesigmoidalFitFunction<-function(dataInput,
                                                    midPointDistance=0.04166667),
                                      upperBounds=c(finalAsymptoteIntensity = 1,
                                                    maximum = 1.5,
-                                                   slope1 = 120,
+                                                   slope1 = 180,
                                                    midPoint1 = 1.145833,
-                                                   slope2=120,
+                                                   slope2=180,
                                                    midPointDistance=0.625),
                                      min_Factor=1/2^20,
-                                     n_iterations=500)
+                                     n_iterations=1000)
 {
 
   isalist=(is.list(dataInput) & !is.data.frame(dataInput))

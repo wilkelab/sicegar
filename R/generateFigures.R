@@ -170,10 +170,10 @@ printInfectionCurves<-function(dataInput,
           ggplot2::geom_hline(ggplot2::aes(yintercept=sigmoidalFitVector$maximum_Estimate),
                               colour="#bdbdbd",size=0.5,linetype="longdash")+
           ggplot2::geom_segment(ggplot2::aes(x = sigmoidalFitVector$midPoint_Estimate -
-                                               sigmoidalFitVector$maximum_Estimate/(sigmoidalFitVector$slope_Estimate*2),
+                                               sigmoidalFitVector$maximum_Estimate/(sigmoidalFitVector$slope_Estimate*sigmoidalFitVector$dataScalingParameters.intensityRatio*2*sigmoidalFitVector$maximum_Estimate*(1/4)),
                                              y = 0,
                                              xend = sigmoidalFitVector$midPoint_Estimate +
-                                               sigmoidalFitVector$maximum_Estimate/(sigmoidalFitVector$slope_Estimate*2),
+                                               sigmoidalFitVector$maximum_Estimate/(sigmoidalFitVector$slope_Estimate*sigmoidalFitVector$dataScalingParameters.intensityRatio*2*sigmoidalFitVector$maximum_Estimate*(1/4)),
                                              yend = sigmoidalFitVector$maximum_Estimate),
                                 colour="#bdbdbd",size=0.5,linetype="longdash")
       }

@@ -227,6 +227,12 @@ numericalReCalculation<-function(parameterVector, stepSize=0.00001){
                                                              midPoint1=parameterVector$midPoint1_Estimate,
                                                              slope2=parameterVector$slope2_Estimate,
                                                              midPointDistance=parameterVector$midPointDistance_Estimate)
+
+    parameterVector$numerical.lysisPoint_x_Estimate = parameterVector$numerical.midPoint2_x_Estimate-
+                                                             parameterVector$maximum_Estimate*(1-parameterVector$finalAsymptoteIntensity_Estimate)/(-parameterVector$numerical.slope2_Estimate*2)
+
+    parameterVector$numerical.lysisPoint_y_Estimate = parameterVector$maximum_Estimate
+
     parameterVector$numericalParameters=TRUE
 
   }

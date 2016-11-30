@@ -2,26 +2,21 @@
 % Please edit documentation in R/dataInputCheck.R
 \name{dataCheck}
 \alias{dataCheck}
-\title{DataCheck Function}
+\title{Checks if data is in correct format.}
 \usage{
 dataCheck(data, showDetails = TRUE)
 }
 \arguments{
-\item{data}{it is the input data file. In can be either a list that contains a data frame in .$timeIntensityData or a data frame by itself.}
+\item{data}{the input data. It can be either a list that contains a data frame in .$timeIntensityData or a data frame by itself.}
 
-\item{showDetails}{If TRUE the function will provide the printout "check done" when everything is OK. Default is FALSE}
+\item{showDetails}{if TRUE the function will provide the printout "check done" if everything is OK. Default is FALSE}
 }
 \description{
-The dataCheck checks if the input data is appropirate and covert it into an appropirate form. Data frame should contain two columns named time and intensity for timeData and intensityData. If the data frame is in a list its name in the list should be $timeIntensityData
+Checks if the input data is appropirate and converts it into an appropirate form. The input data frame should contain two columns named time and intensity for timeData and intensityData. If the data frame is in a list its name in the list should be $timeIntensityData.
 }
 \examples{
 
 # Example 1
-
-# Initial Command to Reset the System
-rm(list = ls())
-if (is.integer(dev.list())){dev.off()}
-cat("\\014")
 
 # generate data frame
 time = seq(3,48,0.5)
@@ -33,11 +28,6 @@ dataOutputVariable = dataCheck(dataInput)
 
 # Example 2
 
-# Initial Command to Reset the System
-rm(list = ls())
-if (is.integer(dev.list())){dev.off()}
-cat("\\014")
-
 # generate data frame
 time = seq(3,48,0.5)
 intensity=runif(length(time), 3.0, 7.5)
@@ -47,7 +37,7 @@ dataInput = data.frame(time,intensity)
 dataOutput = normalizeData(dataInput)
 dataInput2=dataOutput
 
-# Apply dataCheck function?
+# Apply dataCheck function
 dataOutputVariable2 = dataCheck(dataInput2)
 }
 

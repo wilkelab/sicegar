@@ -2,34 +2,30 @@
 % Please edit documentation in R/categorize.R
 \name{categorize_nosignal}
 \alias{categorize_nosignal}
-\title{categorize_nosignal. This function is written for determining if the data is no-signal or not}
+\title{Checks for signal in the data.}
 \usage{
 categorize_nosignal(parameterVectorLinear,
   threshold_line_slope_parameter = 0.01, threshold_intensity_interval = 0.1)
 }
 \arguments{
-\item{parameterVectorLinear}{is the output of lineFitFunction}
+\item{parameterVectorLinear}{is the output of lineFitFunction.}
 
-\item{threshold_line_slope_parameter}{minimum for line slope (Default is 0.01)}
+\item{threshold_line_slope_parameter}{minimum for line slope (Default is 0.01).}
 
-\item{threshold_intensity_interval}{minimum for intensity range (Default is 0.1)}
+\item{threshold_intensity_interval}{minimum for intensity range (Default is 0.1).}
 }
 \value{
-Function simply returns one of the three text outputs. "no_signal", "NOT no_signal"
+Function returns one of two text outputs "no_signal" or "NOT no_signal".
 }
 \description{
-The decision of no_signal or NOT no_signal does not depend on sigmoidal or double_sigmoidal fits. Most of the time a high percent of the data is composed of no signal cells. So labelling no_signal cells without doing sigmoidal and double sigmoidal fit make all process faster. This function is designed to do that.
+Checks if signal is present in the data. Often a high percentage of high through-put data does not contain a signal. Checking if data does not contain signal before doing a sigmoidal or double sigmoidal fit can make analysis of data from high through-put experiments much faster.
 }
 \examples{
 # Example 1 with double sigmoidal data
-# Initial Command to Reset the System
-rm(list = ls())
-if (is.integer(dev.list())){dev.off()}
-cat("\\014")
 
 time=seq(3,24,0.1)
 
-#intensity with Noise
+#simulate intensity data and add noise
 noise_parameter=0.2
 intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=doublesigmoidalFitFormula(time,
@@ -42,30 +38,25 @@ intensity=doublesigmoidalFitFormula(time,
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)
-dataOutput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
-dataInput2=dataOutput
+normalizedInput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
 
 
-# Do the line fit
-parameterVectorLinear=fitFunction(dataInput=dataInput2,
+# Fit linear model
+linearModel=fitFunction(dataInput=normalizedInput,
                                  model="linear",
                                  n_runs_min=20,
                                  n_runs_max=500,
                                  showDetails=FALSE)
 
-isThis_nosignal=categorize_nosignal(parameterVectorLinear=parameterVectorLinear)
+isThis_nosignal=categorize_nosignal(parameterVectorLinear=linearModel)
 
 
 
 # Example 2 with no_signal data
-# Initial Command to Reset the System
-rm(list = ls())
-if (is.integer(dev.list())){dev.off()}
-cat("\\014")
 
 time=seq(3,24,0.1)
 
-#intensity with Noise
+#simulate intensity data and add noise
 noise_parameter=0.05
 intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter*2e-04
 intensity=doublesigmoidalFitFormula(time,
@@ -78,18 +69,17 @@ intensity=doublesigmoidalFitFormula(time,
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)
-dataOutput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
-dataInput2=dataOutput
+normalizeInput= normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
 
 
-# Do the line fit
-parameterVectorLinear=fitFunction(dataInput=dataInput2,
+# Fit linear model
+linearModel=fitFunction(dataInput=normalizeInput,
                                  model="linear",
                                  n_runs_min=20,
                                  n_runs_max=500,
                                  showDetails=FALSE)
 
-isThis_nosignal=categorize_nosignal(parameterVectorLinear=parameterVectorLinear)
+isThis_nosignal=categorize_nosignal(parameterVectorLinear=linearModel)
 
 }
 

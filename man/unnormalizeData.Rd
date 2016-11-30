@@ -2,23 +2,20 @@
 % Please edit documentation in R/normalizationFunction.R
 \name{unnormalizeData}
 \alias{unnormalizeData}
-\title{Title Un-Normalization of given data}
+\title{Unnormalization of given data}
 \usage{
 unnormalizeData(dataInput)
 }
 \arguments{
-\item{dataInput}{dataInput should include a list file composes of two parts
-First part represents the data that will be unnormalized, which is a data frame composed of two columns. One is for time and the other is for intensity
-Second part represents the scaling parameters of the data which is a vector that has three components. The first one of them is related with time and last two of them are related with intensity. Second value represents the min value of the intensity set. First and third values represent the difference between max and min value in the relevant column}
+\item{dataInput}{a list file composes of two parts
+First part is the data that will be unnormalized, which is a data frame composed of two columns. One is for time and the other is for intensity
+Second part is the scaling parameters of the data which is a vector that has three components. The first one of them is related with time and last two of them are related with intensity. The second value represents the min value of the intensity set. First and third values represent the difference between max and min value in the relevant column.}
 }
 \value{
-Function returns another data frame, scaling factors and scaling constants for time and intensity. The other data frame includes 2 columns one is for normalized time and the other is for noralized intensity. The whole time is distributed between 0 and 1 and similarly the whole intensity is distributed between 0 and 1. The time and intensity constants and scaling factors are the parameters to transform data from given set to scaled set.
+Returns a data frame, scaling factors and scaling constants for time and intensity. The other data frame includes 2 columns one is for normalized time and the other is for noralized intensity. The whole time is distributed between 0 and 1 and similarly the whole intensity is distributed between 0 and 1. The time and intensity constants and scaling factors are the parameters to transform data from given set to scaled set.
 }
 \description{
-Title Un-Normalization of given data
-}
-\details{
-Function maps the given time-intensity data into a recaled frame where time is between [0,1] and similarly intensity is between [0,1]
+Maps the given time-intensity data into a recaled frame where time is between [0,1] and similarly intensity is between [0,1].
 }
 \examples{
 # generateRandomData
@@ -30,5 +27,6 @@ dataOutput = normalizeData(dataInput)
 dataInput2=dataOutput
 # Un Normalize it
 dataOutput2 = unnormalizeData(dataInput2)
+
 }
 

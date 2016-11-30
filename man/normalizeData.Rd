@@ -2,26 +2,22 @@
 % Please edit documentation in R/normalizationFunction.R
 \name{normalizeData}
 \alias{normalizeData}
-\title{Title Normalization of given data}
+\title{Normalization of given data}
 \usage{
 normalizeData(dataInput, dataInputName = NA)
 }
 \arguments{
-\item{dataInput}{dataInput should be a data frame composed of two columns. One is for time other is for intensity}
+\item{dataInput}{a data frame composed of two columns. One is for time other is for intensity.}
 
-\item{dataInputName}{is the input name carrier with a default of 'NA'. The functions will be used with massive for loops so put a personal data indicator might be a good idea.}
+\item{dataInputName}{experiment name (Default is 'NA').}
 }
 \value{
 Function returns another data frame, scaling factors and scaling constants for time and intensity. The other data frame includes 2 columns one is for normalized time and the other is for noralized intensity. The whole time is distributed between 0 and 1 and similarly the whole intensity is distributed between 0 and 1. The time and intensity constants and scaling factors are the parameters to transform data from given set to scaled set.
 }
 \description{
-Title Normalization of given data
-}
-\details{
-Function maps the given time-intensity data into a recaled frame where time is between [x,1] and intensity is between [0,1]
+Maps the given time-intensity data into a recaled frame where time is between [x,1] and intensity is between [0,1].
 }
 \examples{
-# add usage examples here
 # generateRandomData
 time = seq(3,48,0.5)
 intensity=runif(length(time), 3.0, 7.5)

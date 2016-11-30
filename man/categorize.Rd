@@ -2,7 +2,7 @@
 % Please edit documentation in R/categorize.R
 \name{categorize}
 \alias{categorize}
-\title{categorize. This function is written for determining the category of the input data}
+\title{Categorize input data by comparing the AIC values of the three fitted models.}
 \usage{
 categorize(parameterVectorLinear, parameterVectorSigmoidal,
   parameterVectorDoubleSigmoidal, threshold_line_slope_parameter = 0.01,
@@ -10,38 +10,33 @@ categorize(parameterVectorLinear, parameterVectorSigmoidal,
   threshold_lysis_finalAsymptoteIntensity = 0.75, threshold_AIC = -10)
 }
 \arguments{
-\item{parameterVectorLinear}{is the output of lineFitFunction}
+\item{parameterVectorLinear}{output from lineFitFunction.}
 
-\item{parameterVectorSigmoidal}{is the output of sigmoidalFitFunction}
+\item{parameterVectorSigmoidal}{output from sigmoidalFitFunction.}
 
-\item{parameterVectorDoubleSigmoidal}{is the output of double sigmoidal fit function}
+\item{parameterVectorDoubleSigmoidal}{output from doublesigmoidalFitFunction.}
 
-\item{threshold_line_slope_parameter}{minimum for line slope (Default is 0.01)}
+\item{threshold_line_slope_parameter}{minimum for line slope (Default is 0.01).}
 
-\item{threshold_intensity_interval}{minimum for intensity range (Default is 0.1)}
+\item{threshold_intensity_interval}{minimum for intensity range (Default is 0.1).}
 
-\item{threshold_difference_AIC}{choice between sigmoidal and double sigmoidal by using AIC values (Default is 0)}
+\item{threshold_difference_AIC}{choice between sigmoidal and double sigmoidal by using AIC values (Default is 0).}
 
-\item{threshold_lysis_finalAsymptoteIntensity}{minimum amound of decrease for double sigmoidal (Default is 0.75)}
+\item{threshold_lysis_finalAsymptoteIntensity}{minimum amount of decrease for double sigmoidal (Default is 0.75).}
 
-\item{threshold_AIC}{maximum AIC values in order to have a meaningful fit (Default is 10)}
+\item{threshold_AIC}{maximum AIC values in order to have a meaningful fit (Default is -10).}
 }
 \value{
-Function simply returns one of the three text outputs. "no_signal", "infection", "infection&lysis"
+Function returns one of the three text outputs, "no_signal", "infection", or "infection&lysis".
 }
 \description{
-The function uses results of all 3 fit algorithms, line fit, sigmoidal fit and double sigmoidal fit and make a decision of the class of the data. Parameters in this function is chosen by try error and experience
+Catagorizes dat using the results of all three fitted models (linear, sigmoidal, and double sigmoidal).
 }
 \examples{
 # Example 1 with double sigmoidal data
-# Initial Command to Reset the System
-rm(list = ls())
-if (is.integer(dev.list())){dev.off()}
-cat("\\014")
-
 time=seq(3,24,0.1)
 
-#intensity with Noise
+#simulate intensity data and add noise
 noise_parameter=0.2
 intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=doublesigmoidalFitFormula(time,
@@ -54,156 +49,73 @@ intensity=doublesigmoidalFitFormula(time,
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)
-dataOutput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
-dataInput2=dataOutput
+normalizedInput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
 
 
-# Do the line fit
-parameterVectorLinear=fitFunction(dataInput=dataInput2,
+# Fit linear model
+linearModel=fitFunction(dataInput=normalizedInput,
                                  model="linear",
                                  n_runs_min=20,
                                  n_runs_max=500,
                                  showDetails=FALSE)
 
-# Do the sigmoidal fit
-parameterVectorSigmoidal=fitFunction(dataInput=dataInput2,
+# Fit sigmoidal model
+sigmoidalModel=fitFunction(dataInput=normalizedInput,
                                     model="sigmoidal",
                                     n_runs_min=20,
                                     n_runs_max=500,
                                     showDetails=FALSE)
 
-# Do the double sigmoidal fit
-parameterVectorDoubleSigmoidal=fitFunction(dataInput=dataInput2,
+# Fit double sigmoidal model
+doubleSigmoidalModel=fitFunction(dataInput=normalizedInput,
                                           model="doublesigmoidal",
                                           n_runs_min=20,
                                           n_runs_max=500,
                                           showDetails=FALSE)
 
 
-outputCluster=categorize(parameterVectorLinear=parameterVectorLinear,
-                        parameterVectorSigmoidal=parameterVectorSigmoidal,
-                        parameterVectorDoubleSigmoidal=parameterVectorDoubleSigmoidal)
-
-#Print the results
-if(is.na(outputCluster$classification)){print(outputCluster)}
-if(outputCluster$classification=="ambiguous"){print(outputCluster)}
-if(outputCluster$classification=="no_signal"){print(outputCluster)}
-if(outputCluster$classification=="infection")
-{
- intensityTheoretical=sigmoidalFitFormula(time,
-                                        maximum=parameterVectorSigmoidal$maximum_Estimate,
-                                        slope=parameterVectorSigmoidal$slope_Estimate,
-                                        midPoint=parameterVectorSigmoidal$midPoint_Estimate)
-
- comparisonData=cbind(dataInput,intensityTheoretical)
- require(ggplot2)
- ggplot(comparisonData)+
-   geom_point(aes(x=time, y=intensity))+
-   geom_line(aes(x=time,y=intensityTheoretical))+
-   expand_limits(x = 0, y = 0)
-}
-if(outputCluster$classification=="infection&lysis")
-{
-intensityTheoretical=
- doublesigmoidalFitFormula(
-     time,
-     finalAsymptoteIntensity=parameterVectorDoubleSigmoidal$finalAsymptoteIntensity_Estimate,
-     maximum=parameterVectorDoubleSigmoidal$maximum_Estimate,
-     slope1=parameterVectorDoubleSigmoidal$slope1_Estimate,
-     midPoint1=parameterVectorDoubleSigmoidal$midPoint1_Estimate,
-     slope2=parameterVectorDoubleSigmoidal$slope2_Estimate,
-     midPointDistance=parameterVectorDoubleSigmoidal$midPointDistance_Estimate)
-
- comparisonData=cbind(dataInput,intensityTheoretical)
- require(ggplot2)
- ggplot(comparisonData)+
-   geom_point(aes(x=time, y=intensity))+
-   geom_line(aes(x=time,y=intensityTheoretical))+
-   expand_limits(x = 0, y = 0)
-}
+outputCluster=categorize(parameterVectorLinear=linearModel,
+                        parameterVectorSigmoidal=sigmoidalModel,
+                        parameterVectorDoubleSigmoidal=doubleSigmoidalModel)
 
 
 # Example 2 with sigmoidal data
-# Initial Command to Reset the System
-rm(list = ls())
-if (is.integer(dev.list())){dev.off()}
-cat("\\014")
-
 time=seq(3,24,0.1)
 
-#intensity with Noise
+#simulate intensity data and add noise
 noise_parameter=0.2
 intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)
-dataOutput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
-dataInput2=dataOutput
+normalizedInput= normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
 
 
-# Do the line fit
-parameterVectorLinear=fitFunction(dataInput=dataInput2,
+# Fit linear model
+linearModel=fitFunction(dataInput=normalizedInput,
                                  model="linear",
                                  n_runs_min=20,
                                  n_runs_max=500,
                                  showDetails=FALSE)
 
-# Do the sigmoidal fit
-parameterVectorSigmoidal=fitFunction(dataInput=dataInput2,
+# Fit sigmoidal model
+sigmoidalModel=fitFunction(dataInput=normalizedInput,
                                     model="sigmoidal",
                                     n_runs_min=20,
                                     n_runs_max=500,
                                     showDetails=FALSE)
 
-# Do the double sigmoidal fit
-parameterVectorDoubleSigmoidal=fitFunction(dataInput=dataInput2,
+# Fit double sigmoidal model
+doubleSigmoidalModel=fitFunction(dataInput=normalizedInput,
                                           model="doublesigmoidal",
                                           n_runs_min=20,
                                           n_runs_max=500,
                                           showDetails=FALSE)
 
 
-outputCluster=categorize(parameterVectorLinear=parameterVectorLinear,
-                        parameterVectorSigmoidal=parameterVectorSigmoidal,
-                        parameterVectorDoubleSigmoidal=parameterVectorDoubleSigmoidal)
-
-#Print the results
-if(is.na(outputCluster$classification)){print(outputCluster)}
-if(outputCluster$classification=="ambiguous"){print(outputCluster)}
-if(outputCluster$classification=="no_signal"){print(outputCluster)}
-if(outputCluster$classification=="infection")
-{
- intensityTheoretical=sigmoidalFitFormula(time,
-                                        maximum=parameterVectorSigmoidal$maximum_Estimate,
-                                        slope=parameterVectorSigmoidal$slope_Estimate,
-                                        midPoint=parameterVectorSigmoidal$midPoint_Estimate)
-
- comparisonData=cbind(dataInput,intensityTheoretical)
- require(ggplot2)
- ggplot(comparisonData)+
-   geom_point(aes(x=time, y=intensity))+
-   geom_line(aes(x=time,y=intensityTheoretical))+
-   expand_limits(x = 0, y = 0)
-}
-if(outputCluster$classification=="infection&lysis")
-{
-intensityTheoretical=
- doublesigmoidalFitFormula(
-     time,
-     finalAsymptoteIntensity=parameterVectorDoubleSigmoidal$finalAsymptoteIntensity_Estimate,
-     maximum=parameterVectorDoubleSigmoidal$maximum_Estimate,
-     slope1=parameterVectorDoubleSigmoidal$slope1_Estimate,
-     midPoint1=parameterVectorDoubleSigmoidal$midPoint1_Estimate,
-     slope2=parameterVectorDoubleSigmoidal$slope2_Estimate,
-     midPointDistance=parameterVectorDoubleSigmoidal$midPointDistance_Estimate)
-
- comparisonData=cbind(dataInput,intensityTheoretical)
- require(ggplot2)
- ggplot(comparisonData)+
-   geom_point(aes(x=time, y=intensity))+
-   geom_line(aes(x=time,y=intensityTheoretical))+
-   expand_limits(x = 0, y = 0)
-}
+outputCluster=categorize(parameterVectorLinear=linearModel,
+                        parameterVectorSigmoidal=sigmoidalModel,
+                        parameterVectorDoubleSigmoidal=doubleSigmoidalModel)
 }
 

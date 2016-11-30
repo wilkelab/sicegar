@@ -2,43 +2,36 @@
 % Please edit documentation in R/doublesigmoidalFitFunctions.R
 \name{doublesigmoidalFitFormula}
 \alias{doublesigmoidalFitFormula}
-\title{doublesigmoidalFitFormula}
+\title{Double Sigmoidal Formula}
 \usage{
 doublesigmoidalFitFormula(x, finalAsymptoteIntensity, maximum, slope1,
   midPoint1, slope2, midPointDistance)
 }
 \arguments{
-\item{x}{is the "time" (time) column of the dataframe}
+\item{x}{the "time" (time) column of the dataframe}
 
-\item{finalAsymptoteIntensity}{represents the intensity value at time is infinite.}
+\item{finalAsymptoteIntensity}{represents the intensity value at infinite time.}
 
-\item{maximum}{is the maximum value that the sigmoidal function can reach}
+\item{maximum}{the maximum value that the sigmoidal function can reach.}
 
-\item{slope1}{is the slope of the sigmoidal function at the steppest point in the exponential phase of the viral production. i.e when the signal intensity is increasing}
+\item{slope1}{the slope of the sigmoidal function at the steppest point in the exponential phase of the viral production. i.e when the intensity is increasing.}
 
-\item{midPoint1}{is the x axis value of the steppest point in the function}
+\item{midPoint1}{the x axis value of the steppest point in the function.}
 
-\item{slope2}{is the slope of the sigmoidal function at the steppest point in the lysis phase of the viral production. i.e when the signal intensity is decreasing}
+\item{slope2}{the slope of the sigmoidal function at the steppest point in the lysis phase. i.e when the intensity is decreasing.}
 
-\item{midPointDistance}{is the distance between the time of steppest increase and steppest decrease in the intensity data. In other words the distance between the x axis values of arguments of slope1 and slope2}
+\item{midPointDistance}{the distance between the time of steppest increase and steppest decrease in the intensity data. In other words the distance between the x axis values of arguments of slope1 and slope2.}
 }
 \value{
-the function returns the predicted intensities for given time points with given the double-sigmoidal fit parameters for double sigmoidal fit
+Returns the predicted intensities for the given time points with the double-sigmoidal fitted parameters for the double sigmoidal fit.
 }
 \description{
-The aim of the function is to calculate intesities for given time points (x) by using double-sigmoidal fit model & parameters (maximum, final asymptote intensity, slope1, midpoint1, slope2 and mid point distance)
+Calculates intensities using the double-sigmoidal model fit and the parameters (maximum, final asymptote intensity, slope1, midpoint1, slope2, and mid point distance).
 }
 \examples{
-# Related example
-
-# Initial Command to Reset the System
-rm(list = ls())
-if (is.integer(dev.list())){dev.off()}
-cat("\\014")
-
 time=seq(3,24,0.1)
 
-#intensity with Noise
+#simulate intensity data and add noise
 noise_parameter=0.2
 intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=doublesigmoidalFitFormula(time,
@@ -51,9 +44,8 @@ intensity=doublesigmoidalFitFormula(time,
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)
-dataOutput = normalizeData(dataInput)
-dataInput2=dataOutput
-parameterVector<-doublesigmoidalFitFunction(dataInput2,tryCounter=2)
+normalizedInput = normalizeData(dataInput)
+parameterVector<-doublesigmoidalFitFunction(normalizedInput,tryCounter=2)
 
 
 #Check the results
@@ -69,6 +61,7 @@ if(parameterVector$isThisaFit){
                midPointDistance=parameterVector$midPointDistance_Estimate)
 
  comparisonData=cbind(dataInput,intensityTheoretical)
+
  require(ggplot2)
  ggplot(comparisonData)+
    geom_point(aes(x=time, y=intensity))+

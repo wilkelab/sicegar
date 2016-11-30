@@ -2,42 +2,35 @@
 % Please edit documentation in R/lineFitFunctions.R
 \name{lineFitFormula}
 \alias{lineFitFormula}
-\title{lineFitFormula}
+\title{Line fit formula.}
 \usage{
 lineFitFormula(x, slope, intersection)
 }
 \arguments{
-\item{x}{is the "time" (time) column of the dataframe}
+\item{x}{the "time" (time) column of the dataframe.}
 
-\item{slope}{is the slope of the line that we want to find in line fit}
+\item{slope}{the slope of the line.}
 
-\item{intersection}{is the intensity intersection point of the line when time is zero in the time-intensity graph}
+\item{intersection}{the intensity intersection point of the line when time is zero in the time-intensity graph.}
 }
 \value{
-the function returns the predicted intensities for given time points in the line fit model for given slope and intersection values.
+Returns the predicted intensities for given time points in the line fit model for given slope and intersection values.
 }
 \description{
-The aim of the function is to calculate intesities for given time points (x) by using line fit model & parameters (slope and intersection)
+Calculates intesities for given time points (x) by using line fit model and parameters (slope and intersection).
 }
 \examples{
-# related examples
-# Initial Command to Reset the System
-rm(list = ls())
-if (is.integer(dev.list())){dev.off()}
-cat("\\014")
-
 time=seq(3,24,0.5)
 
-#intensity with Noise
+#simulate intensity data and add noise
 noise_parameter=.2
 intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=lineFitFormula(time, slope=4, intersection=-2)
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)
-dataOutput = normalizeData(dataInput)
-dataInput2=dataOutput
-parameterVector<-lineFitFunction(dataInput2,tryCounter=2)
+normalizedInput = normalizeData(dataInput)
+parameterVector<-lineFitFunction(normalizedInput,tryCounter=2)
 
 #Check the results
 if(parameterVector$isThisaFit){
@@ -48,6 +41,7 @@ if(parameterVector$isThisaFit){
  comparisonData=cbind(dataInput,intensityTheoretical)
 
  print(parameterVector$residual_Sum_of_Squares)
+
  require(ggplot2)
  ggplot(comparisonData)+
    geom_point(aes(x=time, y=intensity))+

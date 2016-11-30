@@ -7,40 +7,33 @@
 sigmoidalFitFormula(x, maximum, slope, midPoint)
 }
 \arguments{
-\item{x}{is the "time" (time) column of the dataframe.}
+\item{x}{the "time" (time) column of the dataframe.}
 
-\item{maximum}{is the maximum value that the sigmoidal function can reach.}
+\item{maximum}{the maximum value that the sigmoidal function can reach.}
 
-\item{slope}{is the slope of the sigmoidal function at the steppest point.}
+\item{slope}{the slope of the sigmoidal function at the steppest point.}
 
-\item{midPoint}{is the x axis value of the steppest point in the function.}
+\item{midPoint}{the x axis value of the steppest point in the function.}
 }
 \value{
-the function returns the predicted intensities for given time points with given the sigmoidal fit parameters for sigmoidal fit.
+Returns the predicted intensities for given time points with the given sigmoidal fit parameters.
 }
 \description{
-The aim of the function is to calculate intesities for given time points (x) by using sigmoidal fit model & parameters (maximum, slope and midpoint)
+Calculates intesities for given time points (x) by using sigmoidal fit model and parameters (maximum, slope, and midpoint).
 }
 \examples{
-# related examples
-
-# Initial Command to Reset the System
-rm(list = ls())
-if (is.integer(dev.list())){dev.off()}
-cat("\\014")
 
 time=seq(3,24,0.5)
 
-#intensity with Noise
+#simulate intensity data and add noise
 noise_parameter=0.1
 intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)
-dataOutput = normalizeData(dataInput)
-dataInput2=dataOutput
-parameterVector<-sigmoidalFitFunction(dataInput2,tryCounter=2)
+normalizedInput = normalizeData(dataInput)
+parameterVector<-sigmoidalFitFunction(normalizedInput,tryCounter=2)
 
 #Check the results
 if(parameterVector$isThisaFit){
@@ -50,6 +43,7 @@ intensityTheoretical=sigmoidalFitFormula(time,
                                         midPoint=parameterVector$midPoint_Estimate)
 
 comparisonData=cbind(dataInput,intensityTheoretical)
+
 require(ggplot2)
 ggplot(comparisonData)+
  geom_point(aes(x=time, y=intensity))+

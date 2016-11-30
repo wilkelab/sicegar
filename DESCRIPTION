@@ -6,7 +6,7 @@ Date: 2015-12-17
 Authors@R: c( person("M. Umut", "Caglar", role = c("aut", "cre"), email =
     "umut.caglar@gmail.com"), person("Claus O.", "Wilke", role = c("aut"), email =
     "wilke@austin.utexas.edu") )
-Description: An implementation aims to classify data related with viral growth in bacteria. The viral growth probably detected with a fluorescence protein and the data will be intensity (proportional to viral production) versus time. It categorize data into the following categories ambiguous, no signal, infection and infection & lysis. Origin of the package name came from "SIngle CEll Growth Analysis in R".
+Description: The sicegar package classifies time course fluorescence data of viral growth. The package categorize time course data into one of four categories, "ambiguous", "no signal", "infection", and "infection and lysis" by fitting a series of mathematical models to the data. Biologically relevant parameters associated with each of these models are also reported, allowing for analysis of virus yield, replication rate, and the starting time of replication. The origin of the package name came from "SIngle CEll Growth Analysis in R".
 URL: https://github.com/wilkelab/sicegar
 Imports:
     dplyr,

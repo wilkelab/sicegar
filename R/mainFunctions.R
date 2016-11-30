@@ -1,16 +1,16 @@
-#' @title fit function
+#' @title fit function.
 #'
-#' @param dataInput Normalized input data that will be fitted transferred into related functions
-#' @param model type of fit function that will be used. Can be "linear", "sigmoidal", "double_sigmoidal", "test"
-#' @param n_runs_max number of maximum runs that the algorithm can run
-#' @param n_runs_min number of minimum runs that the algorithm can run
-#' @param showDetails If set to True (default is false) prints details of intermediate steps of individual fits
-#' @param dataInputName is the input name container with a default of 'NA'. The functions will be used with massive for loops so put a personal data indicator might be a good idea.
-#' @param randomParameter is a paramter that is needed to run the test model. Default is 'NA'
+#' @param dataInput normalized input data that will be fitted transferred into related functions
+#' @param model type of fit function that will be used. Can be "linear", "sigmoidal", "double_sigmoidal", or "test".
+#' @param n_runs_max number of maximum number of times the fitting is attempted.
+#' @param n_runs_min number of minimum successfull runs returned by the fitting algorithm.
+#' @param showDetails if TRUE prints details of intermediate steps of individual fits (Default is FALSE).
+#' @param dataInputName name of data set (Default is 'NA').
+#' @param randomParameter a parameter needed to run the "test" model. Default is 'NA'
 #' @param ... all other arguments that model functions ("exampleFitFunction", "lineFitFunction", "sigmoidalFitFunction", "doublesigmoidalFitFunction") may need
 #'
-#' @description The algorithm calls the fitting algorithms. to make the fits with random initial parameters. This multiple runs are necessary to avoid local minimums that LM fits can stuck. Fitting algorithms can either gives a fit with related parameters and isThisaFit=TRUE value or just give isThisaFit=FALSE corresponding to not a fit. n_runs_min represent minimum number of fits that are necessary to give a result, n_runs_max limits the number of runs (successful or unsuccessful) that the it algorithm can run
-#' @return The function returns the parameters related with fitted curve to input data
+#' @description Calls the fitting algorithms to fit the data starting from random initial parameters. Multiple attempts at fitting the data are necessary to avoid local minima.
+#' @return Returns the parameters related with the curve fitted to the input data.
 #' @export
 #'
 #' @examples
@@ -61,23 +61,17 @@
 #'
 #'
 #'# Example 4 (linear function with normalization)
-#'# Initial Command to Reset the System
-#'rm(list = ls())
-#'if (is.integer(dev.list())){dev.off()}
-#'cat("\014")
-#'
 #'time=seq(3,24,0.5)
 #'
-#'#intensity with Noise
+#'#simulate intensity data with noise
 #'noise_parameter=20
 #'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 #'intensity=lineFitFormula(time, slope=4, intersection=-2)
 #'intensity=intensity+intensity_noise
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
-#'dataOutput = normalizeData(dataInput)
-#'dataInput2=dataOutput
-#'parameterVector=fitFunction(dataInput=dataInput2,
+#'normalizedInput = normalizeData(dataInput)
+#'parameterVector=fitFunction(dataInput=normalizedInput,
 #'                            model="linear",
 #'                            n_runs_min=5,
 #'                            n_runs_max=15)
@@ -100,23 +94,18 @@
 #'if(!parameterVector$isThisaFit){print(parameterVector)}
 #'
 #'# Example 5 (sigmoidal function with normalization)
-#'# Initial Command to Reset the System
-#'rm(list = ls())
-#'if (is.integer(dev.list())){dev.off()}
-#'cat("\014")
-#'
+
 #'time=seq(3,24,0.5)
 #'
-#'#intensity with Noise
+#'#simulate intensity data and add noise
 #'noise_parameter=2.5
 #'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 #'intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
 #'intensity=intensity+intensity_noise
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
-#'dataOutput = normalizeData(dataInput, dataInputName="batch_01_21_2016_samp007623")
-#'dataInput2=dataOutput
-#'parameterVector=fitFunction(dataInput=dataInput2,
+#'normalizedInput = normalizeData(dataInput, dataInputName="batch_01_21_2016_samp007623")
+#'parameterVector=fitFunction(dataInput=normalizedInput,
 #'                            model="sigmoidal",
 #'                            n_runs_min=20,
 #'                            n_runs_max=500)
@@ -131,6 +120,7 @@
 #'  comparisonData=cbind(dataInput,intensityTheoretical)
 #'
 #'  print(parameterVector$residual_Sum_of_Squares)
+#'
 #'  require(ggplot2)
 #'  ggplot(comparisonData)+
 #'    geom_point(aes(x=time, y=intensity))+
@@ -141,17 +131,11 @@
 #'
 #'if(!parameterVector$isThisaFit){print(parameterVector)}
 #'
-#'
-#'
+
 #'# Example 6 (doublesigmoidal function with normalization)
-#'# Initial Command to Reset the System
-#'rm(list = ls())
-#'if (is.integer(dev.list())){dev.off()}
-#'cat("\014")
-#'
 #'time=seq(3,24,0.1)
 #'
-#'#intensity with Noise
+#'#simulate intensity data with noise
 #'noise_parameter=0.2
 #'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 #'intensity=doublesigmoidalFitFormula(time,
@@ -164,9 +148,8 @@
 #'intensity=intensity+intensity_noise
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
-#'dataOutput = normalizeData(dataInput)
-#'dataInput2=dataOutput
-#'parameterVector=fitFunction(dataInput=dataInput2,
+#'normalizedInput = normalizeData(dataInput)
+#'parameterVector=fitFunction(dataInput=normalizedInput,
 #'                            dataInputName="batch_01_21_2016_samp007623",
 #'                            model="doublesigmoidal",
 #'                            n_runs_min=20,
@@ -177,16 +160,17 @@
 #'#Check the results
 #'if(parameterVector$isThisaFit){
 #'  intensityTheoretical=
-#'          doublesigmoidalFitFormula(
-#'                  time,
-#'                  finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
-#'                  maximum=parameterVector$maximum_Estimate,
-#'                  slope1=parameterVector$slope1_Estimate,
-#'                  midPoint1=parameterVector$midPoint1_Estimate,
-#'                  slope2=parameterVector$slope2_Estimate,
-#'                  midPointDistance=parameterVector$midPointDistance_Estimate)
+#'        doublesigmoidalFitFormula(
+#'                time,
+#'                finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+#'                maximum=parameterVector$maximum_Estimate,
+#'                slope1=parameterVector$slope1_Estimate,
+#'                midPoint1=parameterVector$midPoint1_Estimate,
+#'                slope2=parameterVector$slope2_Estimate,
+#'                midPointDistance=parameterVector$midPointDistance_Estimate)
 #'
 #'  comparisonData=cbind(dataInput,intensityTheoretical)
+#'
 #'  require(ggplot2)
 #'  ggplot(comparisonData)+
 #'    geom_point(aes(x=time, y=intensity))+
@@ -286,14 +270,15 @@ fitFunction <-
     return(storedModelOutput)
   }
 
-#' @title exampleFitFunction
-#'
-#' @param randomParameter This parameter defines the probability that the exampleFitFunction returns TRUE values for isThisaFit parameter. The aparemeter should be in the interval of 0 and 1
-#' @description This is the exampleFitFunction that generates TRUE values for isThisaFit parameter whit given probability
-#' @return The function returns TRUE or FALSE for isThisaFit parameter and also residual_Sum_of_Squares parameter that determines the goodness of the fit
-#'
-#' @examples
-#' # add usage examples here
+# @title Produces an example
+#
+# @param randomParameter defines the probability that the exampleFitFunction returns TRUE values for isThisaFit parameter. The value should be in the interval of 0 and 1.
+# @description Generates TRUE values for isThisaFit parameter with the given probability.
+# @return Returns TRUE or FALSE for isThisaFit parameter and also residual_Sum_of_Squares parameter that determines the goodness of fit.
+# @export
+# @examples
+#
+# print(exampleFitFunction(.5))
 exampleFitFunction<-
   function(randomParameter)
   {

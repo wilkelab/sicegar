@@ -1,30 +1,25 @@
-#' @title categorize. This function is written for determining the category of the input data
+#' @title Categorize input data by comparing the AIC values of the three fitted models.
 #'
-#' @param parameterVectorLinear is the output of lineFitFunction
-#' @param parameterVectorSigmoidal is the output of sigmoidalFitFunction
-#' @param parameterVectorDoubleSigmoidal is the output of double sigmoidal fit function
+#' @param parameterVectorLinear output from lineFitFunction.
+#' @param parameterVectorSigmoidal output from sigmoidalFitFunction.
+#' @param parameterVectorDoubleSigmoidal output from doublesigmoidalFitFunction.
 
-#' @param threshold_line_slope_parameter minimum for line slope (Default is 0.01)
-#' @param threshold_intensity_interval minimum for intensity range (Default is 0.1)
-#' @param threshold_difference_AIC choice between sigmoidal and double sigmoidal by using AIC values (Default is 0)
-#' @param threshold_lysis_finalAsymptoteIntensity minimum amound of decrease for double sigmoidal (Default is 0.75)
-#' @param threshold_AIC maximum AIC values in order to have a meaningful fit (Default is 10)
+#' @param threshold_line_slope_parameter minimum for line slope (Default is 0.01).
+#' @param threshold_intensity_interval minimum for intensity range (Default is 0.1).
+#' @param threshold_difference_AIC choice between sigmoidal and double sigmoidal by using AIC values (Default is 0).
+#' @param threshold_lysis_finalAsymptoteIntensity minimum amount of decrease for double sigmoidal (Default is 0.75).
+#' @param threshold_AIC maximum AIC values in order to have a meaningful fit (Default is -10).
 #'
 #'
-#' @return Function simply returns one of the three text outputs. "no_signal", "infection", "infection&lysis"
-#' @description The function uses results of all 3 fit algorithms, line fit, sigmoidal fit and double sigmoidal fit and make a decision of the class of the data. Parameters in this function is chosen by try error and experience
+#' @return Function returns one of the three text outputs, "no_signal", "infection", or "infection&lysis".
+#' @description Catagorizes dat using the results of all three fitted models (linear, sigmoidal, and double sigmoidal).
 #' @export
 #'
 #' @examples
 #'# Example 1 with double sigmoidal data
-#'# Initial Command to Reset the System
-#'rm(list = ls())
-#'if (is.integer(dev.list())){dev.off()}
-#'cat("\014")
-#'
 #'time=seq(3,24,0.1)
 #'
-#'#intensity with Noise
+#'#simulate intensity data and add noise
 #'noise_parameter=0.2
 #'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
 #'intensity=doublesigmoidalFitFormula(time,
@@ -37,157 +32,153 @@
 #'intensity=intensity+intensity_noise
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
-#'dataOutput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
-#'dataInput2=dataOutput
+#'normalizedInput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
 #'
 #'
-#'# Do the line fit
-#'parameterVectorLinear=fitFunction(dataInput=dataInput2,
+#'# Fit linear model
+#'linearModel=fitFunction(dataInput=normalizedInput,
 #'                                  model="linear",
 #'                                  n_runs_min=20,
 #'                                  n_runs_max=500,
 #'                                  showDetails=FALSE)
 #'
-#'# Do the sigmoidal fit
-#'parameterVectorSigmoidal=fitFunction(dataInput=dataInput2,
+#'# Fit sigmoidal model
+#'sigmoidalModel=fitFunction(dataInput=normalizedInput,
 #'                                     model="sigmoidal",
 #'                                     n_runs_min=20,
 #'                                     n_runs_max=500,
 #'                                     showDetails=FALSE)
 #'
-#'# Do the double sigmoidal fit
-#'parameterVectorDoubleSigmoidal=fitFunction(dataInput=dataInput2,
+#'# Fit double sigmoidal model
+#'doubleSigmoidalModel=fitFunction(dataInput=normalizedInput,
 #'                                           model="doublesigmoidal",
 #'                                           n_runs_min=20,
 #'                                           n_runs_max=500,
 #'                                           showDetails=FALSE)
 #'
 #'
-#'outputCluster=categorize(parameterVectorLinear=parameterVectorLinear,
-#'                         parameterVectorSigmoidal=parameterVectorSigmoidal,
-#'                         parameterVectorDoubleSigmoidal=parameterVectorDoubleSigmoidal)
+#'outputCluster=categorize(parameterVectorLinear=linearModel,
+#'                         parameterVectorSigmoidal=sigmoidalModel,
+#'                         parameterVectorDoubleSigmoidal=doubleSigmoidalModel)
 #'
-#' #Print the results
-#' if(is.na(outputCluster$classification)){print(outputCluster)}
-#' if(outputCluster$classification=="ambiguous"){print(outputCluster)}
-#' if(outputCluster$classification=="no_signal"){print(outputCluster)}
-#' if(outputCluster$classification=="infection")
-#' {
-#'  intensityTheoretical=sigmoidalFitFormula(time,
-#'                                         maximum=parameterVectorSigmoidal$maximum_Estimate,
-#'                                         slope=parameterVectorSigmoidal$slope_Estimate,
-#'                                         midPoint=parameterVectorSigmoidal$midPoint_Estimate)
-#'
-#'  comparisonData=cbind(dataInput,intensityTheoretical)
-#'  require(ggplot2)
-#'  ggplot(comparisonData)+
-#'    geom_point(aes(x=time, y=intensity))+
-#'    geom_line(aes(x=time,y=intensityTheoretical))+
-#'    expand_limits(x = 0, y = 0)
-#' }
-#' if(outputCluster$classification=="infection&lysis")
-#' {
-#' intensityTheoretical=
-#'  doublesigmoidalFitFormula(
-#'      time,
-#'      finalAsymptoteIntensity=parameterVectorDoubleSigmoidal$finalAsymptoteIntensity_Estimate,
-#'      maximum=parameterVectorDoubleSigmoidal$maximum_Estimate,
-#'      slope1=parameterVectorDoubleSigmoidal$slope1_Estimate,
-#'      midPoint1=parameterVectorDoubleSigmoidal$midPoint1_Estimate,
-#'      slope2=parameterVectorDoubleSigmoidal$slope2_Estimate,
-#'      midPointDistance=parameterVectorDoubleSigmoidal$midPointDistance_Estimate)
-#'
-#'  comparisonData=cbind(dataInput,intensityTheoretical)
-#'  require(ggplot2)
-#'  ggplot(comparisonData)+
-#'    geom_point(aes(x=time, y=intensity))+
-#'    geom_line(aes(x=time,y=intensityTheoretical))+
-#'    expand_limits(x = 0, y = 0)
-#' }
-#'
+# #Print the results
+# if(is.na(outputCluster$classification)){print(outputCluster)}
+# if(outputCluster$classification=="ambiguous"){print(outputCluster)}
+# if(outputCluster$classification=="no_signal"){print(outputCluster)}
+# if(outputCluster$classification=="infection")
+# {
+#  intensityTheoretical=sigmoidalFitFormula(time,
+#                                         maximum=sigmoidalModel$maximum_Estimate,
+#                                         slope=sigmoidalModel$slope_Estimate,
+#                                         midPoint=sigmoidalModel$midPoint_Estimate)
+#
+#  comparisonData=cbind(dataInput,intensityTheoretical)
+#
+#  require(ggplot2)
+#  ggplot(comparisonData)+
+#    geom_point(aes(x=time, y=intensity))+
+#    geom_line(aes(x=time,y=intensityTheoretical))+
+#    expand_limits(x = 0, y = 0)
+# }
+# if(outputCluster$classification=="infection&lysis")
+# {
+# intensityTheoretical=
+#  doublesigmoidalFitFormula(
+#      time,
+#      finalAsymptoteIntensity=doubleSigmoidalModel$finalAsymptoteIntensity_Estimate,
+#      maximum=doubleSigmoidalModel$maximum_Estimate,
+#      slope1=doubleSigmoidalModel$slope1_Estimate,
+#      midPoint1=doubleSigmoidalModel$midPoint1_Estimate,
+#      slope2=doubleSigmoidalModel$slope2_Estimate,
+#      midPointDistance=doubleSigmoidalModel$midPointDistance_Estimate)
+#
+#  comparisonData=cbind(dataInput,intensityTheoretical)
+#
+#  require(ggplot2)
+#  ggplot(comparisonData)+
+#    geom_point(aes(x=time, y=intensity))+
+#    geom_line(aes(x=time,y=intensityTheoretical))+
+#    expand_limits(x = 0, y = 0)
+# }
+#
 #'
 #'# Example 2 with sigmoidal data
-#'# Initial Command to Reset the System
-#'rm(list = ls())
-#'if (is.integer(dev.list())){dev.off()}
-#'cat("\014")
-#'
 #'time=seq(3,24,0.1)
 #'
-#'#intensity with Noise
+#'#simulate intensity data and add noise
 #'noise_parameter=0.2
 #'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
 #'intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
 #'intensity=intensity+intensity_noise
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
-#'dataOutput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
-#'dataInput2=dataOutput
+#'normalizedInput= normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
 #'
 #'
-#'# Do the line fit
-#'parameterVectorLinear=fitFunction(dataInput=dataInput2,
+#'# Fit linear model
+#'linearModel=fitFunction(dataInput=normalizedInput,
 #'                                  model="linear",
 #'                                  n_runs_min=20,
 #'                                  n_runs_max=500,
 #'                                  showDetails=FALSE)
 #'
-#'# Do the sigmoidal fit
-#'parameterVectorSigmoidal=fitFunction(dataInput=dataInput2,
+#'# Fit sigmoidal model
+#'sigmoidalModel=fitFunction(dataInput=normalizedInput,
 #'                                     model="sigmoidal",
 #'                                     n_runs_min=20,
 #'                                     n_runs_max=500,
 #'                                     showDetails=FALSE)
 #'
-#'# Do the double sigmoidal fit
-#'parameterVectorDoubleSigmoidal=fitFunction(dataInput=dataInput2,
+#'# Fit double sigmoidal model
+#'doubleSigmoidalModel=fitFunction(dataInput=normalizedInput,
 #'                                           model="doublesigmoidal",
 #'                                           n_runs_min=20,
 #'                                           n_runs_max=500,
 #'                                           showDetails=FALSE)
 #'
 #'
-#'outputCluster=categorize(parameterVectorLinear=parameterVectorLinear,
-#'                         parameterVectorSigmoidal=parameterVectorSigmoidal,
-#'                         parameterVectorDoubleSigmoidal=parameterVectorDoubleSigmoidal)
-#'
-#' #Print the results
-#' if(is.na(outputCluster$classification)){print(outputCluster)}
-#' if(outputCluster$classification=="ambiguous"){print(outputCluster)}
-#' if(outputCluster$classification=="no_signal"){print(outputCluster)}
-#' if(outputCluster$classification=="infection")
-#' {
-#'  intensityTheoretical=sigmoidalFitFormula(time,
-#'                                         maximum=parameterVectorSigmoidal$maximum_Estimate,
-#'                                         slope=parameterVectorSigmoidal$slope_Estimate,
-#'                                         midPoint=parameterVectorSigmoidal$midPoint_Estimate)
-#'
-#'  comparisonData=cbind(dataInput,intensityTheoretical)
-#'  require(ggplot2)
-#'  ggplot(comparisonData)+
-#'    geom_point(aes(x=time, y=intensity))+
-#'    geom_line(aes(x=time,y=intensityTheoretical))+
-#'    expand_limits(x = 0, y = 0)
-#' }
-#' if(outputCluster$classification=="infection&lysis")
-#' {
-#' intensityTheoretical=
-#'  doublesigmoidalFitFormula(
-#'      time,
-#'      finalAsymptoteIntensity=parameterVectorDoubleSigmoidal$finalAsymptoteIntensity_Estimate,
-#'      maximum=parameterVectorDoubleSigmoidal$maximum_Estimate,
-#'      slope1=parameterVectorDoubleSigmoidal$slope1_Estimate,
-#'      midPoint1=parameterVectorDoubleSigmoidal$midPoint1_Estimate,
-#'      slope2=parameterVectorDoubleSigmoidal$slope2_Estimate,
-#'      midPointDistance=parameterVectorDoubleSigmoidal$midPointDistance_Estimate)
-#'
-#'  comparisonData=cbind(dataInput,intensityTheoretical)
-#'  require(ggplot2)
-#'  ggplot(comparisonData)+
-#'    geom_point(aes(x=time, y=intensity))+
-#'    geom_line(aes(x=time,y=intensityTheoretical))+
-#'    expand_limits(x = 0, y = 0)
-#' }
+#'outputCluster=categorize(parameterVectorLinear=linearModel,
+#'                         parameterVectorSigmoidal=sigmoidalModel,
+#'                         parameterVectorDoubleSigmoidal=doubleSigmoidalModel)
+# #Print the results
+# if(is.na(outputCluster$classification)){print(outputCluster)}
+# if(outputCluster$classification=="ambiguous"){print(outputCluster)}
+# if(outputCluster$classification=="no_signal"){print(outputCluster)}
+# if(outputCluster$classification=="infection")
+# {
+#  intensityTheoretical=sigmoidalFitFormula(time,
+#                                         maximum=sigmoidalModel$maximum_Estimate,
+#                                         slope=sigmoidalModel$slope_Estimate,
+#                                         midPoint=sigmoidalModel$midPoint_Estimate)
+#
+#  comparisonData=cbind(dataInput,intensityTheoretical)
+#
+#  require(ggplot2)
+#  ggplot(comparisonData)+
+#    geom_point(aes(x=time, y=intensity))+
+#    geom_line(aes(x=time,y=intensityTheoretical))+
+#    expand_limits(x = 0, y = 0)
+# }
+# if(outputCluster$classification=="infection&lysis")
+# {
+# intensityTheoretical=
+#  doublesigmoidalFitFormula(
+#      time,
+#      finalAsymptoteIntensity=doubleSigmoidalModel$finalAsymptoteIntensity_Estimate,
+#      maximum=doubleSigmoidalModel$maximum_Estimate,
+#      slope1=doubleSigmoidalModel$slope1_Estimate,
+#      midPoint1=doubleSigmoidalModel$midPoint1_Estimate,
+#      slope2=doubleSigmoidalModel$slope2_Estimate,
+#      midPointDistance=doubleSigmoidalModel$midPointDistance_Estimate)
+#
+#  comparisonData=cbind(dataInput,intensityTheoretical)
+#
+#  require(ggplot2)
+#  ggplot(comparisonData)+
+#    geom_point(aes(x=time, y=intensity))+
+#    geom_line(aes(x=time,y=intensityTheoretical))+
+#    expand_limits(x = 0, y = 0)
+# }
 categorize<-
   function(parameterVectorLinear,
            parameterVectorSigmoidal,
@@ -200,7 +191,7 @@ categorize<-
   {
 
     #************************************************
-    # does these 3 input comes from same source
+    # do the 3 input comes from same source?
     doTheyComeFromSameSource=FALSE
     if(is.na(parameterVectorLinear$dataInputName) &
        is.na(parameterVectorSigmoidal$dataInputName) &
@@ -215,7 +206,7 @@ categorize<-
     {
       doTheyComeFromSameSource=TRUE
     }
-    if(!doTheyComeFromSameSource){stop("inputs should come from same source")}
+    if(!doTheyComeFromSameSource){stop("inputs should come from the same source")}
     #************************************************
 
 
@@ -233,7 +224,7 @@ categorize<-
 
 
     #************************************************
-    # new names for parameters if they exist
+    # rename parameters if they exist
     data_intensity_interval=parameterVectorLinear$dataScalingParameters.intensityRatio
 
     line_slope=parameterVectorLinear$slope_Estimate
@@ -272,21 +263,21 @@ categorize<-
              doubleSigmoidal_midPoint1_Estimate-0.5*4/doubleSigmoidal_slope1_Estimate<0)
     {output=as.data.frame(t(c(classification="ambiguous")))}
 
-    # if it at the end decreases significantly and
-    # double sigmoidal AIC is bigger it is infection and lysis
+    # if at the end the GFP decreases significantly and
+    # double sigmoidal AIC is bigger then classify the data as infection and lysis
     else if (difference_AIC>threshold_difference_AIC &
              doubleSigmoidal_finalAsymptoteIntensity_Estimate<threshold_lysis_finalAsymptoteIntensity)
     {output=as.data.frame(t(c(classification="infection&lysis")))}
 
-    # start point of infection is below time 0 wrt sigmoidal model it is ambiguous
+    # if the start point of infection is below time 0 wrt sigmoidal model then classify the data as ambiguous
     else if (sigmoidal_midPoint_Estimate-0.5*1.5*sigmoidal_maximum_Estimate/sigmoidal_slope_Estimate<0)
     {output=as.data.frame(t(c(classification="ambiguous")))}
 
-    # end point of infection is above time 0 wrt sigmoidal model it is ambiguous
+    # if end point of infection is above time 0 wrt sigmoidal model then classify the data as ambiguous
     else if (sigmoidal_midPoint_Estimate+0.5*1.5*sigmoidal_maximum_Estimate/sigmoidal_slope_Estimate>parameterVectorLinear$dataScalingParameters.timeRatio)
     {output=as.data.frame(t(c(classification="ambiguous")))}
 
-    # if not any of them it is infection
+    # if none of these then classify as infection
     else {output=as.data.frame(t(c(classification="infection")))}
     #************************************************
 
@@ -302,27 +293,23 @@ categorize<-
 
 #************************************************
 
-#' @title categorize_nosignal. This function is written for determining if the data is no-signal or not
+#' @title Checks for signal in the data.
 #'
-#' @param parameterVectorLinear is the output of lineFitFunction
-#' @param threshold_line_slope_parameter minimum for line slope (Default is 0.01)
-#' @param threshold_intensity_interval minimum for intensity range (Default is 0.1)
+#' @param parameterVectorLinear is the output of lineFitFunction.
+#' @param threshold_line_slope_parameter minimum for line slope (Default is 0.01).
+#' @param threshold_intensity_interval minimum for intensity range (Default is 0.1).
 #'
 #'
-#' @return Function simply returns one of the three text outputs. "no_signal", "NOT no_signal"
-#' @description The decision of no_signal or NOT no_signal does not depend on sigmoidal or double_sigmoidal fits. Most of the time a high percent of the data is composed of no signal cells. So labelling no_signal cells without doing sigmoidal and double sigmoidal fit make all process faster. This function is designed to do that.
+#' @return Function returns one of two text outputs "no_signal" or "NOT no_signal".
+#' @description Checks if signal is present in the data. Often a high percentage of high through-put data does not contain a signal. Checking if data does not contain signal before doing a sigmoidal or double sigmoidal fit can make analysis of data from high through-put experiments much faster.
 #' @export
 #'
 #' @examples
 #'# Example 1 with double sigmoidal data
-#'# Initial Command to Reset the System
-#'rm(list = ls())
-#'if (is.integer(dev.list())){dev.off()}
-#'cat("\014")
 #'
 #'time=seq(3,24,0.1)
 #'
-#'#intensity with Noise
+#'#simulate intensity data and add noise
 #'noise_parameter=0.2
 #'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
 #'intensity=doublesigmoidalFitFormula(time,
@@ -335,30 +322,25 @@ categorize<-
 #'intensity=intensity+intensity_noise
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
-#'dataOutput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
-#'dataInput2=dataOutput
+#'normalizedInput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
 #'
 #'
-#'# Do the line fit
-#'parameterVectorLinear=fitFunction(dataInput=dataInput2,
+#'# Fit linear model
+#'linearModel=fitFunction(dataInput=normalizedInput,
 #'                                  model="linear",
 #'                                  n_runs_min=20,
 #'                                  n_runs_max=500,
 #'                                  showDetails=FALSE)
 #'
-#'isThis_nosignal=categorize_nosignal(parameterVectorLinear=parameterVectorLinear)
+#'isThis_nosignal=categorize_nosignal(parameterVectorLinear=linearModel)
 #'
 #'
 #'
 #'# Example 2 with no_signal data
-#'# Initial Command to Reset the System
-#'rm(list = ls())
-#'if (is.integer(dev.list())){dev.off()}
-#'cat("\014")
 #'
 #'time=seq(3,24,0.1)
 #'
-#'#intensity with Noise
+#'#simulate intensity data and add noise
 #'noise_parameter=0.05
 #'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter*2e-04
 #'intensity=doublesigmoidalFitFormula(time,
@@ -371,18 +353,17 @@ categorize<-
 #'intensity=intensity+intensity_noise
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
-#'dataOutput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
-#'dataInput2=dataOutput
+#'normalizeInput= normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
 #'
 #'
-#'# Do the line fit
-#'parameterVectorLinear=fitFunction(dataInput=dataInput2,
+#'# Fit linear model
+#'linearModel=fitFunction(dataInput=normalizeInput,
 #'                                  model="linear",
 #'                                  n_runs_min=20,
 #'                                  n_runs_max=500,
 #'                                  showDetails=FALSE)
 #'
-#'isThis_nosignal=categorize_nosignal(parameterVectorLinear=parameterVectorLinear)
+#'isThis_nosignal=categorize_nosignal(parameterVectorLinear=linearModel)
 #'
 
 
@@ -403,7 +384,7 @@ categorize_nosignal<-
 
 
     #************************************************
-    # new names for parameters if they exist
+    # rename parameters if they exist
     data_intensity_interval=parameterVectorLinear$dataScalingParameters.intensityRatio
     line_slope=parameterVectorLinear$slope_Estimate
     #************************************************

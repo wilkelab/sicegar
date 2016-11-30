@@ -1,19 +1,14 @@
-#' @title DataCheck Function
+#' @title Checks if data is in correct format.
 #'
-#' @param data it is the input data file. In can be either a list that contains a data frame in .$timeIntensityData or a data frame by itself.
-#' @param showDetails If TRUE the function will provide the printout "check done" when everything is OK. Default is FALSE
+#' @param data the input data. It can be either a list that contains a data frame in .$timeIntensityData or a data frame by itself.
+#' @param showDetails if TRUE the function will provide the printout "check done" if everything is OK. Default is FALSE
 #'
-#' @description The dataCheck checks if the input data is appropirate and covert it into an appropirate form. Data frame should contain two columns named time and intensity for timeData and intensityData. If the data frame is in a list its name in the list should be $timeIntensityData
+#' @description Checks if the input data is appropirate and converts it into an appropirate form. The input data frame should contain two columns named time and intensity for timeData and intensityData. If the data frame is in a list its name in the list should be $timeIntensityData.
 #' @export
 #'
 #' @examples
 #'
 #' # Example 1
-#'
-#' # Initial Command to Reset the System
-#' rm(list = ls())
-#' if (is.integer(dev.list())){dev.off()}
-#' cat("\014")
 #'
 #' # generate data frame
 #' time = seq(3,48,0.5)
@@ -25,11 +20,6 @@
 #'
 #' # Example 2
 #'
-#' # Initial Command to Reset the System
-#' rm(list = ls())
-#' if (is.integer(dev.list())){dev.off()}
-#' cat("\014")
-#'
 #' # generate data frame
 #' time = seq(3,48,0.5)
 #' intensity=runif(length(time), 3.0, 7.5)
@@ -39,7 +29,7 @@
 #' dataOutput = normalizeData(dataInput)
 #' dataInput2=dataOutput
 #'
-#' # Apply dataCheck function?
+#' # Apply dataCheck function
 #' dataOutputVariable2 = dataCheck(dataInput2)
 
 dataCheck <-function(data, showDetails=TRUE){
@@ -112,7 +102,7 @@ dataCheck <-function(data, showDetails=TRUE){
     }
 
     if(!doescolnamescorrect){
-      stop("The colum names should be time and intensity")
+      stop("The column names should be time and intensity")
     }
 
   }

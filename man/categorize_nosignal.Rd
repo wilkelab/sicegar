@@ -5,7 +5,8 @@
 \title{Checks for signal in the data.}
 \usage{
 categorize_nosignal(parameterVectorLinear,
-  threshold_line_slope_parameter = 0.01, threshold_intensity_interval = 0.1)
+  threshold_line_slope_parameter = 0.01, threshold_intensity_interval = 0.1,
+  threshold_minimum_for_intensity_maximum = 0)
 }
 \arguments{
 \item{parameterVectorLinear}{is the output of lineFitFunction.}
@@ -13,6 +14,8 @@ categorize_nosignal(parameterVectorLinear,
 \item{threshold_line_slope_parameter}{minimum for line slope (Default is 0.01).}
 
 \item{threshold_intensity_interval}{minimum for intensity range (Default is 0.1).}
+
+\item{threshold_minimum_for_intensity_maximum}{minimum allowed value for intensity maximum}
 }
 \value{
 Function returns one of two text outputs "no_signal" or "NOT no_signal".

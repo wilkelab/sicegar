@@ -4,6 +4,8 @@
 #' @param sigmoidalFitVector the output of sigmoidalFitFunction. Default is NULL.
 #' @param doubleSigmoidalFitVector the output of double sigmoidal fit function. Default is NULL.
 #' @param showParameterRelatedLines if equal to TRUE, figure will show parameter related lines on the curves. Default is FALSE.
+#' @param xlabelText the x-axis name; with default "time"
+#' @param ylabelText the y-axis name; with default "intensity"
 #'
 #' @description Generates figures using ggplot that shows the input data and the fitted curves.
 #' @return Returns infection curve figures.
@@ -72,7 +74,8 @@
 printInfectionCurves<-function(dataInput,
                                sigmoidalFitVector=NULL,
                                doubleSigmoidalFitVector=NULL,
-                               showParameterRelatedLines=FALSE)
+                               showParameterRelatedLines=FALSE,
+                               xlabelText="time", ylabelText="intensity")
 {
   # get data from data input
   dataOutputVariable = dataCheck(dataInput) # check if the data structure is correct
@@ -168,7 +171,8 @@ printInfectionCurves<-function(dataInput,
                                              xend = sigmoidalFitVector$midPoint_Estimate +
                                                2/(1*sigmoidalFitVector$slope_Estimate),
                                              yend = sigmoidalFitVector$maximum_Estimate),
-                                colour="#bdbdbd",size=0.5,linetype="longdash")
+                                colour="#bdbdbd",size=0.5,linetype="longdash")+
+          ggplot2::xlab(xlabelText)+ggplot2::ylab(ylabelText)
       }
     }
   }
@@ -221,7 +225,8 @@ printInfectionCurves<-function(dataInput,
                                                xend = doubleSigmoidalFitVector$numerical.midPoint2_x_Estimate +
                                                  doubleSigmoidalFitVector$maximum_Estimate*(1-doubleSigmoidalFitVector$finalAsymptoteIntensity_Estimate)/(-doubleSigmoidalFitVector$numerical.slope2_Estimate*2),
                                                yend = doubleSigmoidalFitVector$maximum_Estimate*doubleSigmoidalFitVector$finalAsymptoteIntensity_Estimate),
-                                  colour="#bdbdbd",size=0.5,linetype="longdash")
+                                  colour="#bdbdbd",size=0.5,linetype="longdash")+
+            ggplot2::xlab(xlabelText)+ggplot2::ylab(ylabelText)
 
         }
       }

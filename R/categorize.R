@@ -6,6 +6,7 @@
 
 #' @param threshold_line_slope_parameter minimum for line slope (Default is 0.01).
 #' @param threshold_intensity_interval minimum for intensity range (Default is 0.1).
+#' @param threshold_minimum_for_intensity_maximum minimum allowed value for intensity maximum
 #' @param threshold_difference_AIC choice between sigmoidal and double sigmoidal by using AIC values (Default is 0).
 #' @param threshold_lysis_finalAsymptoteIntensity minimum amount of decrease for double sigmoidal (Default is 0.75).
 #' @param threshold_AIC maximum AIC values in order to have a meaningful fit (Default is -10).
@@ -185,6 +186,7 @@ categorize<-
            parameterVectorDoubleSigmoidal,
            threshold_line_slope_parameter=0.01,
            threshold_intensity_interval=0.1,
+           threshold_minimum_for_intensity_maximum=0.4,
            threshold_difference_AIC=0,
            threshold_lysis_finalAsymptoteIntensity=0.75,
            threshold_AIC=-10)
@@ -226,8 +228,8 @@ categorize<-
     #************************************************
     # rename parameters if they exist
     data_intensity_interval=parameterVectorLinear$dataScalingParameters.intensityRatio
-
     line_slope=parameterVectorLinear$slope_Estimate
+    intensity_maximum=parameterVectorLinear$dataScalingParameters.intensityMax
 
     sigmoidal_AIC=parameterVectorSigmoidal$AIC_value
     doubleSigmoidal_AIC=parameterVectorDoubleSigmoidal$AIC_value
@@ -247,8 +249,10 @@ categorize<-
     #************************************************
     # else if the range of y is smaller than threshold_noSignal_y or
     #      if line slope of the y axis is smaller than threshold_noSignal_x there is no sigal
-    if (line_slope<threshold_line_slope_parameter * parameterVectorLinear$dataScalingParameters.timeRatio &
-        data_intensity_interval<threshold_intensity_interval)
+
+    if ((line_slope<threshold_line_slope_parameter * parameterVectorLinear$dataScalingParameters.timeRatio &
+        data_intensity_interval<threshold_intensity_interval)|
+        intensity_maximum < threshold_minimum_for_intensity_maximum)
     {output=as.data.frame(t(c(classification="no_signal")))}
 
     # if both of the AIC values for sigmoidal and double sigmoidal fit
@@ -298,6 +302,7 @@ categorize<-
 #' @param parameterVectorLinear is the output of lineFitFunction.
 #' @param threshold_line_slope_parameter minimum for line slope (Default is 0.01).
 #' @param threshold_intensity_interval minimum for intensity range (Default is 0.1).
+#' @param threshold_minimum_for_intensity_maximum minimum allowed value for intensity maximum
 #'
 #'
 #' @return Function returns one of two text outputs "no_signal" or "NOT no_signal".
@@ -370,7 +375,8 @@ categorize<-
 categorize_nosignal<-
   function(parameterVectorLinear,
            threshold_line_slope_parameter=0.01,
-           threshold_intensity_interval=0.1)
+           threshold_intensity_interval=0.1,
+           threshold_minimum_for_intensity_maximum=0.4)
   {
     #************************************************
     # First Part Define NA
@@ -387,14 +393,16 @@ categorize_nosignal<-
     # rename parameters if they exist
     data_intensity_interval=parameterVectorLinear$dataScalingParameters.intensityRatio
     line_slope=parameterVectorLinear$slope_Estimate
+    intensity_maximum=parameterVectorLinear$dataScalingParameters.intensityMax
     #************************************************
 
 
     #************************************************
     # else if the range of y is smaller than threshold_noSignal_y or
     #      if line slope of the y axis is smaller than threshold_noSignal_x there is no sigal
-    if (line_slope<threshold_line_slope_parameter * parameterVectorLinear$dataScalingParameters.timeRatio &
-        data_intensity_interval<threshold_intensity_interval)
+    if ((line_slope<threshold_line_slope_parameter * parameterVectorLinear$dataScalingParameters.timeRatio &
+        data_intensity_interval<threshold_intensity_interval)|
+        intensity_maximum < threshold_minimum_for_intensity_maximum)
     {output=as.data.frame(t(c(classification_nosignal="no_signal")))}
 
     # if not it is not no_signal

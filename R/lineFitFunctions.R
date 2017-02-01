@@ -73,6 +73,7 @@ lineFitFunction<-function(dataInput,
                                         upper = upperBounds,
                                         trace=F),silent = TRUE)
 
+
   if(class(theFitResult)!="try-error")
   {
     parameterMatrix=summary(theFitResult)$parameters

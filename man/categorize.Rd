@@ -6,7 +6,8 @@
 \usage{
 categorize(parameterVectorLinear, parameterVectorSigmoidal,
   parameterVectorDoubleSigmoidal, threshold_line_slope_parameter = 0.01,
-  threshold_intensity_interval = 0.1, threshold_difference_AIC = 0,
+  threshold_intensity_interval = 0.1,
+  threshold_minimum_for_intensity_maximum = 0, threshold_difference_AIC = 0,
   threshold_lysis_finalAsymptoteIntensity = 0.75, threshold_AIC = -10)
 }
 \arguments{
@@ -19,6 +20,8 @@ categorize(parameterVectorLinear, parameterVectorSigmoidal,
 \item{threshold_line_slope_parameter}{minimum for line slope (Default is 0.01).}
 
 \item{threshold_intensity_interval}{minimum for intensity range (Default is 0.1).}
+
+\item{threshold_minimum_for_intensity_maximum}{minimum allowed value for intensity maximum}
 
 \item{threshold_difference_AIC}{choice between sigmoidal and double sigmoidal by using AIC values (Default is 0).}
 

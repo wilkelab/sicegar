@@ -1,0 +1,229 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      8011,        220]
+NotebookOptionsPosition[      7377,        192]
+NotebookOutlinePosition[      7754,        209]
+CellTagsIndexPosition[      7711,        206]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["\<\
+Toy Model
+\
+\>", "Title",
+ CellChangeTimes->{{3.633438400404826*^9, 3.6334384135478163`*^9}},
+ FontSize->12],
+
+Cell["\<\
+Assume a toy model that can be represented by simple data with following \
+assumptions.\
+\>", "Text",
+ CellChangeTimes->{{3.633438416535042*^9, 3.6334384400433826`*^9}, {
+  3.633438474539651*^9, 3.633438535151312*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["each data starts from 0 brightness. f(0)=0", "Item",
+ CellChangeTimes->{{3.633438537101512*^9, 3.6334385864786663`*^9}}],
+
+Cell["\<\
+data starts to climb to the maximum linearly from the start of the climb point\
+\>", "Item",
+ CellChangeTimes->{{3.633438537101512*^9, 3.633438598724927*^9}, {
+  3.633442691853876*^9, 3.6334427057959633`*^9}, {3.633442743730406*^9, 
+  3.633442743737088*^9}}],
+
+Cell["if data reaches to its maximum it will stay there", "Item",
+ CellChangeTimes->{{3.633438537101512*^9, 3.633438598724927*^9}, {
+  3.633442691853876*^9, 3.6334427057959633`*^9}, {3.633442743730406*^9, 
+  3.633442764840654*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Clear", "[", "\"\<Global`*\>\"", "]"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{"startPoint", "=", "4.3"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"maximum", " ", "=", " ", "3"}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"slope", " ", "=", "25"}], ";"}], "\n"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"f", "[", "x_", "]"}], "=", 
+   RowBox[{"If", "[", 
+    RowBox[{
+     RowBox[{"x", "<", "startPoint"}], ",", "0", ",", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{"x", ">", 
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"maximum", "/", "slope"}], "+", "startPoint"}], ")"}]}], 
+       ",", "maximum", ",", 
+       RowBox[{"slope", "*", 
+        RowBox[{"(", 
+         RowBox[{"x", "-", "startPoint"}], ")"}]}]}], "]"}]}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"fig1", "=", 
+   RowBox[{"Plot", "[", 
+    RowBox[{
+     RowBox[{"f", "[", "x", "]"}], ",", " ", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", " ", "0", ",", " ", "24"}], "}"}], ",", " ", 
+     RowBox[{"PlotRange", " ", "->", " ", "Full"}]}], "]"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"m", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"x", ",", 
+       RowBox[{"f", "[", "x", "]"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", "0", ",", "24", ",", "0.5"}], "}"}]}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"fig2", "=", 
+   RowBox[{"ListPlot", "[", "m", "]"}]}], ";"}], "\n", 
+ RowBox[{"Show", "[", 
+  RowBox[{"fig1", ",", "fig2"}], "]"}], "\n", 
+ RowBox[{"N", "[", 
+  RowBox[{"maximum", "/", "startPoint"}], "]"}], "\n"}], "Code",
+ CellChangeTimes->{{3.633438537101512*^9, 3.633438598724927*^9}, {
+  3.633442691853876*^9, 3.6334427057959633`*^9}, {3.633442743730406*^9, 
+  3.633442764833856*^9}, {3.633442798344234*^9, 3.633442840567655*^9}, {
+  3.6334428791794147`*^9, 3.633442880239442*^9}, {3.633442965563691*^9, 
+  3.6334430834552593`*^9}, {3.633443215821967*^9, 3.633443228699561*^9}, {
+  3.633443342089857*^9, 3.633443512079988*^9}, {3.633443556016469*^9, 
+  3.6334435797349157`*^9}, {3.633443679467874*^9, 3.633443736752499*^9}, {
+  3.6334438123995047`*^9, 3.633443819917617*^9}, {3.63344392383594*^9, 
+  3.633443936953918*^9}, {3.633444130076744*^9, 3.63344418349876*^9}, {
+  3.633445354387231*^9, 3.633445372423581*^9}, {3.63344566847886*^9, 
+  3.633445710595957*^9}}],
+
+Cell[BoxData[
+ GraphicsBox[{{{}, {}, 
+    {RGBColor[0.368417, 0.506779, 0.709798], AbsoluteThickness[1.6], Opacity[
+     1.], LineBox[CompressedData["
+1:eJxFznkw3HcYBvCtIxsbR34hmkXclnUkVoVMqvl9URJpTaxbnCE2oc2uirOM
+ChHSWGQxHZG1YrqGNNXEFU2K1jGjxgilpc5IJWlThDRoCNrO1Pu+M8888/nj
+mXmNIkXe0QoMBkP4b/7rvz8QSr1ElUcZ/1/QjizNh5wMetuVRbS/mFMA7vSr
+SP6YUwH2a/HcGcKpA1fEyAd8OG1gF5fBxpOcfnDJgWfVnpwpMCtsYen32Bfg
+XD1BYpP/Klix+0SPfHATrNmtbRyfrEi23TxX6f8DYYJvG9+SOQbvAq/ZpY34
+foQ+7vqhRnwa+reohYzb5WgduV2Y0QT6ivkDvV2hqmCBdV/ZVJgauNFJOrgu
+RCt4ClXYn6Gl53en+sjQw3W+gT3TaBfepHZ9hDrYwGGhOCdSA5xVW3ZV/Al6
+Vs8tuzQTXaN4I15egbYd9OB3j6ENm71zs7i7wYMii+wdPHQWdzPj88Po2Ru1
+SZJj6JpshqAqGm3Lr3u/4yZ6hnWJuNeiJV1BTr130K8cle1/ake36IeYPJ5E
+x4zyDARP0DoSpu7zOXS6csOel+tom/Y89SRFCjyVEsZaY6HJnIqCgg56ST69
+kWOErgpveq3CRfuwry6LbdFKQxFL1GGKkDGO1DSujW7Kd5gvpSliOP6u3OXU
+EC1wV/2DfYwid7ZsTNL3TdM93957ZORPkXOmVwqTT/xJp14QT8hDKRKo62ze
+W7JIW9pEjXKjKZL+ZevlwEt/0fmV6gO8BIp0NTe7JUa9pvm50e3OEopMnB8+
+PVKkQPTpMyrnrlPkqU/Jz3wLJTK3EulTUEUR4yO+Hn3tyuR+3Wlp4y2KhBlq
+tboHMEmeIOLZWP32/zuJyS+haead6Da3YI2EIfSyqb+j2iu0tRI/vFprD/h6
+h/s3o35o5kWnLdYX6Mcb5jIRWxPc+qkmPVyOvicvSvco1ALfHVC735a1F3ym
+VM7aG/E2mMykP9mMZoPlhZUPiIcu2L5bUU/bbz/4YoySd0CAAdiqpcY5pdwQ
+vSWUFciMwKLk8TUviTH4eMNZ3dAyE3BmdQdHVm4KftPbeVCcbwZWa5jd6LrG
+AUf2ffVjTY45WFvqnNmRYAEO562um6VwwfMr3omHYi3BGpn9DQVxVuBr3++b
+3B9vDQ6wU1EKirQB159lL04KDoD5/Q9/VT91EGyRZDlyxNQWvPT0jUmxHB0S
+VyVy1ueBJeMjUq2b6NjwR73v6drh/qjX/FvFaFeG18vnWu+AHceMV7gF6OXS
+nAkxZQ+O+vpkS74EfWFyTjLDOgT2fMH2Chaje9k6qlZMB/CK7GJraQZ6npnK
+N2M4gi/nuc6yUtF6i8rCnO/QdwN6Vre20P8ANsChVw==
+      "]]}}, {{}, {{}, 
+     {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+      0.019444444444444445`], AbsoluteThickness[1.6], PointBox[CompressedData["
+1:eJxtyzkKAgEMQNEgFhYWIiIiIo77vm+dcwaPIFh7BY/qESwt1UaYh4EQHp8k
+l9v5mouI1We/9/88Tlk/8QtHmmUeF3ARl3A5zf5VcBXXcB03cBO3cILbuIO7
+uIf7eICHeITHeIKneIbneIGXWd9xrOg41nQcGzqOLR3Hjo5jT8dxoOM4/vwG
+YVYmnA==
+       "]]}, {}}, {}}},
+  AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+  Axes->{True, True},
+  AxesLabel->{None, None},
+  AxesOrigin->{0, 0},
+  DisplayFunction->Identity,
+  Frame->{{False, False}, {False, False}},
+  FrameLabel->{{None, None}, {None, None}},
+  FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+  GridLines->{None, None},
+  GridLinesStyle->Directive[
+    GrayLevel[0.5, 0.4]],
+  Method->{"DefaultBoundaryStyle" -> Automatic, "ScalingFunctions" -> None},
+  PlotRange->{{0, 24}, {0., 3.}},
+  PlotRangeClipping->True,
+  PlotRangePadding->{{
+     Scaled[0.02], 
+     Scaled[0.02]}, {
+     Scaled[0.05], 
+     Scaled[0.05]}},
+  Ticks->{Automatic, Automatic}]], "Output",
+ CellChangeTimes->{
+  3.633443481288471*^9, 3.633443512635357*^9, 3.633443581099504*^9, {
+   3.6334437109869223`*^9, 3.633443737206711*^9}, 3.633443820382852*^9, {
+   3.6334439297414093`*^9, 3.633443957215838*^9}, 3.633444157779421*^9, 
+   3.633444191728428*^9, {3.633445357628018*^9, 3.6334453736078672`*^9}, {
+   3.63344568601875*^9, 3.633445712400856*^9}}],
+
+Cell[BoxData["0.6976744186046512`"], "Output",
+ CellChangeTimes->{
+  3.633443481288471*^9, 3.633443512635357*^9, 3.633443581099504*^9, {
+   3.6334437109869223`*^9, 3.633443737206711*^9}, 3.633443820382852*^9, {
+   3.6334439297414093`*^9, 3.633443957215838*^9}, 3.633444157779421*^9, 
+   3.633444191728428*^9, {3.633445357628018*^9, 3.6334453736078672`*^9}, {
+   3.63344568601875*^9, 3.633445712407217*^9}}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1440, 790},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+Magnification->1.5,
+FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
+2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 118, 5, 104, "Title"],
+Cell[701, 29, 228, 5, 46, "Text"],
+Cell[CellGroupData[{
+Cell[954, 38, 126, 1, 43, "Item"],
+Cell[1083, 41, 268, 5, 43, "Item"],
+Cell[1354, 48, 231, 3, 43, "Item"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1622, 56, 2354, 62, 349, "Code"],
+Cell[3979, 120, 2961, 60, 352, "Output"],
+Cell[6943, 182, 406, 6, 43, "Output"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

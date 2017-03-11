@@ -1,0 +1,203 @@
+---
+title: (2/3) Sigmoidal model
+author: "Umut Caglar"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# The Sigmoidal Fit Function
+This is a document invetigates details of sigmoidal model 
+
+
+```{r install packages, echo=FALSE, warning=FALSE, results='hide',message=FALSE}
+
+###*****************************
+# INITIAL COMMANDS TO RESET THE SYSTEM
+rm(list = ls())
+if (is.integer(dev.list())){dev.off()}
+cat("\014")
+seedNo=14159
+set.seed(seedNo)
+###*****************************
+
+###*****************************
+require("sicegar")
+require("dplyr")
+require("ggplot2")
+require("cowplot")
+###*****************************
+```
+
+## Data generation
+To simulate the results, we will go backwards and firstly generate some data to analize. To add some randomness to the input data I will use some noise. The input of all package must be in the form of a data frame with at least 2 columns time and intensity. 
+
+`sicegar::sigmoidalFitFormula` generate a set of intensity values based on maximum, slope and midPoint values supplied. So here we are generating a set of points that are on a sigmoidal with a _/slope parameter/_ of 1, maximum of 4 and midpoint of 8.
+
+The sigmoidal fit formula uses the function  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`y = (0 + (maximum - 0) / (1 + exp((-slope)*(x - midPoint))))`  
+and if we calculate the derivative of it at the midpoint we find the slope as  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`max_slope = 1/4 * slope * maximum`  
+__i.e what we provide to `sicegar::sigmoidalFitFormula` as slope is not the maximum slope but a parameter related with maximum slope__.
+
+```{r generate data}
+time=seq(3,24,0.5)
+
+#simulate intensity data and add noise
+noise_parameter=0.1
+intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
+intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
+intensity=intensity+intensity_noise
+
+dataInput=data.frame(intensity=intensity,time=time)
+```
+
+## Data normalization 
+
+This is the first step. Data should be normalized before any fit. I.e time and intensity should be in between 0-1 interval. 
+
+There is a nuance 
+
+*  Time is normalized with respect to maximum value the time parameter takes.
+```{r time normalization, eval=FALSE}
+timeRatio=max(timeData); timeData=timeData/timeRatio
+```
+
+*  Intensity is normalized with respect to intensity interval
+```{r intensity normalization, eval=FALSE}
+intensityMin = min(dataInput$intensity)
+intensityMax = max(dataInput$intensity)
+intensityRatio = intensityMax - intensityMin
+
+intensityData=dataInput$intensity-intensityMin
+intensityData=intensityData/intensityRatio
+```
+
+The normalization code is 
+
+```{r normalize_data}
+normalizedInput = normalizeData(dataInput = dataInput, 
+                                dataInputName = "Sample001")
+```
+
+
+Components of the normalization output
+
+```{r normalized_data_output}
+head(normalizedInput$timeIntensityData) # the normalized time and intensity data
+print(normalizedInput$dataScalingParameters) # the normalization parameters that is needed to go back to original scale
+print(normalizedInput$dataInputName) # a useful feature to track the sample in all the process
+```
+
+
+## The figures of raw and normalized datasets
+
+```{r plot raw and normal data, echo=FALSE, fig.height=4, fig.width=8}
+dataInput %>% dplyr::mutate(process="raw")->dataInput2
+normalizedInput$timeIntensityData %>%
+  dplyr::mutate(process="normalized")->timeIntensityData2
+dplyr::bind_rows(dataInput2,timeIntensityData2) -> combined
+combined$process <- factor(combined$process, levels = c("raw","normalized"))
+
+ggplot(combined,aes(x=time, y=intensity))+
+  facet_wrap(~process, scales = "free")+
+  geom_point()
+```
+
+## Sigmoidal fit of the data
+
+Now it is time to calculate the parameters by using `sicegar::sigmoidalFitFunction()`
+
+```{r linefit_data}
+parameterVector<-sigmoidalFitFunction(normalizedInput,tryCounter=2)
+
+# Where tryCounter is a tool usually provided by sicegar::fitFunction when the sicegar::sigmoidalFitFunction is called from sicegar::fitFunction. 
+
+# If tryCounter==1 it took the  start position given by sicegar::fitFunction
+# If tryCounter!=1 it generates a random start position from given interval
+```
+
+the function outputs a vector that gives information about multiple parameters
+
+```{r parameter vector}
+print(t(parameterVector))
+```
+
+Here is the brief explanations of the parameters that are given by lineFitFunction (In different order then than the output vector of the lineFitFunction)
+
+These are the parameters of the normalization step 
+
+* `dataScalingParameters.timeRatio`
+* `dataScalingParameters.intensityMin`
+* `dataScalingParameters.intensityMax`
+* `dataScalingParameters.intensityRatio`
+
+They are the meta summary of the result parameters
+* `model`
+* `isThisaFit`
+
+Likelihood maximization algorithm starts from a random initiation (if tryCounter!=1) point and goes down the fitness space by a gradient decent algorithm. these parameters represent the start point of the gradient decent algorithm. 
+
+* `startVector.maximum`
+* `startVector.slope`
+* `startVector.midPoint`
+
+
+For each parameter that needs to fitted by LM algorithm; the algorithm gives a bunch of statistical parameters; including the estimated value of the parameter
+
+They are the parameters associated with parameter "maximum"
+
+* `maximum_N_Estimate`
+* `maximum_Std_Error`
+* `maximum_t_value`
+* `maximum_Pr_t`
+
+They are the parameters associated with parameter "slope"
+
+* `slope_N_Estimate`
+* `slope_Std_Error`
+* `slope_t_value`
+* `slope_Pr_t`
+
+They are the parameters associated with parameter "midpoint"
+
+* `midPoint_N_Estimate`
+* `midPoint_Std_Error`
+* `midPoint_t_value`
+* `midPoint_Pr_t`
+
+They are the parameters associated with the quality of the fit. 
+
+* `residual_Sum_of_Squares`
+* `log_likelihood`
+* `AIC_value`
+* `BIC_value`
+       
+They are the fitted values after converting everything from normalized to un-normalized scale. 
+
+* `maximum_Estimate`
+* `slope_Estimate` 
+* `midPoint_Estimate`
+
+## Check the results to see if the results are meaningfull
+
+By using the `intersection_Estimate`, `slope_Estimate` parameters of the linefit and the time sequence that we already created we can calculate the intensity values by the help of `sicegar::lineFitFormula()`. We can draw the bes line on top of our initial data.
+
+```{r plot raw data and fit, fig.height=4, fig.width=8}
+# intensityTheoretical=lineFitFormula(time,
+#                                     slope=parameterVector$slope_Estimate,
+#                                     intersection=parameterVector$intersection_Estimate)
+# comparisonData=cbind(dataInput,intensityTheoretical)
+# 
+# ggplot(comparisonData)+
+#   geom_point(aes(x=time, y=intensity))+
+#   geom_line(aes(x=time,y=intensityTheoretical))+
+#   expand_limits(x = 0, y = 0)
+```

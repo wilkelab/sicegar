@@ -140,8 +140,8 @@ They are the meta summary of the result parameters
 
 Likelihood maximization algorithm starts from a random initiation point (if tryCounter!=1) and goes down the fitness space by a gradient decent algorithm. These parameters represent the start point of the gradient decent algorithm.
 
-* `startVector.slope`: Slope value of the initialtion point
-* `startVector.intersection`: Intersection value of the initialtion point
+* `startVector.slope`: Slope value of the initiation point
+* `startVector.intersection`: Intersection value of the initiation point
 
 For each parameter that needs to fitted by LM algorithm; the algorithm gives a bunch of statistical parameters; including the estimated value of the parameter. __Note: They are for normalized data.__
 
@@ -180,7 +180,7 @@ They are the fitted values after converting everything from normalized to un-nor
 
 ## Check the results to see if the results are meaningfull
 
-By using the `intersection_Estimate`, `slope_Estimate` parameters of the linefit and the time sequence that we already created we can calculate the intensity values by the help of `sicegar::lineFitFormula()`. We can draw the bes line on top of our initial data.
+By using the `intersection_Estimate`, `slope_Estimate` parameters of the linefit and the time sequence that we already created we can calculate the intensity values by the help of `sicegar::lineFitFormula()`. We can draw the best line on top of our initial data.
 
 ```{r plot raw data and fit, fig.height=4, fig.width=8}
 intensityTheoretical=lineFitFormula(time,

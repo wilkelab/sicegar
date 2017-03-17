@@ -12,12 +12,12 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-# The Sigmoidal Fit Function
-This is a document invetigates details of sigmoidal model 
-
-
-```{r install packages, echo=FALSE, warning=FALSE, results='hide',message=FALSE}
+  
+  # The Sigmoidal Fit Function
+  This is a document invetigates details of sigmoidal model 
+  
+  
+  ```{r install packages, echo=FALSE, warning=FALSE, results='hide',message=FALSE}
 
 ###*****************************
 # INITIAL COMMANDS TO RESET THE SYSTEM
@@ -32,7 +32,6 @@ set.seed(seedNo)
 require("sicegar")
 require("dplyr")
 require("ggplot2")
-require("cowplot")
 ###*****************************
 ```
 
@@ -83,8 +82,8 @@ intensityData=intensityData/intensityRatio
 The normalization code is 
 
 ```{r normalize_data}
-normalizedInput = normalizeData(dataInput = dataInput, 
-                                dataInputName = "Sample001")
+normalizedInput = sicegar::normalizeData(dataInput = dataInput, 
+                                         dataInputName = "Sample001")
 ```
 
 
@@ -106,9 +105,9 @@ normalizedInput$timeIntensityData %>%
 dplyr::bind_rows(dataInput2,timeIntensityData2) -> combined
 combined$process <- factor(combined$process, levels = c("raw","normalized"))
 
-ggplot(combined,aes(x=time, y=intensity))+
-  facet_wrap(~process, scales = "free")+
-  geom_point()
+ggplot2::ggplot(combined,aes(x=time, y=intensity))+
+  ggplot2::facet_wrap(~process, scales = "free")+
+  ggplot2::geom_point()
 ```
 
 ## Sigmoidal fit of the data
@@ -116,7 +115,7 @@ ggplot(combined,aes(x=time, y=intensity))+
 Now it is time to calculate the parameters by using `sicegar::sigmoidalFitFunction()`
 
 ```{r sigmoidalfit_data}
-parameterVector<-sigmoidalFitFunction(normalizedInput,tryCounter=2)
+parameterVector<-sicegar::sigmoidalFitFunction(normalizedInput,tryCounter=2)
 
 # Where tryCounter is a tool usually provided by sicegar::fitFunction when the sicegar::sigmoidalFitFunction is called from sicegar::fitFunction. 
 
@@ -192,14 +191,14 @@ They are the fitted values after converting everything from normalized to un-nor
 By using the `maximum_Estimate`, `slope_Estimate`, `midPoint_Estimate` parameters of the sigmoidalfit and the time sequence that we already created we can calculate the intensity values by the help of `sicegar::sigmoidalFitFormula()`. We can draw the best sigmoidal fit on top of our initial data.
 
 ```{r plot raw data and fit, fig.height=4, fig.width=8}
-intensityTheoretical=sigmoidalFitFormula(time,
-                                        maximum=parameterVector$maximum_Estimate,
-                                        slope=parameterVector$slope_Estimate,
-                                        midPoint=parameterVector$midPoint_Estimate)
+intensityTheoretical=sicegar::sigmoidalFitFormula(time,
+                                                  maximum=parameterVector$maximum_Estimate,
+                                                  slope=parameterVector$slope_Estimate,
+                                                  midPoint=parameterVector$midPoint_Estimate)
 comparisonData=cbind(dataInput,intensityTheoretical)
 
-ggplot(comparisonData)+
- geom_point(aes(x=time, y=intensity))+
- geom_line(aes(x=time,y=intensityTheoretical))+
- expand_limits(x = 0, y = 0)
+ggplot2::ggplot(comparisonData)+
+  ggplot2::geom_point(aes(x=time, y=intensity))+
+  ggplot2::geom_line(aes(x=time,y=intensityTheoretical))+
+  ggplot2::expand_limits(x = 0, y = 0)
 ```

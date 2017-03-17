@@ -7,7 +7,8 @@
 categorize(parameterVectorLinear, parameterVectorSigmoidal,
   parameterVectorDoubleSigmoidal, threshold_line_slope_parameter = 0.01,
   threshold_intensity_interval = 0.1,
-  threshold_minimum_for_intensity_maximum = 0, threshold_difference_AIC = 0,
+  threshold_minimum_for_intensity_maximum = 0.3,
+  threshold_difference_AIC = 0,
   threshold_lysis_finalAsymptoteIntensity = 0.75, threshold_AIC = -10)
 }
 \arguments{

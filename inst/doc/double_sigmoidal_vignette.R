@@ -21,10 +21,16 @@ require("ggplot2")
 ## ----generate data-------------------------------------------------------
 time=seq(3,24,0.5)
 
-#intensity with Noise
-noise_parameter=7
+#simulate intensity data and add noise
+noise_parameter=0.1
 intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
-intensity=sicegar::lineFitFormula(time, slope=4, intersection=-2)
+intensity=doublesigmoidalFitFormula(time,
+                                    finalAsymptoteIntensity=.3,
+                                    maximum=4,
+                                    slope1=1,
+                                    midPoint1=7,
+                                    slope2=1,
+                                    midPointDistance=8)
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)
@@ -60,10 +66,10 @@ ggplot2::ggplot(combined,aes(x=time, y=intensity))+
   ggplot2::facet_wrap(~process, scales = "free")+
   ggplot2::geom_point()
 
-## ----linefit_data--------------------------------------------------------
-parameterVector<-sicegar::lineFitFunction(dataInput = normalizedInput, tryCounter = 2)
+## ----doublesigmoidalfit_data---------------------------------------------
+parameterVector<-sicegar::doublesigmoidalFitFunction(normalizedInput,tryCounter=2)
 
-# Where tryCounter is a tool usually provided by sicegar::fitFunction when the sicegar::lineFitFunction is called from sicegar::fitFunction. 
+# Where tryCounter is a tool usually provided by sicegar::fitFunction when the sicegar::sigmoidalFitFunction is called from sicegar::fitFunction. 
 
 # If tryCounter==1 it took the  start position given by sicegar::fitFunction
 # If tryCounter!=1 it generates a random start position from given interval
@@ -72,11 +78,19 @@ parameterVector<-sicegar::lineFitFunction(dataInput = normalizedInput, tryCounte
 print(t(parameterVector))
 
 ## ----plot raw data and fit, fig.height=4, fig.width=8--------------------
-intensityTheoretical=sicegar::lineFitFormula(time,
-                                             slope=parameterVector$slope_Estimate,
-                                             intersection=parameterVector$intersection_Estimate)
+intensityTheoretical=
+  sicegar::doublesigmoidalFitFormula(
+    time,
+    finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+    maximum=parameterVector$maximum_Estimate,
+    slope1=parameterVector$slope1_Estimate,
+    midPoint1=parameterVector$midPoint1_Estimate,
+    slope2=parameterVector$slope2_Estimate,
+    midPointDistance=parameterVector$midPointDistance_Estimate)
+
 comparisonData=cbind(dataInput,intensityTheoretical)
 
+require(ggplot2)
 ggplot2::ggplot(comparisonData)+
   ggplot2::geom_point(aes(x=time, y=intensity))+
   ggplot2::geom_line(aes(x=time,y=intensityTheoretical))+

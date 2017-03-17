@@ -32,7 +32,6 @@ set.seed(seedNo)
 require("sicegar")
 require("dplyr")
 require("ggplot2")
-require("cowplot")
 ###*****************************
 ```
 
@@ -77,8 +76,8 @@ intensityData=intensityData/intensityRatio
 The normalization code is 
 
 ```{r normalize_data}
-normalizedInput = normalizeData(dataInput = dataInput, 
-                                dataInputName = "Sample001")
+normalizedInput = sicegar::normalizeData(dataInput = dataInput, 
+                                         dataInputName = "Sample001")
 ```
 
 
@@ -100,9 +99,9 @@ normalizedInput$timeIntensityData %>%
 dplyr::bind_rows(dataInput2,timeIntensityData2) -> combined
 combined$process <- factor(combined$process, levels = c("raw","normalized"))
 
-ggplot(combined,aes(x=time, y=intensity))+
-  facet_wrap(~process, scales = "free")+
-  geom_point()
+ggplot2::ggplot(combined,aes(x=time, y=intensity))+
+  ggplot2::facet_wrap(~process, scales = "free")+
+  ggplot2::geom_point()
 ```
 
 ## Line fit of the data
@@ -110,7 +109,7 @@ ggplot(combined,aes(x=time, y=intensity))+
 Now it is time to calculate the parameters by using `sicegar::lineFitFunction()`
 
 ```{r linefit_data}
-parameterVector<-lineFitFunction(dataInput = normalizedInput, tryCounter = 2)
+parameterVector<-sicegar::lineFitFunction(dataInput = normalizedInput, tryCounter = 2)
 
 # Where tryCounter is a tool usually provided by sicegar::fitFunction when the sicegar::lineFitFunction is called from sicegar::fitFunction. 
 
@@ -124,7 +123,7 @@ the function outputs a vector that gives information about multiple parameters
 print(t(parameterVector))
 ```
 
-Here is the brief explanations of the parameters that are given by lineFitFunction (In different order then than the output vector of the lineFitFunction)
+Here is the brief explanations of the parameters that are given by `sicegar::lineFitFunction` (In different order then than the output vector of the `sicegar::lineFitFunction`)
 
 These are the parameters of the normalization step:
 
@@ -138,10 +137,10 @@ They are the meta summary of the result parameters
 * `model`: Gives the used model for fitting
 * `isThisaFit`: FALSE means there is not any successful fit. TRUE means there is at least one successful fit 
 
-Likelihood maximization algorithm starts from a random initiation point and goes down the fitness space by a gradient decent algorithm. these parameters represent the start point of the gradient decent algorithm.
+Likelihood maximization algorithm starts from a random initiation point (if tryCounter!=1) and goes down the fitness space by a gradient decent algorithm. These parameters represent the start point of the gradient decent algorithm.
 
-* `startVector.slope`: Slope value of the initialtion point
-* `startVector.intersection`: Intersection value of the initialtion point
+* `startVector.slope`: Slope value of the initiation point
+* `startVector.intersection`: Intersection value of the initiation point
 
 For each parameter that needs to fitted by LM algorithm; the algorithm gives a bunch of statistical parameters; including the estimated value of the parameter. __Note: They are for normalized data.__
 
@@ -172,7 +171,7 @@ They are the parameters associated with the quality of the fit.
 
 Final results that are relavent to most of the users   
 
-They are the fitter values after converting everything from normalized to un-normalized scale.
+They are the fitted values after converting everything from normalized to un-normalized scale.
 
 * `intersection_Estimate`: Intersection estimate for the raw data
 * `slope_Estimate`: Slope estimate for the raw data
@@ -180,16 +179,16 @@ They are the fitter values after converting everything from normalized to un-nor
 
 ## Check the results to see if the results are meaningfull
 
-By using the `intersection_Estimate`, `slope_Estimate` parameters of the linefit and the time sequence that we already created we can calculate the intensity values by the help of `sicegar::lineFitFormula()`. We can draw the bes line on top of our initial data.
+By using the `intersection_Estimate`, `slope_Estimate` parameters of the linefit and the time sequence that we already created we can calculate the intensity values by the help of `sicegar::lineFitFormula()`. We can draw the best line on top of our initial data.
 
 ```{r plot raw data and fit, fig.height=4, fig.width=8}
-intensityTheoretical=lineFitFormula(time,
-                                    slope=parameterVector$slope_Estimate,
-                                    intersection=parameterVector$intersection_Estimate)
+intensityTheoretical=sicegar::lineFitFormula(time,
+                                             slope=parameterVector$slope_Estimate,
+                                             intersection=parameterVector$intersection_Estimate)
 comparisonData=cbind(dataInput,intensityTheoretical)
 
-ggplot(comparisonData)+
-  geom_point(aes(x=time, y=intensity))+
-  geom_line(aes(x=time,y=intensityTheoretical))+
-  expand_limits(x = 0, y = 0)
+ggplot2::ggplot(comparisonData)+
+  ggplot2::geom_point(aes(x=time, y=intensity))+
+  ggplot2::geom_line(aes(x=time,y=intensityTheoretical))+
+  ggplot2::expand_limits(x = 0, y = 0)
 ```

@@ -6,7 +6,7 @@
 \usage{
 categorize_nosignal(parameterVectorLinear,
   threshold_line_slope_parameter = 0.01, threshold_intensity_interval = 0.1,
-  threshold_minimum_for_intensity_maximum = 0)
+  threshold_minimum_for_intensity_maximum = 0.3)
 }
 \arguments{
 \item{parameterVectorLinear}{is the output of lineFitFunction.}

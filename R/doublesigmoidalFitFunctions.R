@@ -475,7 +475,7 @@ f_mid2_doublesigmoidal <- function(parameterDf){
             B2=parameterDf$slope2_Estimate ,
             L=parameterDf$midPointDistance_Estimate);
 
-  mid2x <- stats::uniroot(f0mid, interval=c(argumentt,max_x*(3)),
+  mid2x <- stats::uniroot(f0mid, interval=c(argumentt,max_x*(2)),
                           tol=0.0001,
                           B1=parameterDf$slope1_Estimate,
                           M1=parameterDf$midPoint1_Estimate,

@@ -16,7 +16,6 @@ set.seed(seedNo)
 require("sicegar")
 require("dplyr")
 require("ggplot2")
-require("cowplot")
 ###*****************************
 
 ## ----generate data-------------------------------------------------------
@@ -42,8 +41,8 @@ dataInput=data.frame(intensity=intensity,time=time)
 #  intensityData=intensityData/intensityRatio
 
 ## ----normalize_data------------------------------------------------------
-normalizedInput = normalizeData(dataInput = dataInput, 
-                                dataInputName = "Sample001")
+normalizedInput = sicegar::normalizeData(dataInput = dataInput, 
+                                         dataInputName = "Sample001")
 
 ## ----normalized_data_output----------------------------------------------
 head(normalizedInput$timeIntensityData) # the normalized time and intensity data
@@ -57,12 +56,12 @@ normalizedInput$timeIntensityData %>%
 dplyr::bind_rows(dataInput2,timeIntensityData2) -> combined
 combined$process <- factor(combined$process, levels = c("raw","normalized"))
 
-ggplot(combined,aes(x=time, y=intensity))+
-  facet_wrap(~process, scales = "free")+
-  geom_point()
+ggplot2::ggplot(combined,aes(x=time, y=intensity))+
+  ggplot2::facet_wrap(~process, scales = "free")+
+  ggplot2::geom_point()
 
-## ----linefit_data--------------------------------------------------------
-parameterVector<-sigmoidalFitFunction(normalizedInput,tryCounter=2)
+## ----sigmoidalfit_data---------------------------------------------------
+parameterVector<-sicegar::sigmoidalFitFunction(normalizedInput,tryCounter=2)
 
 # Where tryCounter is a tool usually provided by sicegar::fitFunction when the sicegar::sigmoidalFitFunction is called from sicegar::fitFunction. 
 
@@ -73,13 +72,14 @@ parameterVector<-sigmoidalFitFunction(normalizedInput,tryCounter=2)
 print(t(parameterVector))
 
 ## ----plot raw data and fit, fig.height=4, fig.width=8--------------------
-# intensityTheoretical=lineFitFormula(time,
-#                                     slope=parameterVector$slope_Estimate,
-#                                     intersection=parameterVector$intersection_Estimate)
-# comparisonData=cbind(dataInput,intensityTheoretical)
-# 
-# ggplot(comparisonData)+
-#   geom_point(aes(x=time, y=intensity))+
-#   geom_line(aes(x=time,y=intensityTheoretical))+
-#   expand_limits(x = 0, y = 0)
+intensityTheoretical=sicegar::sigmoidalFitFormula(time,
+                                                  maximum=parameterVector$maximum_Estimate,
+                                                  slope=parameterVector$slope_Estimate,
+                                                  midPoint=parameterVector$midPoint_Estimate)
+comparisonData=cbind(dataInput,intensityTheoretical)
+
+ggplot2::ggplot(comparisonData)+
+  ggplot2::geom_point(aes(x=time, y=intensity))+
+  ggplot2::geom_line(aes(x=time,y=intensityTheoretical))+
+  ggplot2::expand_limits(x = 0, y = 0)
 

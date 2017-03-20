@@ -1,12 +1,12 @@
 Package: sicegar
 Type: Package
 Title: Analysis of Single-Cell Viral Growth Curves
-Version: 0.1.0.0000
-Date: 2015-12-17
+Version: 0.1
+Date: 2017-03-17
 Authors@R: c( person("M. Umut", "Caglar", role = c("aut", "cre"), email =
     "umut.caglar@gmail.com"), person("Claus O.", "Wilke", role = c("aut"), email =
     "wilke@austin.utexas.edu") )
-Description: The sicegar package classifies time course fluorescence data of viral growth. The package categorize time course data into one of four categories, "ambiguous", "no signal", "infection", and "infection and lysis" by fitting a series of mathematical models to the data. Biologically relevant parameters associated with each of these models are also reported, allowing for analysis of virus yield, replication rate, and the starting time of replication. The origin of the package name came from "SIngle CEll Growth Analysis in R".
+Description: Classifies time course fluorescence data of viral growth. The package categorize time course data into one of four categories, "ambiguous", "no signal", "sigmoidal", and "double sigmoidal" by fitting a series of mathematical models to the data. The origin of the package name came from "SIngle CEll Growth Analysis in R".
 URL: https://github.com/wilkelab/sicegar
 Imports:
     dplyr,

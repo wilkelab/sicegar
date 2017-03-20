@@ -236,6 +236,6 @@ comparisonData=cbind(dataInput,intensityTheoretical)
 require(ggplot2)
 ggplot2::ggplot(comparisonData)+
   ggplot2::geom_point(aes(x=time, y=intensity))+
-  ggplot2::geom_line(aes(x=time,y=intensityTheoretical))+
+  ggplot2::geom_line(aes(x=time,y=intensityTheoretical), colour="orange")+
   ggplot2::expand_limits(x = 0, y = 0)
 ```

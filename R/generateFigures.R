@@ -29,12 +29,6 @@
 #'dataInput=data.frame(intensity=intensity,time=time)
 #'normalizedInput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
 #'
-#'# Do the sigmoidal fit
-#'sigmoidalModel=fitFunction(dataInput=normalizedInput,
-#'                                     model="sigmoidal",
-#'                                     n_runs_min=20,
-#'                                     n_runs_max=500,
-#'                                     showDetails=FALSE)
 #'
 #'# Do the double sigmoidal fit
 #'doubleSigmoidalModel=fitFunction(dataInput=normalizedInput,
@@ -45,31 +39,12 @@
 #'
 #'doubleSigmoidalModel = numericalReCalculation(doubleSigmoidalModel,
 #'                                                        stepSize=0.00001)
-#'fig01=printInfectionCurves(dataInput=normalizedInput)
-#'print(fig01)
 #'
-#'fig02=printInfectionCurves(dataInput=normalizedInput,
-#'                           sigmoidalFitVector=sigmoidalModel)
-#'print(fig02)
-#'
-#'fig03=printInfectionCurves(dataInput=normalizedInput,
-#'                           doubleSigmoidalFitVector=doubleSigmoidalModel)
-#'print(fig03)
-#'
-#'fig04=printInfectionCurves(dataInput=normalizedInput,
-#'                           sigmoidalFitVector=sigmoidalModel,
-#'                           doubleSigmoidalFitVector=doubleSigmoidalModel)
-#'print(fig04)
-#'
-#'fig05=printInfectionCurves(dataInput=normalizedInput,
+#'fig01=printInfectionCurves(dataInput=normalizedInput,
 #'                           doubleSigmoidalFitVector=doubleSigmoidalModel,
 #'                           showParameterRelatedLines=TRUE)
-#'print(fig05)
+#'print(fig01)
 #'
-#'fig06=printInfectionCurves(dataInput=normalizedInput,
-#'                           sigmoidalFitVector=sigmoidalModel,
-#'                           showParameterRelatedLines=TRUE)
-#'print(fig06)
 #'
 printInfectionCurves<-function(dataInput,
                                sigmoidalFitVector=NULL,
@@ -145,7 +120,8 @@ printInfectionCurves<-function(dataInput,
     ggplot2::geom_point(ggplot2::aes(x=dataFrameInput$time, y=dataFrameInput$intensity))+
     ggplot2::expand_limits(x = 0, y = 0)+
     ggplot2::theme_bw()+
-    ggplot2::theme(panel.grid.minor = ggplot2::element_blank())
+    ggplot2::theme(panel.grid.minor = ggplot2::element_blank())+
+    ggplot2::xlab(xlabelText)+ggplot2::ylab(ylabelText)
 
   if(!is.null(sigmoidalFitVector))
   {
@@ -171,8 +147,7 @@ printInfectionCurves<-function(dataInput,
                                              xend = sigmoidalFitVector$midPoint_Estimate +
                                                2/(1*sigmoidalFitVector$slope_Estimate),
                                              yend = sigmoidalFitVector$maximum_Estimate),
-                                colour="#bdbdbd",size=0.5,linetype="longdash")+
-          ggplot2::xlab(xlabelText)+ggplot2::ylab(ylabelText)
+                                colour="#bdbdbd",size=0.5,linetype="longdash")
       }
     }
   }
@@ -225,8 +200,7 @@ printInfectionCurves<-function(dataInput,
                                                xend = doubleSigmoidalFitVector$numerical.midPoint2_x_Estimate +
                                                  doubleSigmoidalFitVector$maximum_Estimate*(1-doubleSigmoidalFitVector$finalAsymptoteIntensity_Estimate)/(-doubleSigmoidalFitVector$numerical.slope2_Estimate*2),
                                                yend = doubleSigmoidalFitVector$maximum_Estimate*doubleSigmoidalFitVector$finalAsymptoteIntensity_Estimate),
-                                  colour="#bdbdbd",size=0.5,linetype="longdash")+
-            ggplot2::xlab(xlabelText)+ggplot2::ylab(ylabelText)
+                                  colour="#bdbdbd",size=0.5,linetype="longdash")
 
         }
       }

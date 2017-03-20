@@ -45,12 +45,6 @@ intensity=intensity+intensity_noise
 dataInput=data.frame(intensity=intensity,time=time)
 normalizedInput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
 
-# Do the sigmoidal fit
-sigmoidalModel=fitFunction(dataInput=normalizedInput,
-                                    model="sigmoidal",
-                                    n_runs_min=20,
-                                    n_runs_max=500,
-                                    showDetails=FALSE)
 
 # Do the double sigmoidal fit
 doubleSigmoidalModel=fitFunction(dataInput=normalizedInput,
@@ -61,31 +55,12 @@ doubleSigmoidalModel=fitFunction(dataInput=normalizedInput,
 
 doubleSigmoidalModel = numericalReCalculation(doubleSigmoidalModel,
                                                        stepSize=0.00001)
-fig01=printInfectionCurves(dataInput=normalizedInput)
-print(fig01)
 
-fig02=printInfectionCurves(dataInput=normalizedInput,
-                          sigmoidalFitVector=sigmoidalModel)
-print(fig02)
-
-fig03=printInfectionCurves(dataInput=normalizedInput,
-                          doubleSigmoidalFitVector=doubleSigmoidalModel)
-print(fig03)
-
-fig04=printInfectionCurves(dataInput=normalizedInput,
-                          sigmoidalFitVector=sigmoidalModel,
-                          doubleSigmoidalFitVector=doubleSigmoidalModel)
-print(fig04)
-
-fig05=printInfectionCurves(dataInput=normalizedInput,
+fig01=printInfectionCurves(dataInput=normalizedInput,
                           doubleSigmoidalFitVector=doubleSigmoidalModel,
                           showParameterRelatedLines=TRUE)
-print(fig05)
+print(fig01)
 
-fig06=printInfectionCurves(dataInput=normalizedInput,
-                          sigmoidalFitVector=sigmoidalModel,
-                          showParameterRelatedLines=TRUE)
-print(fig06)
 
 }
 

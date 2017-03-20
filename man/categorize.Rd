@@ -83,43 +83,6 @@ outputCluster=categorize(parameterVectorLinear=linearModel,
                         parameterVectorDoubleSigmoidal=doubleSigmoidalModel)
 
 
-# Example 2 with sigmoidal data
-time=seq(3,24,0.1)
 
-#simulate intensity data and add noise
-noise_parameter=0.2
-intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
-intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
-intensity=intensity+intensity_noise
-
-dataInput=data.frame(intensity=intensity,time=time)
-normalizedInput= normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
-
-
-# Fit linear model
-linearModel=fitFunction(dataInput=normalizedInput,
-                                 model="linear",
-                                 n_runs_min=20,
-                                 n_runs_max=500,
-                                 showDetails=FALSE)
-
-# Fit sigmoidal model
-sigmoidalModel=fitFunction(dataInput=normalizedInput,
-                                    model="sigmoidal",
-                                    n_runs_min=20,
-                                    n_runs_max=500,
-                                    showDetails=FALSE)
-
-# Fit double sigmoidal model
-doubleSigmoidalModel=fitFunction(dataInput=normalizedInput,
-                                          model="doublesigmoidal",
-                                          n_runs_min=20,
-                                          n_runs_max=500,
-                                          showDetails=FALSE)
-
-
-outputCluster=categorize(parameterVectorLinear=linearModel,
-                        parameterVectorSigmoidal=sigmoidalModel,
-                        parameterVectorDoubleSigmoidal=doubleSigmoidalModel)
 }
 

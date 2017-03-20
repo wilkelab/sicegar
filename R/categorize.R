@@ -62,124 +62,9 @@
 #'                         parameterVectorSigmoidal=sigmoidalModel,
 #'                         parameterVectorDoubleSigmoidal=doubleSigmoidalModel)
 #'
-# #Print the results
-# if(is.na(outputCluster$classification)){print(outputCluster)}
-# if(outputCluster$classification=="ambiguous"){print(outputCluster)}
-# if(outputCluster$classification=="no_signal"){print(outputCluster)}
-# if(outputCluster$classification=="infection")
-# {
-#  intensityTheoretical=sigmoidalFitFormula(time,
-#                                         maximum=sigmoidalModel$maximum_Estimate,
-#                                         slope=sigmoidalModel$slope_Estimate,
-#                                         midPoint=sigmoidalModel$midPoint_Estimate)
-#
-#  comparisonData=cbind(dataInput,intensityTheoretical)
-#
-#  require(ggplot2)
-#  ggplot(comparisonData)+
-#    geom_point(aes(x=time, y=intensity))+
-#    geom_line(aes(x=time,y=intensityTheoretical))+
-#    expand_limits(x = 0, y = 0)
-# }
-# if(outputCluster$classification=="infection&lysis")
-# {
-# intensityTheoretical=
-#  doublesigmoidalFitFormula(
-#      time,
-#      finalAsymptoteIntensity=doubleSigmoidalModel$finalAsymptoteIntensity_Estimate,
-#      maximum=doubleSigmoidalModel$maximum_Estimate,
-#      slope1=doubleSigmoidalModel$slope1_Estimate,
-#      midPoint1=doubleSigmoidalModel$midPoint1_Estimate,
-#      slope2=doubleSigmoidalModel$slope2_Estimate,
-#      midPointDistance=doubleSigmoidalModel$midPointDistance_Estimate)
-#
-#  comparisonData=cbind(dataInput,intensityTheoretical)
-#
-#  require(ggplot2)
-#  ggplot(comparisonData)+
-#    geom_point(aes(x=time, y=intensity))+
-#    geom_line(aes(x=time,y=intensityTheoretical))+
-#    expand_limits(x = 0, y = 0)
-# }
-#
-#'
-#'# Example 2 with sigmoidal data
-#'time=seq(3,24,0.1)
-#'
-#'#simulate intensity data and add noise
-#'noise_parameter=0.2
-#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
-#'intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
-#'intensity=intensity+intensity_noise
-#'
-#'dataInput=data.frame(intensity=intensity,time=time)
-#'normalizedInput= normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
 #'
 #'
-#'# Fit linear model
-#'linearModel=fitFunction(dataInput=normalizedInput,
-#'                                  model="linear",
-#'                                  n_runs_min=20,
-#'                                  n_runs_max=500,
-#'                                  showDetails=FALSE)
-#'
-#'# Fit sigmoidal model
-#'sigmoidalModel=fitFunction(dataInput=normalizedInput,
-#'                                     model="sigmoidal",
-#'                                     n_runs_min=20,
-#'                                     n_runs_max=500,
-#'                                     showDetails=FALSE)
-#'
-#'# Fit double sigmoidal model
-#'doubleSigmoidalModel=fitFunction(dataInput=normalizedInput,
-#'                                           model="doublesigmoidal",
-#'                                           n_runs_min=20,
-#'                                           n_runs_max=500,
-#'                                           showDetails=FALSE)
-#'
-#'
-#'outputCluster=categorize(parameterVectorLinear=linearModel,
-#'                         parameterVectorSigmoidal=sigmoidalModel,
-#'                         parameterVectorDoubleSigmoidal=doubleSigmoidalModel)
-# #Print the results
-# if(is.na(outputCluster$classification)){print(outputCluster)}
-# if(outputCluster$classification=="ambiguous"){print(outputCluster)}
-# if(outputCluster$classification=="no_signal"){print(outputCluster)}
-# if(outputCluster$classification=="infection")
-# {
-#  intensityTheoretical=sigmoidalFitFormula(time,
-#                                         maximum=sigmoidalModel$maximum_Estimate,
-#                                         slope=sigmoidalModel$slope_Estimate,
-#                                         midPoint=sigmoidalModel$midPoint_Estimate)
-#
-#  comparisonData=cbind(dataInput,intensityTheoretical)
-#
-#  require(ggplot2)
-#  ggplot(comparisonData)+
-#    geom_point(aes(x=time, y=intensity))+
-#    geom_line(aes(x=time,y=intensityTheoretical))+
-#    expand_limits(x = 0, y = 0)
-# }
-# if(outputCluster$classification=="infection&lysis")
-# {
-# intensityTheoretical=
-#  doublesigmoidalFitFormula(
-#      time,
-#      finalAsymptoteIntensity=doubleSigmoidalModel$finalAsymptoteIntensity_Estimate,
-#      maximum=doubleSigmoidalModel$maximum_Estimate,
-#      slope1=doubleSigmoidalModel$slope1_Estimate,
-#      midPoint1=doubleSigmoidalModel$midPoint1_Estimate,
-#      slope2=doubleSigmoidalModel$slope2_Estimate,
-#      midPointDistance=doubleSigmoidalModel$midPointDistance_Estimate)
-#
-#  comparisonData=cbind(dataInput,intensityTheoretical)
-#
-#  require(ggplot2)
-#  ggplot(comparisonData)+
-#    geom_point(aes(x=time, y=intensity))+
-#    geom_line(aes(x=time,y=intensityTheoretical))+
-#    expand_limits(x = 0, y = 0)
-# }
+
 categorize<-
   function(parameterVectorLinear,
            parameterVectorSigmoidal,
@@ -261,28 +146,28 @@ categorize<-
     {output=as.data.frame(t(c(classification="ambiguous")))}
 
     # if the difference between AIC values is above the threshold_lysis_a (it more looks like double sigmoidal)
-    # and start point of infection is below time 0 wrt double sigmoidal model it is ambiguous
+    # and start point of sigmoidal is below time 0 wrt double sigmoidal model it is ambiguous
     else if (difference_AIC>threshold_difference_AIC &
              doubleSigmoidal_finalAsymptoteIntensity_Estimate<threshold_lysis_finalAsymptoteIntensity &
              doubleSigmoidal_midPoint1_Estimate-0.5*4/doubleSigmoidal_slope1_Estimate<0)
     {output=as.data.frame(t(c(classification="ambiguous")))}
 
     # if at the end the GFP decreases significantly and
-    # double sigmoidal AIC is bigger then classify the data as infection and lysis
+    # double sigmoidal AIC is bigger then classify the data as double_sigmoidal
     else if (difference_AIC>threshold_difference_AIC &
              doubleSigmoidal_finalAsymptoteIntensity_Estimate<threshold_lysis_finalAsymptoteIntensity)
-    {output=as.data.frame(t(c(classification="infection&lysis")))}
+    {output=as.data.frame(t(c(classification="double_sigmoidal")))}
 
-    # if the start point of infection is below time 0 wrt sigmoidal model then classify the data as ambiguous
+    # if the start point of sigmoidal is below time 0 wrt sigmoidal model then classify the data as ambiguous
     else if (sigmoidal_midPoint_Estimate-0.5*1.5*sigmoidal_maximum_Estimate/sigmoidal_slope_Estimate<0)
     {output=as.data.frame(t(c(classification="ambiguous")))}
 
-    # if end point of infection is above time 0 wrt sigmoidal model then classify the data as ambiguous
+    # if end point of sigmoidal is above time 0 wrt sigmoidal model then classify the data as ambiguous
     else if (sigmoidal_midPoint_Estimate+0.5*1.5*sigmoidal_maximum_Estimate/sigmoidal_slope_Estimate>parameterVectorLinear$dataScalingParameters.timeRatio)
     {output=as.data.frame(t(c(classification="ambiguous")))}
 
-    # if none of these then classify as infection
-    else {output=as.data.frame(t(c(classification="infection")))}
+    # if none of these then classify as sigmoidal
+    else {output=as.data.frame(t(c(classification="sigmoidal")))}
     #************************************************
 
 

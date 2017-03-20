@@ -59,6 +59,5 @@ parameterVector=fitFunction(dataInput=normalizeInput,
 
 dataOutput2 = numericalReCalculation(parameterVector, stepSize=0.00001)
 
-
 }
 

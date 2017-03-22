@@ -329,18 +329,29 @@ f0mid <- function (x, B1, M1, B2, L,const) {
 # # with in the range of [0, dataScalingParameters.timeRatio]
 # maximum_x=f_argmax_doublesigmoidal(parameterDf)
 #
-f_argmax_doublesigmoidal <- function(parameterDf){
+f_argmax_doublesigmoidal <- function(parameterVector){
 
-  max_x = parameterDf$dataScalingParameters.timeRatio
+  slope1<-parameterVector$slope1_N_Estimate
+  slope2<-parameterVector$slope2_N_Estimate
+  midPointDistance<-parameterVector$midPointDistance_N_Estimate
+  finalAsymptoteIntensity<-parameterVector$finalAsymptoteIntensity_N_Estimate
+  maximum<-parameterVector$maximum_N_Estimate
+  midPoint1<-parameterVector$midPoint1_N_Estimate
+  timeRatio<-parameterVector$dataScalingParameters.timeRatio
+
+  if(slope1<0){stop("slope1 should be a positive number")}
+  if(slope2<0){stop("slope2 should be a positive number. It is the absolute value of the second slope")}
+  if(midPointDistance<0){stop("midPointDistance should be a positive number. It is the distance between two steppest points of exponential phase and lysis")}
+  if(finalAsymptoteIntensity<0 | finalAsymptoteIntensity>1){stop("finalAsymptoteIntensity should be a number between 0 and 1")}
+  if(maximum<0){stop("maximum should be a positive number")}
+
+  optimizeIntervalMin=midPoint1-2*midPointDistance
+  optimizeIntervalMax=midPoint1+3*midPointDistance
   xmax <- stats::optimize(f1,
-                          c(0,max_x),
+                          c(optimizeIntervalMin,optimizeIntervalMax),
                           tol=0.0001,
-                          B1=parameterDf$slope1_Estimate,
-                          M1=parameterDf$midPoint1_Estimate,
-                          B2=parameterDf$slope2_Estimate ,
-                          L=parameterDf$midPointDistance_Estimate,
-                          maximum = TRUE);
-  argumentt=xmax$maximum;
+                          B1=slope1, M1=midPoint1, B2=slope2, L=midPointDistance, maximum = TRUE);
+  argumentt = xmax$maximum * timeRatio;
   return(argumentt)}
 #**************************************
 

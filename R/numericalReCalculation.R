@@ -10,44 +10,30 @@
 #' @examples
 #'time=seq(3,24,0.1)
 #'
-#'#simulate intensity data and add noise
+#'#simulate intensity data with noise
 #'noise_parameter=0.2
-#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
-#'initialParameters=data.frame(dataScalingParameters.timeRatio=24,
-#'                                  finalAsymptoteIntensity_Estimate=.3,
-#'                                  maximum_Estimate=4,
-#'                                  slope1_Estimate=1,
-#'                                  midPoint1_Estimate=7,
-#'                                  slope2_Estimate=1,
-#'                                  midPointDistance_Estimate=8,
-#'                                  model="doublesigmoidal")
-#'
-#'initialParameters = numericalReCalculation(initialParameters, stepSize=0.00001)
-#'
-#'intensity=
-#'  doublesigmoidalFitFormula(
-#'          time,
-#'          finalAsymptoteIntensity=initialParameters$finalAsymptoteIntensity_Estimate,
-#'          maximum=initialParameters$maximum_Estimate,
-#'          slope1=initialParameters$slope1_Estimate,
-#'          midPoint1=initialParameters$midPoint1_Estimate,
-#'          slope2=initialParameters$slope2_Estimate,
-#'          midPointDistance=initialParameters$midPointDistance_Estimate)
-#'
-#'
+#'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
+#'intensity=doublesigmoidalFitFormula(time,
+#'                                    finalAsymptoteIntensity=.3,
+#'                                    maximum=4,
+#'                                    slope1=1,
+#'                                    midPoint1=7,
+#'                                    slope2=1,
+#'                                    midPointDistance=8)
 #'intensity=intensity+intensity_noise
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
-#'normalizeInput = normalizeData(dataInput)
-#'parameterVector=fitFunction(dataInput=normalizeInput,
+#'normalizedInput = normalizeData(dataInput)
+#'parameterVector=fitFunction(dataInput=normalizedInput,
 #'                            dataInputName="batch_01_21_2016_samp007623",
 #'                            model="doublesigmoidal",
 #'                            n_runs_min=20,
-#'                            n_runs_max=500,
-#'                            showDetails=FALSE)
+#'                             n_runs_max=500,
+#'                             showDetails=FALSE)
 #'
-#'
-#'dataOutput2 = numericalReCalculation(parameterVector, stepSize=0.00001)
+#'if(parameterVector$isThisaFit)
+#'{parameterVector<-sicegar::numericalReCalculation(parameterVector)}
+#'(parameterVector)
 #'
 numericalReCalculation<-function(parameterVector, stepSize=0.00001){
 

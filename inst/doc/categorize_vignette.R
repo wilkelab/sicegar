@@ -24,7 +24,7 @@ time=seq(3,24,0.5)
 #simulate intensity data and add noise
 noise_parameter=0.1
 intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
-intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
+intensity=sigmoidalFitFormula(time, maximum=4, slopeParam=1, midPoint=8)
 intensity=intensity+intensity_noise
 
 dataInputSigmoidal=data.frame(intensity=intensity,time=time)
@@ -33,11 +33,11 @@ dataInputSigmoidal=data.frame(intensity=intensity,time=time)
 noise_parameter=0.2
 intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=doublesigmoidalFitFormula(time,
-                                    finalAsymptoteIntensity=.3,
+                                    finalAsymptoteIntensityRatio=.3,
                                     maximum=4,
-                                    slope1=1,
+                                    slope1Param=1,
                                     midPoint1=7,
-                                    slope2=1,
+                                    slope2Param=1,
                                     midPointDistance=8)
 intensity=intensity+intensity_noise
 
@@ -50,7 +50,7 @@ normalizedSigmoidalInput = sicegar::normalizeData(dataInput = dataInputSigmoidal
 normalizedDoubleSigmoidalInput = sicegar::normalizeData(dataInput = dataInputDoubleSigmoidal, 
                                          dataInputName = "doubleSigmoidalSample")
 
-## ----linear sigmoidal amd double-sigmoidal fits to sigmoidal data--------
+## ----linear sigmoidal and double-sigmoidal fits to sigmoidal data--------
 # Do the sigmoidal fit
 # Fit linear model
 linearModel_sd=fitFunction(dataInput=normalizedSigmoidalInput,

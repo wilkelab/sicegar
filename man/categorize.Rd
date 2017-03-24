@@ -9,7 +9,7 @@ categorize(parameterVectorLinear, parameterVectorSigmoidal,
   threshold_intensity_interval = 0.1,
   threshold_minimum_for_intensity_maximum = 0.3,
   threshold_difference_AIC = 0,
-  threshold_lysis_finalAsymptoteIntensity = 0.75, threshold_AIC = -10)
+  threshold_lysis_finalAsymptoteIntensityRatio = 0.75, threshold_AIC = -10)
 }
 \arguments{
 \item{parameterVectorLinear}{output from lineFitFunction.}
@@ -18,7 +18,7 @@ categorize(parameterVectorLinear, parameterVectorSigmoidal,
 
 \item{parameterVectorDoubleSigmoidal}{output from doublesigmoidalFitFunction.}
 
-\item{threshold_line_slope_parameter}{minimum for line slope (Default is 0.01).}
+\item{threshold_line_slope_parameter}{minimum for line slopeParam (Default is 0.01).}
 
 \item{threshold_intensity_interval}{minimum for intensity range (Default is 0.1).}
 
@@ -26,7 +26,7 @@ categorize(parameterVectorLinear, parameterVectorSigmoidal,
 
 \item{threshold_difference_AIC}{choice between sigmoidal and double sigmoidal by using AIC values (Default is 0).}
 
-\item{threshold_lysis_finalAsymptoteIntensity}{minimum amount of decrease for double sigmoidal (Default is 0.75).}
+\item{threshold_lysis_finalAsymptoteIntensityRatio}{minimum amount of decrease for double sigmoidal (Default is 0.75).}
 
 \item{threshold_AIC}{maximum AIC values in order to have a meaningful fit (Default is -10).}
 }
@@ -44,12 +44,12 @@ time=seq(3,24,0.1)
 noise_parameter=0.2
 intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=doublesigmoidalFitFormula(time,
-                                   finalAsymptoteIntensity=.3,
+                                   finalAsymptoteIntensityRatio=.3,
                                    maximum=4,
-                                   slope1=1,
-                                   midPoint1=7,
-                                   slope2=1,
-                                   midPointDistance=8)
+                                   slope1Param=1,
+                                   midPoint1Param=7,
+                                   slope2Param=1,
+                                   midPointDistanceParam=8)
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)

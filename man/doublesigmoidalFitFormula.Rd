@@ -4,29 +4,29 @@
 \alias{doublesigmoidalFitFormula}
 \title{Double Sigmoidal Formula}
 \usage{
-doublesigmoidalFitFormula(x, finalAsymptoteIntensity, maximum, slope1,
-  midPoint1, slope2, midPointDistance)
+doublesigmoidalFitFormula(x, finalAsymptoteIntensityRatio, maximum, slope1Param,
+  midPoint1Param, slope2Param, midPointDistanceParam)
 }
 \arguments{
 \item{x}{the "time" (time) column of the dataframe}
 
-\item{finalAsymptoteIntensity}{represents the intensity value at infinite time.}
+\item{finalAsymptoteIntensityRatio}{represents the intensity value at infinite time.}
 
 \item{maximum}{the maximum value that the sigmoidal function can reach.}
 
-\item{slope1}{the slope of the sigmoidal function at the steppest point in the exponential phase of the viral production. i.e when the intensity is increasing.}
+\item{slope1Param}{the slope parameter of the sigmoidal function at the steppest point in the exponential phase of the viral production. i.e when the intensity is increasing.}
 
-\item{midPoint1}{the x axis value of the steppest point in the function.}
+\item{midPoint1Param}{the x axis value of the steppest point in the function.}
 
-\item{slope2}{the slope of the sigmoidal function at the steppest point in the lysis phase. i.e when the intensity is decreasing.}
+\item{slope2Param}{the slope parameter of the sigmoidal function at the steppest point in the lysis phase. i.e when the intensity is decreasing.}
 
-\item{midPointDistance}{the distance between the time of steppest increase and steppest decrease in the intensity data. In other words the distance between the x axis values of arguments of slope1 and slope2.}
+\item{midPointDistanceParam}{the distance between the time of steppest increase and steppest decrease in the intensity data. In other words the distance between the x axis values of arguments of slope1Param and slope2Param.}
 }
 \value{
 Returns the predicted intensities for the given time points with the double-sigmoidal fitted parameters for the double sigmoidal fit.
 }
 \description{
-Calculates intensities using the double-sigmoidal model fit and the parameters (maximum, final asymptote intensity, slope1, midpoint1, slope2, and mid point distance).
+Calculates intensities using the double-sigmoidal model fit and the parameters (maximum, final asymptote intensity, slope1Param, midpoint1Param, slope2Param, and mid point distance).
 }
 \examples{
 time=seq(3,24,0.1)
@@ -35,12 +35,12 @@ time=seq(3,24,0.1)
 noise_parameter=0.2
 intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=doublesigmoidalFitFormula(time,
-                                   finalAsymptoteIntensity=.3,
+                                   finalAsymptoteIntensityRatio=.3,
                                    maximum=4,
-                                   slope1=1,
-                                   midPoint1=7,
-                                   slope2=1,
-                                   midPointDistance=8)
+                                   slope1Param=1,
+                                   midPoint1Param=7,
+                                   slope2Param=1,
+                                   midPointDistanceParam=8)
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)
@@ -53,12 +53,12 @@ if(parameterVector$isThisaFit){
  intensityTheoretical=
        doublesigmoidalFitFormula(
                time,
-               finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+               finalAsymptoteIntensityRatio=parameterVector$finalAsymptoteIntensityRatio_Estimate,
                maximum=parameterVector$maximum_Estimate,
-               slope1=parameterVector$slope1_Estimate,
-               midPoint1=parameterVector$midPoint1_Estimate,
-               slope2=parameterVector$slope2_Estimate,
-               midPointDistance=parameterVector$midPointDistance_Estimate)
+               slope1Param=parameterVector$slope1Param_Estimate,
+               midPoint1Param=parameterVector$midPoint1Param_Estimate,
+               slope2Param=parameterVector$slope2Param_Estimate,
+               midPointDistanceParam=parameterVector$midPointDistanceParam_Estimate)
 
  comparisonData=cbind(dataInput,intensityTheoretical)
 

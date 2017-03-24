@@ -1,4 +1,4 @@
-#' @title Calls fitting algorithm with different initial parameters.
+#' @title Generates derived parameters from fit parameters of sigmoidal and double sigmoidal fit. Some of them calculated directlt from fit parameters and some of them are calculated from numerical computations from fitline generated from fit parameters.
 #'
 #' @param parameterVector output of fitFunction or data frame that gives the variables related with double sigmoidal fit.
 #' @param stepSize step size used by the fitting algorithm.
@@ -14,12 +14,12 @@
 #'noise_parameter=0.2
 #'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 #'intensity=doublesigmoidalFitFormula(time,
-#'                                    finalAsymptoteIntensity=.3,
+#'                                    finalAsymptoteIntensityRatio=.3,
 #'                                    maximum=4,
-#'                                    slope1=1,
-#'                                    midPoint1=7,
-#'                                    slope2=1,
-#'                                    midPointDistance=8)
+#'                                    slope1Param=1,
+#'                                    midPoint1Param=7,
+#'                                    slope2Param=1,
+#'                                    midPointDistanceParam=8)
 #'intensity=intensity+intensity_noise
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
@@ -45,18 +45,21 @@ numericalReCalculation<-function(parameterVector, stepSize=0.00001){
 
   if(parameterVector$model=="doublesigmoidal")
   {
-
     # calculate xmax argument (the time that function reaches maximum)
     parameterVector$numerical.maximum_x_Estimate=f_argmax_doublesigmoidal(parameterVector)
+
     # calculate x values of midpoint1 (the time that function reaches half of maximum)
     parameterVector$numerical.midPoint1_x_Estimate=f_mid1_doublesigmoidal(parameterVector)
+
     # calculate x values of midpoint2 (the time that function reaches half of maximum and final asymptote)
     parameterVector$numerical.midPoint2_x_Estimate=f_mid2_doublesigmoidal(parameterVector)
+
     # calculate slope of midpoint 1
     parameterVector$numerical.slope1_Estimate=
       f_slope_doublesigmoidal(parameterVector$numerical.midPoint1_x_Estimate,
                               parameterVector,
                               timeStep=stepSize)
+
     # calculate slope of midpoint 2
     parameterVector$numerical.slope2_Estimate=
       f_slope_doublesigmoidal(parameterVector$numerical.midPoint2_x_Estimate,
@@ -65,31 +68,33 @@ numericalReCalculation<-function(parameterVector, stepSize=0.00001){
 
     # Calculate corresponding Y values
     parameterVector$numerical.maximum_y_Estimate=doublesigmoidalFitFormula(x=parameterVector$numerical.maximum_x_Estimate,
-                                                   finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+                                                   finalAsymptoteIntensityRatio=parameterVector$finalAsymptoteIntensityRatio_Estimate,
                                                    maximum=parameterVector$maximum_Estimate,
-                                                   slope1=parameterVector$slope1_Estimate,
-                                                   midPoint1=parameterVector$midPoint1_Estimate,
-                                                   slope2=parameterVector$slope2_Estimate,
-                                                   midPointDistance=parameterVector$midPointDistance_Estimate)
+                                                   slope1Param=parameterVector$slope1Param_Estimate,
+                                                   midPoint1Param=parameterVector$midPoint1Param_Estimate,
+                                                   slope2Param=parameterVector$slope2Param_Estimate,
+                                                   midPointDistanceParam=parameterVector$midPointDistanceParam_Estimate)
 
     parameterVector$numerical.midPoint1_y_Estimate=doublesigmoidalFitFormula(x=parameterVector$numerical.midPoint1_x_Estimate,
-                                                           finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+                                                           finalAsymptoteIntensityRatio=parameterVector$finalAsymptoteIntensityRatio_Estimate,
                                                            maximum=parameterVector$maximum_Estimate,
-                                                           slope1=parameterVector$slope1_Estimate,
-                                                           midPoint1=parameterVector$midPoint1_Estimate,
-                                                           slope2=parameterVector$slope2_Estimate,
-                                                           midPointDistance=parameterVector$midPointDistance_Estimate)
+                                                           slope1Param=parameterVector$slope1Param_Estimate,
+                                                           midPoint1Param=parameterVector$midPoint1Param_Estimate,
+                                                           slope2Param=parameterVector$slope2Param_Estimate,
+                                                           midPointDistanceParam=parameterVector$midPointDistanceParam_Estimate)
 
     parameterVector$numerical.midPoint2_y_Estimate=doublesigmoidalFitFormula(x=parameterVector$numerical.midPoint2_x_Estimate,
-                                                             finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+                                                             finalAsymptoteIntensityRatio=parameterVector$finalAsymptoteIntensityRatio_Estimate,
                                                              maximum=parameterVector$maximum_Estimate,
-                                                             slope1=parameterVector$slope1_Estimate,
-                                                             midPoint1=parameterVector$midPoint1_Estimate,
-                                                             slope2=parameterVector$slope2_Estimate,
-                                                             midPointDistance=parameterVector$midPointDistance_Estimate)
+                                                             slope1Param=parameterVector$slope1Param_Estimate,
+                                                             midPoint1Param=parameterVector$midPoint1Param_Estimate,
+                                                             slope2Param=parameterVector$slope2Param_Estimate,
+                                                             midPointDistanceParam=parameterVector$midPointDistanceParam_Estimate)
 
     parameterVector$numerical.lysisPoint_x_Estimate = parameterVector$numerical.midPoint2_x_Estimate-
-                                                             parameterVector$maximum_Estimate*(1-parameterVector$finalAsymptoteIntensity_Estimate)/(-parameterVector$numerical.slope2_Estimate*2)
+                                                             parameterVector$maximum_Estimate*(1-parameterVector$finalAsymptoteIntensityRatio_Estimate)/(-parameterVector$numerical.slope2_Estimate*2)
+    if(parameterVector$numerical.lysisPoint_x_Estimate < parameterVector$numerical.maximum_x_Estimate)
+     {parameterVector$numerical.lysisPoint_x_Estimate <- parameterVector$numerical.maximum_x_Estimate}
 
     parameterVector$numerical.lysisPoint_y_Estimate = parameterVector$maximum_Estimate
 

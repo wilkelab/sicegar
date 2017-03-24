@@ -2,7 +2,7 @@
 % Please edit documentation in R/numericalReCalculation.R
 \name{numericalReCalculation}
 \alias{numericalReCalculation}
-\title{Calls fitting algorithm with different initial parameters.}
+\title{Generates derived parameters from fit parameters of sigmoidal and double sigmoidal fit. Some of them calculated directlt from fit parameters and some of them are calculated from numerical computations from fitline generated from fit parameters.}
 \usage{
 numericalReCalculation(parameterVector, stepSize = 1e-05)
 }
@@ -24,12 +24,12 @@ time=seq(3,24,0.1)
 noise_parameter=0.2
 intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=doublesigmoidalFitFormula(time,
-                                   finalAsymptoteIntensity=.3,
+                                   finalAsymptoteIntensityRatio=.3,
                                    maximum=4,
-                                   slope1=1,
-                                   midPoint1=7,
-                                   slope2=1,
-                                   midPointDistance=8)
+                                   slope1Param=1,
+                                   midPoint1Param=7,
+                                   slope2Param=1,
+                                   midPointDistanceParam=8)
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)

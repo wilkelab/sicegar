@@ -6,6 +6,8 @@
 #' @param showParameterRelatedLines if equal to TRUE, figure will show parameter related lines on the curves. Default is FALSE.
 #' @param xlabelText the x-axis name; with default "time"
 #' @param ylabelText the y-axis name; with default "intensity"
+#' @param fittedXmin the minimum of the fitted data that plotted (Default 0)
+#' @param fittedXmax the maximum of the fitted data that plotted (Default timeRatio)
 #'
 #' @description Generates figures using ggplot that shows the input data and the fitted curves.
 #' @return Returns infection curve figures.
@@ -18,12 +20,12 @@
 #'noise_parameter=0.2
 #'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
 #'intensity=doublesigmoidalFitFormula(time,
-#'                                    finalAsymptoteIntensity=.3,
+#'                                    finalAsymptoteIntensityRatio=.3,
 #'                                    maximum=4,
-#'                                    slope1=1,
-#'                                    midPoint1=7,
-#'                                    slope2=1,
-#'                                    midPointDistance=8)
+#'                                    slope1Param=1,
+#'                                    midPoint1Param=7,
+#'                                    slope2Param=1,
+#'                                    midPointDistanceParam=8)
 #'intensity=intensity+intensity_noise
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
@@ -50,7 +52,8 @@ printInfectionCurves<-function(dataInput,
                                sigmoidalFitVector=NULL,
                                doubleSigmoidalFitVector=NULL,
                                showParameterRelatedLines=FALSE,
-                               xlabelText="time", ylabelText="intensity")
+                               xlabelText="time", ylabelText="intensity",
+                               fittedXmin=0, fittedXmax=NA)
 {
   # get data from data input
   dataOutputVariable = dataCheck(dataInput) # check if the data structure is correct
@@ -69,6 +72,7 @@ printInfectionCurves<-function(dataInput,
     dataFrameInput=dataInput
   }
 
+
   # SIGMOIDAL
   if(!is.null(sigmoidalFitVector))
   {
@@ -79,12 +83,23 @@ printInfectionCurves<-function(dataInput,
     if(sigmoidalFitVector$isThisaFit)
     {
       # GENERATE THE TIME SERIES FOR FITTED DATA
-      time=seq(0,
-               sigmoidalFitVector$dataScalingParameters.timeRatio,
-               sigmoidalFitVector$dataScalingParameters.timeRatio/1000)
+      if(is.na(fittedXmax))
+      {fittedXmax_sigmoidal = sigmoidalFitVector$dataScalingParameters.timeRatio}
+      if(!is.na(fittedXmax))
+      {fittedXmax_sigmoidal = fittedXmax}
+
+      if(fittedXmin==0)
+      {fittedXmin_sigmoidal=0}
+      if(fittedXmin!=0)
+      {fittedXmin_sigmoidal=fittedXmin}
+
+      time=seq(fittedXmin_sigmoidal,
+               fittedXmax_sigmoidal,
+               fittedXmax_sigmoidal/1000)
+
       intensityTheoreticalSigmoidal=sigmoidalFitFormula(time,
                                                         maximum=sigmoidalFitVector$maximum_Estimate,
-                                                        slope=sigmoidalFitVector$slope_Estimate,
+                                                        slopeParam=sigmoidalFitVector$slopeParam_Estimate,
                                                         midPoint=sigmoidalFitVector$midPoint_Estimate)
       intensityTheoreticalSigmoidalDf=data.frame(time,intensityTheoreticalSigmoidal)
       dplyr::full_join(intensityTheoreticalSigmoidalDf,dataFrameInput)->dataFrameInput
@@ -101,16 +116,27 @@ printInfectionCurves<-function(dataInput,
     if(doubleSigmoidalFitVector$isThisaFit)
     {
       # GENERATE THE TIME SERIES FOR FITTED DATA
-      time=seq(0,
-               doubleSigmoidalFitVector$dataScalingParameters.timeRatio,
-               doubleSigmoidalFitVector$dataScalingParameters.timeRatio/1000)
+      if(is.na(fittedXmax))
+      {fittedXmax_doublesigmoidal = doubleSigmoidalFitVector$dataScalingParameters.timeRatio}
+      if(!is.na(fittedXmax))
+      {fittedXmax_doublesigmoidal = fittedXmax}
+
+      if(fittedXmin==0)
+      {fittedXmin_doublesigmoidal=0}
+      if(fittedXmin!=0)
+      {fittedXmin_doublesigmoidal=fittedXmin}
+
+      time=seq(fittedXmin_doublesigmoidal,
+               fittedXmax_doublesigmoidal,
+               fittedXmax_doublesigmoidal/1000)
+
       intensityTheoreticalDoubleSigmoidal=doublesigmoidalFitFormula(time,
-                                                                    finalAsymptoteIntensity=doubleSigmoidalFitVector$finalAsymptoteIntensity_Estimate,
+                                                                    finalAsymptoteIntensityRatio=doubleSigmoidalFitVector$finalAsymptoteIntensityRatio_Estimate,
                                                                     maximum=doubleSigmoidalFitVector$maximum_Estimate,
-                                                                    slope1=doubleSigmoidalFitVector$slope1_Estimate,
-                                                                    midPoint1=doubleSigmoidalFitVector$midPoint1_Estimate,
-                                                                    slope2=doubleSigmoidalFitVector$slope2_Estimate,
-                                                                    midPointDistance=doubleSigmoidalFitVector$midPointDistance_Estimate)
+                                                                    slope1Param=doubleSigmoidalFitVector$slope1Param_Estimate,
+                                                                    midPoint1Param=doubleSigmoidalFitVector$midPoint1Param_Estimate,
+                                                                    slope2Param=doubleSigmoidalFitVector$slope2Param_Estimate,
+                                                                    midPointDistanceParam=doubleSigmoidalFitVector$midPointDistanceParam_Estimate)
       intensityTheoreticalDoubleSigmoidalDf=data.frame(time,intensityTheoreticalDoubleSigmoidal)
       dplyr::full_join(intensityTheoreticalDoubleSigmoidalDf,dataFrameInput)->dataFrameInput
     }
@@ -142,10 +168,10 @@ printInfectionCurves<-function(dataInput,
           ggplot2::geom_hline(ggplot2::aes(yintercept=sigmoidalFitVector$maximum_Estimate),
                               colour="#bdbdbd",size=0.5,linetype="longdash")+
           ggplot2::geom_segment(ggplot2::aes(x = sigmoidalFitVector$midPoint_Estimate -
-                                               2/(1*sigmoidalFitVector$slope_Estimate),
+                                               2/(1*sigmoidalFitVector$slopeParam_Estimate),
                                              y = 0,
                                              xend = sigmoidalFitVector$midPoint_Estimate +
-                                               2/(1*sigmoidalFitVector$slope_Estimate),
+                                               2/(1*sigmoidalFitVector$slopeParam_Estimate),
                                              yend = sigmoidalFitVector$maximum_Estimate),
                                 colour="#bdbdbd",size=0.5,linetype="longdash")
       }
@@ -182,10 +208,10 @@ printInfectionCurves<-function(dataInput,
                                 colour="#bdbdbd",size=0.5,linetype="longdash")+
             ggplot2::geom_segment(ggplot2::aes(x = doubleSigmoidalFitVector$numerical.maximum_x_Estimate,
                                                y = doubleSigmoidalFitVector$numerical.maximum_y_Estimate*
-                                                 doubleSigmoidalFitVector$finalAsymptoteIntensity_Estimate,
+                                                 doubleSigmoidalFitVector$finalAsymptoteIntensityRatio_Estimate,
                                                xend = Inf,
                                                yend = doubleSigmoidalFitVector$numerical.maximum_y_Estimate*
-                                                 doubleSigmoidalFitVector$finalAsymptoteIntensity_Estimate),
+                                                 doubleSigmoidalFitVector$finalAsymptoteIntensityRatio_Estimate),
                                   colour="#bdbdbd",size=0.5,linetype="longdash")+
             ggplot2::geom_segment(ggplot2::aes(x = doubleSigmoidalFitVector$numerical.midPoint1_x_Estimate -
                                                  doubleSigmoidalFitVector$maximum_Estimate/(doubleSigmoidalFitVector$numerical.slope1_Estimate*2),
@@ -195,11 +221,11 @@ printInfectionCurves<-function(dataInput,
                                                yend = doubleSigmoidalFitVector$maximum_Estimate),
                                   colour="#bdbdbd",size=0.5,linetype="longdash")+
             ggplot2::geom_segment(ggplot2::aes(x = doubleSigmoidalFitVector$numerical.midPoint2_x_Estimate -
-                                                 doubleSigmoidalFitVector$maximum_Estimate*(1-doubleSigmoidalFitVector$finalAsymptoteIntensity_Estimate)/(-doubleSigmoidalFitVector$numerical.slope2_Estimate*2),
+                                                 doubleSigmoidalFitVector$maximum_Estimate*(1-doubleSigmoidalFitVector$finalAsymptoteIntensityRatio_Estimate)/(-doubleSigmoidalFitVector$numerical.slope2_Estimate*2),
                                                y = doubleSigmoidalFitVector$maximum_Estimate,
                                                xend = doubleSigmoidalFitVector$numerical.midPoint2_x_Estimate +
-                                                 doubleSigmoidalFitVector$maximum_Estimate*(1-doubleSigmoidalFitVector$finalAsymptoteIntensity_Estimate)/(-doubleSigmoidalFitVector$numerical.slope2_Estimate*2),
-                                               yend = doubleSigmoidalFitVector$maximum_Estimate*doubleSigmoidalFitVector$finalAsymptoteIntensity_Estimate),
+                                                 doubleSigmoidalFitVector$maximum_Estimate*(1-doubleSigmoidalFitVector$finalAsymptoteIntensityRatio_Estimate)/(-doubleSigmoidalFitVector$numerical.slope2_Estimate*2),
+                                               yend = doubleSigmoidalFitVector$maximum_Estimate*doubleSigmoidalFitVector$finalAsymptoteIntensityRatio_Estimate),
                                   colour="#bdbdbd",size=0.5,linetype="longdash")
 
         }

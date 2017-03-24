@@ -25,11 +25,11 @@ time=seq(3,24,0.5)
 noise_parameter=0.1
 intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=doublesigmoidalFitFormula(time,
-                                    finalAsymptoteIntensity=.3,
+                                    finalAsymptoteIntensityRatio=.3,
                                     maximum=4,
-                                    slope1=1,
+                                    slope1Param=1,
                                     midPoint1=7,
-                                    slope2=1,
+                                    slope2Param=1,
                                     midPointDistance=8)
 intensity=intensity+intensity_noise
 
@@ -81,11 +81,11 @@ print(t(parameterVector))
 intensityTheoretical=
   sicegar::doublesigmoidalFitFormula(
     time,
-    finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+    finalAsymptoteIntensityRatio=parameterVector$finalAsymptoteIntensityRatio_Estimate,
     maximum=parameterVector$maximum_Estimate,
-    slope1=parameterVector$slope1_Estimate,
+    slope1Param=parameterVector$slope1Param_Estimate,
     midPoint1=parameterVector$midPoint1_Estimate,
-    slope2=parameterVector$slope2_Estimate,
+    slope2Param=parameterVector$slope2Param_Estimate,
     midPointDistance=parameterVector$midPointDistance_Estimate)
 
 comparisonData=cbind(dataInput,intensityTheoretical)

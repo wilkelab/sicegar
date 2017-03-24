@@ -4,11 +4,11 @@
 #' @param parameterVectorSigmoidal output from sigmoidalFitFunction.
 #' @param parameterVectorDoubleSigmoidal output from doublesigmoidalFitFunction.
 
-#' @param threshold_line_slope_parameter minimum for line slope (Default is 0.01).
+#' @param threshold_line_slope_parameter minimum for line slopeParam (Default is 0.01).
 #' @param threshold_intensity_interval minimum for intensity range (Default is 0.1).
 #' @param threshold_minimum_for_intensity_maximum minimum allowed value for intensity maximum
 #' @param threshold_difference_AIC choice between sigmoidal and double sigmoidal by using AIC values (Default is 0).
-#' @param threshold_lysis_finalAsymptoteIntensity minimum amount of decrease for double sigmoidal (Default is 0.75).
+#' @param threshold_lysis_finalAsymptoteIntensityRatio minimum amount of decrease for double sigmoidal (Default is 0.75).
 #' @param threshold_AIC maximum AIC values in order to have a meaningful fit (Default is -10).
 #'
 #'
@@ -24,12 +24,12 @@
 #'noise_parameter=0.2
 #'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
 #'intensity=doublesigmoidalFitFormula(time,
-#'                                    finalAsymptoteIntensity=.3,
+#'                                    finalAsymptoteIntensityRatio=.3,
 #'                                    maximum=4,
-#'                                    slope1=1,
-#'                                    midPoint1=7,
-#'                                    slope2=1,
-#'                                    midPointDistance=8)
+#'                                    slope1Param=1,
+#'                                    midPoint1Param=7,
+#'                                    slope2Param=1,
+#'                                    midPointDistanceParam=8)
 #'intensity=intensity+intensity_noise
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
@@ -73,7 +73,7 @@ categorize<-
            threshold_intensity_interval=0.1,
            threshold_minimum_for_intensity_maximum=0.3,
            threshold_difference_AIC=0,
-           threshold_lysis_finalAsymptoteIntensity=0.75,
+           threshold_lysis_finalAsymptoteIntensityRatio=0.75,
            threshold_AIC=-10)
   {
 
@@ -120,12 +120,12 @@ categorize<-
     doubleSigmoidal_AIC=parameterVectorDoubleSigmoidal$AIC_value
     difference_AIC=sigmoidal_AIC-doubleSigmoidal_AIC
 
-    doubleSigmoidal_finalAsymptoteIntensity_Estimate=
-      parameterVectorDoubleSigmoidal$finalAsymptoteIntensity_Estimate
-    doubleSigmoidal_slope1_Estimate=parameterVectorDoubleSigmoidal$slope1_Estimate
-    doubleSigmoidal_midPoint1_Estimate=parameterVectorDoubleSigmoidal$midPoint1_Estimate
+    doubleSigmoidal_finalAsymptoteIntensityRatio_Estimate=
+      parameterVectorDoubleSigmoidal$finalAsymptoteIntensityRatio_Estimate
+    doubleSigmoidal_slope1Param_Estimate=parameterVectorDoubleSigmoidal$slope1Param_Estimate
+    doubleSigmoidal_midPoint1Param_Estimate=parameterVectorDoubleSigmoidal$midPoint1Param_Estimate
 
-    sigmoidal_slope_Estimate=parameterVectorSigmoidal$slope_Estimate
+    sigmoidal_slopeParam_Estimate=parameterVectorSigmoidal$slopeParam_Estimate
     sigmoidal_maximum_Estimate=parameterVectorSigmoidal$maximum_Estimate
     sigmoidal_midPoint_Estimate=parameterVectorSigmoidal$midPoint_Estimate
     #************************************************
@@ -148,22 +148,22 @@ categorize<-
     # if the difference between AIC values is above the threshold_lysis_a (it more looks like double sigmoidal)
     # and start point of sigmoidal is below time 0 wrt double sigmoidal model it is ambiguous
     else if (difference_AIC>threshold_difference_AIC &
-             doubleSigmoidal_finalAsymptoteIntensity_Estimate<threshold_lysis_finalAsymptoteIntensity &
-             doubleSigmoidal_midPoint1_Estimate-0.5*4/doubleSigmoidal_slope1_Estimate<0)
+             doubleSigmoidal_finalAsymptoteIntensityRatio_Estimate<threshold_lysis_finalAsymptoteIntensityRatio &
+             doubleSigmoidal_midPoint1Param_Estimate-0.5*4/doubleSigmoidal_slope1Param_Estimate<0)
     {output=as.data.frame(t(c(classification="ambiguous")))}
 
     # if at the end the GFP decreases significantly and
     # double sigmoidal AIC is bigger then classify the data as double_sigmoidal
     else if (difference_AIC>threshold_difference_AIC &
-             doubleSigmoidal_finalAsymptoteIntensity_Estimate<threshold_lysis_finalAsymptoteIntensity)
+             doubleSigmoidal_finalAsymptoteIntensityRatio_Estimate<threshold_lysis_finalAsymptoteIntensityRatio)
     {output=as.data.frame(t(c(classification="double_sigmoidal")))}
 
     # if the start point of sigmoidal is below time 0 wrt sigmoidal model then classify the data as ambiguous
-    else if (sigmoidal_midPoint_Estimate-0.5*1.5*sigmoidal_maximum_Estimate/sigmoidal_slope_Estimate<0)
+    else if (sigmoidal_midPoint_Estimate-0.5*1.5*sigmoidal_maximum_Estimate/sigmoidal_slopeParam_Estimate<0)
     {output=as.data.frame(t(c(classification="ambiguous")))}
 
     # if end point of sigmoidal is above time 0 wrt sigmoidal model then classify the data as ambiguous
-    else if (sigmoidal_midPoint_Estimate+0.5*1.5*sigmoidal_maximum_Estimate/sigmoidal_slope_Estimate>parameterVectorLinear$dataScalingParameters.timeRatio)
+    else if (sigmoidal_midPoint_Estimate+0.5*1.5*sigmoidal_maximum_Estimate/sigmoidal_slopeParam_Estimate>parameterVectorLinear$dataScalingParameters.timeRatio)
     {output=as.data.frame(t(c(classification="ambiguous")))}
 
     # if none of these then classify as sigmoidal
@@ -203,12 +203,12 @@ categorize<-
 #'noise_parameter=0.2
 #'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
 #'intensity=doublesigmoidalFitFormula(time,
-#'                                    finalAsymptoteIntensity=.3,
+#'                                    finalAsymptoteIntensityRatio=.3,
 #'                                    maximum=4,
-#'                                    slope1=1,
-#'                                    midPoint1=7,
-#'                                    slope2=1,
-#'                                    midPointDistance=8)
+#'                                    slope1Param=1,
+#'                                    midPoint1Param=7,
+#'                                    slope2Param=1,
+#'                                    midPointDistanceParam=8)
 #'intensity=intensity+intensity_noise
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
@@ -234,12 +234,12 @@ categorize<-
 #'noise_parameter=0.05
 #'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter*2e-04
 #'intensity=doublesigmoidalFitFormula(time,
-#'                                    finalAsymptoteIntensity=.3,
+#'                                    finalAsymptoteIntensityRatio=.3,
 #'                                    maximum=2e-04,
-#'                                    slope1=1,
-#'                                    midPoint1=7,
-#'                                    slope2=1,
-#'                                    midPointDistance=8)
+#'                                    slope1Param=1,
+#'                                    midPoint1Param=7,
+#'                                    slope2Param=1,
+#'                                    midPointDistanceParam=8)
 #'intensity=intensity+intensity_noise
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)

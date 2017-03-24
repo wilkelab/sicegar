@@ -4,14 +4,14 @@
 \alias{sigmoidalFitFormula}
 \title{sigmoidalFitFormula}
 \usage{
-sigmoidalFitFormula(x, maximum, slope, midPoint)
+sigmoidalFitFormula(x, maximum, slopeParam, midPoint)
 }
 \arguments{
 \item{x}{the "time" (time) column of the dataframe.}
 
 \item{maximum}{the maximum value that the sigmoidal function can reach.}
 
-\item{slope}{the slope of the sigmoidal function at the steppest point.}
+\item{slopeParam}{the slope parameter of the sigmoidal function at the steppest point.}
 
 \item{midPoint}{the x axis value of the steppest point in the function.}
 }
@@ -19,7 +19,7 @@ sigmoidalFitFormula(x, maximum, slope, midPoint)
 Returns the predicted intensities for given time points with the given sigmoidal fit parameters.
 }
 \description{
-Calculates intesities for given time points (x) by using sigmoidal fit model and parameters (maximum, slope, and midpoint).
+Calculates intesities for given time points (x) by using sigmoidal fit model and parameters (maximum, slopeParam, and midpoint).
 }
 \examples{
 
@@ -28,7 +28,7 @@ time=seq(3,24,0.5)
 #simulate intensity data and add noise
 noise_parameter=0.1
 intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
-intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
+intensity=sigmoidalFitFormula(time, maximum=4, slopeParam=1, midPoint=8)
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)
@@ -39,7 +39,7 @@ parameterVector<-sigmoidalFitFunction(normalizedInput,tryCounter=2)
 if(parameterVector$isThisaFit){
 intensityTheoretical=sigmoidalFitFormula(time,
                                         maximum=parameterVector$maximum_Estimate,
-                                        slope=parameterVector$slope_Estimate,
+                                        slopeParam=parameterVector$slopeParam_Estimate,
                                         midPoint=parameterVector$midPoint_Estimate)
 
 comparisonData=cbind(dataInput,intensityTheoretical)

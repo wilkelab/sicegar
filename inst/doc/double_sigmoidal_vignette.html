@@ -12,7 +12,7 @@
 
 <meta name="author" content="Umut Caglar" />
 
-<meta name="date" content="2017-03-20" />
+<meta name="date" content="2017-03-23" />
 
 <title>(3/3) Double Sigmoidal model</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">(3/3) Double Sigmoidal model</h1>
 <h4 class="author"><em>Umut Caglar</em></h4>
-<h4 class="date"><em>2017-03-20</em></h4>
+<h4 class="date"><em>2017-03-23</em></h4>
 
 
 
@@ -80,19 +80,19 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="data-generation" class="section level2">
 <h2>Data generation</h2>
 <p>To simulate the results, we will go backwards and firstly generate some data to analize. To add some randomness to the input data I will use some noise. The input of all package must be in the form of a data frame with at least 2 columns time and intensity.</p>
-<p><code>sicegar::doublesigmoidalFitFormula</code> generate a set of intensity values based on finalAsymptoteIntensity, maximum, slope1, midPoint1,slope2, midPointDistance values supplied. So here we are generating a set of points that are on two sigmoidals glued side by side from the maximum of the combined function.</p>
-<p>note that slope1, slope2 and finalAsymptoteIntensity are not exactly the exacly slope1 slope2 and final asymtote intensity of the final function. they are parameters related with them.</p>
+<p><code>sicegar::doublesigmoidalFitFormula</code> generate a set of intensity values based on finalAsymptoteIntensityRatio, maximum, slope1 parameter, midPoint1, slope2 parameter, midPointDistance values supplied. So here we are generating a set of points that are on two sigmoidals glued side by side from the maximum of the combined function.</p>
+<p>note that slope1Param and slope2Param and finalAsymptoteIntensityRatio are not exactly the slope1 slope2 and final asymtote intensity of the final function. they are parameters related with them.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">time=<span class="kw">seq</span>(<span class="dv">3</span>,<span class="dv">24</span>,<span class="fl">0.5</span>)
 
 <span class="co">#simulate intensity data and add noise</span>
 noise_parameter=<span class="fl">0.1</span>
 intensity_noise=stats::<span class="kw">runif</span>(<span class="dt">n =</span> <span class="kw">length</span>(time),<span class="dt">min =</span> <span class="dv">0</span>,<span class="dt">max =</span> <span class="dv">1</span>)*noise_parameter
 intensity=<span class="kw">doublesigmoidalFitFormula</span>(time,
-                                    <span class="dt">finalAsymptoteIntensity=</span>.<span class="dv">3</span>,
+                                    <span class="dt">finalAsymptoteIntensityRatio=</span>.<span class="dv">3</span>,
                                     <span class="dt">maximum=</span><span class="dv">4</span>,
-                                    <span class="dt">slope1=</span><span class="dv">1</span>,
+                                    <span class="dt">slope1Param=</span><span class="dv">1</span>,
                                     <span class="dt">midPoint1=</span><span class="dv">7</span>,
-                                    <span class="dt">slope2=</span><span class="dv">1</span>,
+                                    <span class="dt">slope2Param=</span><span class="dv">1</span>,
                                     <span class="dt">midPointDistance=</span><span class="dv">8</span>)
 intensity=intensity+intensity_noise
 
@@ -148,54 +148,54 @@ intensityData=intensityData/intensityRatio</code></pre></div>
 <span class="co"># If tryCounter!=1 it generates a random start position from given interval</span></code></pre></div>
 <p>the function outputs a vector that gives information about multiple parameters</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">t</span>(parameterVector))</code></pre></div>
-<pre><code>##                                      [,1]             
-## finalAsymptoteIntensity_N_Estimate   &quot;0.2830857&quot;      
-## finalAsymptoteIntensity_Std_Error    &quot;0.003176356&quot;    
-## finalAsymptoteIntensity_t_value      &quot;89.12278&quot;       
-## finalAsymptoteIntensity_Pr_t         &quot;8.723137e-45&quot;   
-## maximum_N_Estimate                   &quot;0.99507&quot;        
-## maximum_Std_Error                    &quot;0.00379288&quot;     
-## maximum_t_value                      &quot;262.3521&quot;       
-## maximum_Pr_t                         &quot;4.204386e-62&quot;   
-## slope1_N_Estimate                    &quot;25.9788&quot;        
-## slope1_Std_Error                     &quot;0.4928017&quot;      
-## slope1_t_value                       &quot;52.71653&quot;       
-## slope1_Pr_t                          &quot;2.04674e-36&quot;    
-## midPoint1_N_Estimate                 &quot;0.2936612&quot;      
-## midPoint1_Std_Error                  &quot;0.0009137447&quot;   
-## midPoint1_t_value                    &quot;321.3821&quot;       
-## midPoint1_Pr_t                       &quot;2.31223e-65&quot;    
-## slope2_N_Estimate                    &quot;24.8414&quot;        
-## slope2_Std_Error                     &quot;0.6875028&quot;      
-## slope2_t_value                       &quot;36.1328&quot;        
-## slope2_Pr_t                          &quot;1.842897e-30&quot;   
-## midPointDistance_N_Estimate          &quot;0.3335492&quot;      
-## midPointDistance_Std_Error           &quot;0.00186414&quot;     
-## midPointDistance_t_value             &quot;178.9293&quot;       
-## midPointDistance_Pr_t                &quot;5.8665e-56&quot;     
-## residual_Sum_of_Squares              &quot;0.003357907&quot;    
-## log_likelihood                       &quot;142.3248&quot;       
-## AIC_value                            &quot;-270.6497&quot;      
-## BIC_value                            &quot;-258.3213&quot;      
-## isThisaFit                           &quot;TRUE&quot;           
-## startVector.finalAsymptoteIntensity  &quot;0.3351392&quot;      
-## startVector.maximum                  &quot;0.9301484&quot;      
-## startVector.slope1                   &quot;98.1881&quot;        
-## startVector.midPoint1                &quot;0.562631&quot;       
-## startVector.slope2                   &quot;118.1069&quot;       
-## startVector.midPointDistance         &quot;0.2448843&quot;      
-## dataScalingParameters.timeRatio      &quot;24&quot;             
-## dataScalingParameters.intensityMin   &quot;0.1544192&quot;      
-## dataScalingParameters.intensityMax   &quot;4.061148&quot;       
-## dataScalingParameters.intensityRatio &quot;3.906729&quot;       
-## model                                &quot;doublesigmoidal&quot;
-## numericalParameters                  &quot;FALSE&quot;          
-## finalAsymptoteIntensity_Estimate     &quot;0.2830857&quot;      
-## maximum_Estimate                     &quot;4.041888&quot;       
-## slope1_Estimate                      &quot;1.08245&quot;        
-## midPoint1_Estimate                   &quot;7.047869&quot;       
-## slope2_Estimate                      &quot;1.035058&quot;       
-## midPointDistance_Estimate            &quot;8.005181&quot;</code></pre>
+<pre><code>##                                          [,1]             
+## finalAsymptoteIntensityRatio_N_Estimate  &quot;0.2830857&quot;      
+## finalAsymptoteIntensityRatio_Std_Error   &quot;0.003176356&quot;    
+## finalAsymptoteIntensityRatio_t_value     &quot;89.12278&quot;       
+## finalAsymptoteIntensityRatio_Pr_t        &quot;8.723137e-45&quot;   
+## maximum_N_Estimate                       &quot;0.99507&quot;        
+## maximum_Std_Error                        &quot;0.00379288&quot;     
+## maximum_t_value                          &quot;262.3521&quot;       
+## maximum_Pr_t                             &quot;4.204386e-62&quot;   
+## slope1Param_N_Estimate                   &quot;25.9788&quot;        
+## slope1Param_Std_Error                    &quot;0.4928017&quot;      
+## slope1Param_t_value                      &quot;52.71653&quot;       
+## slope1Param_Pr_t                         &quot;2.04674e-36&quot;    
+## midPoint1_N_Estimate                     &quot;0.2936612&quot;      
+## midPoint1_Std_Error                      &quot;0.0009137447&quot;   
+## midPoint1_t_value                        &quot;321.3821&quot;       
+## midPoint1_Pr_t                           &quot;2.31223e-65&quot;    
+## slope2Param_N_Estimate                   &quot;24.8414&quot;        
+## slope2Param_Std_Error                    &quot;0.6875028&quot;      
+## slope2Param_t_value                      &quot;36.1328&quot;        
+## slope2Param_Pr_t                         &quot;1.842897e-30&quot;   
+## midPointDistance_N_Estimate              &quot;0.3335492&quot;      
+## midPointDistance_Std_Error               &quot;0.00186414&quot;     
+## midPointDistance_t_value                 &quot;178.9293&quot;       
+## midPointDistance_Pr_t                    &quot;5.8665e-56&quot;     
+## residual_Sum_of_Squares                  &quot;0.003357907&quot;    
+## log_likelihood                           &quot;142.3248&quot;       
+## AIC_value                                &quot;-270.6497&quot;      
+## BIC_value                                &quot;-258.3213&quot;      
+## isThisaFit                               &quot;TRUE&quot;           
+## startVector.finalAsymptoteIntensityRatio &quot;0.3351392&quot;      
+## startVector.maximum                      &quot;0.9301484&quot;      
+## startVector.slope1Param                  &quot;98.1881&quot;        
+## startVector.midPoint1                    &quot;0.562631&quot;       
+## startVector.slope2Param                  &quot;118.1069&quot;       
+## startVector.midPointDistance             &quot;0.2448843&quot;      
+## dataScalingParameters.timeRatio          &quot;24&quot;             
+## dataScalingParameters.intensityMin       &quot;0.1544192&quot;      
+## dataScalingParameters.intensityMax       &quot;4.061148&quot;       
+## dataScalingParameters.intensityRatio     &quot;3.906729&quot;       
+## model                                    &quot;doublesigmoidal&quot;
+## numericalParameters                      &quot;FALSE&quot;          
+## finalAsymptoteIntensityRatio_Estimate    &quot;0.2830857&quot;      
+## maximum_Estimate                         &quot;4.041888&quot;       
+## slope1Param_Estimate                     &quot;1.08245&quot;        
+## midPoint1_Estimate                       &quot;7.047869&quot;       
+## slope2Param_Estimate                     &quot;1.035058&quot;       
+## midPointDistance_Estimate                &quot;8.005181&quot;</code></pre>
 <p>Here is the brief explanations of the parameters that are given by <code>sicegar::doublesigmoidalFitFunction</code> (In different order then than the output vector of the doublesigmoidalFitFunction)</p>
 <p>These are the parameters of the normalization step</p>
 <ul>
@@ -214,11 +214,11 @@ intensityData=intensityData/intensityRatio</code></pre></div>
 <p>Likelihood maximization algorithm starts from a random initiation (if tryCounter!=1) point and goes down the fitness space by a gradient decent algorithm. these parameters represent the start point of the gradient decent algorithm.</p>
 <ul>
 <li><code>startVector.maximum</code>: maximum value of initiation point</li>
-<li><code>startVector.slope1</code>: slope1 value of initiation point</li>
+<li><code>startVector.slopeParam1</code>: slope1 value of initiation point</li>
 <li><code>startVector.midPoint1</code>: midPoint1 value of initiation point</li>
-<li><code>startVector.slope2</code>: slope2 value of initiation point</li>
+<li><code>startVector.slope2Param</code>: slope2 value of initiation point</li>
 <li><code>startVector.midPointDistance</code>: midPointDistance value of initiation point</li>
-<li><code>startVector.finalAsymptoteIntensity</code>: finalAsymptoteIntensity value of initiation point.</li>
+<li><code>startVector.finalAsymptoteIntensityRatio</code>: finalAsymptoteIntensityRatio value of initiation point.</li>
 </ul>
 <p>For each parameter that needs to fitted by LM algorithm; the algorithm gives a bunch of statistical parameters; including the estimated value of the parameter</p>
 <p>They are the parameters associated with parameter “maximum”</p>
@@ -230,10 +230,10 @@ intensityData=intensityData/intensityRatio</code></pre></div>
 </ul>
 <p>They are the parameters associated with parameter “slope1”</p>
 <ul>
-<li><code>slope1_N_Estimate</code>: Here N stand for the intersection in the normalized scale</li>
-<li><code>slope1_Std_Error</code></li>
-<li><code>slope1_t_value</code></li>
-<li><code>slope1_Pr_t</code></li>
+<li><code>slope1Param_N_Estimate</code>: Here N stand for the intersection in the normalized scale</li>
+<li><code>slope1Param_Std_Error</code></li>
+<li><code>slope1Param_t_value</code></li>
+<li><code>slope1Param_Pr_t</code></li>
 </ul>
 <p>They are the parameters associated with parameter “midPoint1”</p>
 <ul>
@@ -244,10 +244,10 @@ intensityData=intensityData/intensityRatio</code></pre></div>
 </ul>
 <p>They are the parameters associated with parameter “slope2”</p>
 <ul>
-<li><code>slope2_N_Estimate</code>: Here N stand for the intersection in the normalized scale</li>
-<li><code>slope2_Std_Error</code></li>
-<li><code>slope2_t_value</code></li>
-<li><code>slope2_Pr_t</code></li>
+<li><code>slope2Param_N_Estimate</code>: Here N stand for the intersection in the normalized scale</li>
+<li><code>slope2Param_Std_Error</code></li>
+<li><code>slope2Param_t_value</code></li>
+<li><code>slope2Param_Pr_t</code></li>
 </ul>
 <p>They are the parameters associated with parameter “midPointDistance”</p>
 <ul>
@@ -256,13 +256,12 @@ intensityData=intensityData/intensityRatio</code></pre></div>
 <li><code>midPointDistance_t_value</code></li>
 <li><code>midPointDistance_Pr_t</code></li>
 </ul>
-<p>They are the parameters associated with parameter “finalAsymptoteIntensity”</p>
+<p>They are the parameters associated with parameter “finalAsymptoteIntensityRatio”</p>
 <ul>
-<li><code>finalAsymptoteIntensity_N_Estimate</code>: Here N stand for the intersection in the normalized scale<br />
-</li>
-<li><code>finalAsymptoteIntensity_Std_Error</code></li>
-<li><code>finalAsymptoteIntensity_t_value</code></li>
-<li><code>finalAsymptoteIntensity_Pr_t</code></li>
+<li><code>finalAsymptoteIntensityRatio_N_Estimate</code>: Here N stand for the intersection in the normalized scale. It is the ratio of final asymptote intensity to maximum intensity</li>
+<li><code>finalAsymptoteIntensityRatio_Std_Error</code></li>
+<li><code>finalAsymptoteIntensityRatio_t_value</code></li>
+<li><code>finalAsymptoteIntensityRatio_Pr_t</code></li>
 </ul>
 <p>They are the parameters associated with the quality of the fit.</p>
 <ul>
@@ -274,24 +273,24 @@ intensityData=intensityData/intensityRatio</code></pre></div>
 <p>They are the fitted values after converting everything from normalized to un-normalized scale. (Without numeric correction)</p>
 <ul>
 <li><code>maximum_Estimate</code>: Maximum intensity estimate for the raw data</li>
-<li><code>slope1_Estimate</code>: <strong>Slope1 parameter</strong> estimate for the raw data</li>
+<li><code>slope1Param_Estimate</code>: <strong>Slope1 parameter</strong> estimate for the raw data</li>
 <li><code>midPoint1_Estimate</code>: Mid-point 1 estimate (time the intensity reaches 1/2 of maximum) for the raw data. <em>Needs numerical correction</em></li>
-<li><code>slope2_Estimate</code>: <strong>Slope2 parameter</strong> estimate for the raw data</li>
+<li><code>slope2Param_Estimate</code>: <strong>Slope2 parameter</strong> estimate for the raw data</li>
 <li><code>midPointDistance_Estimate</code>: Distance between mid- point 1 and mid-point 2. Where mid-point 2 is the time that intensity decreases to the value in between final asymptote intensity and maximum value. <em>Needs numerical correction</em></li>
-<li><code>finalAsymptoteIntensity_Estimate</code>: This is the <strong>ratio</strong> between asymptote intensity and maximum value of the function.</li>
+<li><code>finalAsymptoteIntensityRatio_Estimate</code>: This is the <strong>ratio</strong> between asymptote intensity and maximum value of the function.</li>
 </ul>
 </div>
 <div id="check-the-results-to-see-if-the-results-are-meaningfull" class="section level2">
 <h2>Check the results to see if the results are meaningfull</h2>
-<p>By using the <code>maximum_Estimate</code>, <code>slope_Estimate</code>, <code>midPoint_Estimate</code> parameters of the sigmoidalfit and the time sequence that we already created we can calculate the intensity values by the help of <code>sicegar::sigmoidalFitFormula()</code>. We can draw the best sigmoidal fit on top of our initial data.</p>
+<p>By using the <code>maximum_Estimate</code>, <code>slope1Param_Estimate</code>, <code>midPoint1_Estimate</code>, <code>slope2Param_Estimate</code>, <code>midPoint2_Estimate</code>, <code>midPointDistance_Estimate</code> parameters of the doublesigmoidalfit and the time sequence that we already created; we can calculate the intensity values by the help of <code>sicegar::doublesigmoidalFitFormula()</code>. We can draw the best double sigmoidal fit on top of our initial data.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">intensityTheoretical=
 <span class="st">  </span>sicegar::<span class="kw">doublesigmoidalFitFormula</span>(
     time,
-    <span class="dt">finalAsymptoteIntensity=</span>parameterVector$finalAsymptoteIntensity_Estimate,
+    <span class="dt">finalAsymptoteIntensityRatio=</span>parameterVector$finalAsymptoteIntensityRatio_Estimate,
     <span class="dt">maximum=</span>parameterVector$maximum_Estimate,
-    <span class="dt">slope1=</span>parameterVector$slope1_Estimate,
+    <span class="dt">slope1Param=</span>parameterVector$slope1Param_Estimate,
     <span class="dt">midPoint1=</span>parameterVector$midPoint1_Estimate,
-    <span class="dt">slope2=</span>parameterVector$slope2_Estimate,
+    <span class="dt">slope2Param=</span>parameterVector$slope2Param_Estimate,
     <span class="dt">midPointDistance=</span>parameterVector$midPointDistance_Estimate)
 
 comparisonData=<span class="kw">cbind</span>(dataInput,intensityTheoretical)

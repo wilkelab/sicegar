@@ -12,7 +12,7 @@
 
 <meta name="author" content="Umut Caglar" />
 
-<meta name="date" content="2017-03-20" />
+<meta name="date" content="2017-03-23" />
 
 <title>The categorize function</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">The categorize function</h1>
 <h4 class="author"><em>Umut Caglar</em></h4>
-<h4 class="date"><em>2017-03-20</em></h4>
+<h4 class="date"><em>2017-03-23</em></h4>
 
 
 
@@ -88,7 +88,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <span class="co">#simulate intensity data and add noise</span>
 noise_parameter=<span class="fl">0.1</span>
 intensity_noise=stats::<span class="kw">runif</span>(<span class="dt">n =</span> <span class="kw">length</span>(time),<span class="dt">min =</span> <span class="dv">0</span>,<span class="dt">max =</span> <span class="dv">1</span>)*noise_parameter
-intensity=<span class="kw">sigmoidalFitFormula</span>(time, <span class="dt">maximum=</span><span class="dv">4</span>, <span class="dt">slope=</span><span class="dv">1</span>, <span class="dt">midPoint=</span><span class="dv">8</span>)
+intensity=<span class="kw">sigmoidalFitFormula</span>(time, <span class="dt">maximum=</span><span class="dv">4</span>, <span class="dt">slopeParam=</span><span class="dv">1</span>, <span class="dt">midPoint=</span><span class="dv">8</span>)
 intensity=intensity+intensity_noise
 
 dataInputSigmoidal=<span class="kw">data.frame</span>(<span class="dt">intensity=</span>intensity,<span class="dt">time=</span>time)</code></pre></div>
@@ -98,11 +98,11 @@ dataInputSigmoidal=<span class="kw">data.frame</span>(<span class="dt">intensity
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">noise_parameter=<span class="fl">0.2</span>
 intensity_noise=<span class="kw">runif</span>(<span class="dt">n =</span> <span class="kw">length</span>(time),<span class="dt">min =</span> <span class="dv">0</span>,<span class="dt">max =</span> <span class="dv">1</span>)*noise_parameter
 intensity=<span class="kw">doublesigmoidalFitFormula</span>(time,
-                                    <span class="dt">finalAsymptoteIntensity=</span>.<span class="dv">3</span>,
+                                    <span class="dt">finalAsymptoteIntensityRatio=</span>.<span class="dv">3</span>,
                                     <span class="dt">maximum=</span><span class="dv">4</span>,
-                                    <span class="dt">slope1=</span><span class="dv">1</span>,
+                                    <span class="dt">slope1Param=</span><span class="dv">1</span>,
                                     <span class="dt">midPoint1=</span><span class="dv">7</span>,
-                                    <span class="dt">slope2=</span><span class="dv">1</span>,
+                                    <span class="dt">slope2Param=</span><span class="dv">1</span>,
                                     <span class="dt">midPointDistance=</span><span class="dv">8</span>)
 intensity=intensity+intensity_noise
 

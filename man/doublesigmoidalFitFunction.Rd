@@ -5,20 +5,21 @@
 \title{Double sigmoidal fit function.}
 \usage{
 doublesigmoidalFitFunction(dataInput, tryCounter,
-  startList = list(finalAsymptoteIntensity = 0, maximum = 1, slope1 = 1,
-  midPoint1 = 0.3333333, slope2 = 1, midPointDistance = 0.2916667),
-  lowerBounds = c(finalAsymptoteIntensity = 0, maximum = 0.3, slope1 = 0.01,
-  midPoint1 = -0.5208333, slope2 = 0.01, midPointDistance = 0.04166667),
-  upperBounds = c(finalAsymptoteIntensity = 1, maximum = 1.5, slope1 = 180,
-  midPoint1 = 1.145833, slope2 = 180, midPointDistance = 0.625),
-  min_Factor = 1/2^20, n_iterations = 1000)
+  startList = list(finalAsymptoteIntensityRatio = 0, maximum = 1, slope1Param
+  = 1, midPoint1Param = 0.3333333, slope2Param = 1, midPointDistanceParam =
+  0.2916667), lowerBounds = c(finalAsymptoteIntensityRatio = 0, maximum = 0.3,
+  slope1Param = 0.01, midPoint1Param = -0.5208333, slope2Param = 0.01,
+  midPointDistanceParam = 0.04166667),
+  upperBounds = c(finalAsymptoteIntensityRatio = 1, maximum = 1.5, slope1Param
+  = 180, midPoint1Param = 1.145833, slope2Param = 180, midPointDistanceParam =
+  0.625), min_Factor = 1/2^20, n_iterations = 1000)
 }
 \arguments{
 \item{dataInput}{a data frame composed of two columns. One is for time other is for intensity. The data should be normalized with the normalizeData function first.}
 
 \item{tryCounter}{the number of times the data is fit via maximum likelihood.}
 
-\item{startList}{the initial set of parameters that algorithm tries for the fit. Where the parameters are the 'maximumValue' that represents the maximum value that the function that can take, 'slope1' represents the maximum slope on the normalized y axis at the exponential phase, 'midPoint1' represents the x axis value for the maximum slope in exponential phase, 'slope2' represents the maximum slope in the normalized y axis during lysis, 'midPointDistance' represents the x axis distance between the maximum slope in exponential phase and the maximum slope in lysis, 'finalAsymptoteIntensity' represents the intensity value at infinite time as the ratio with respect to maximum value reached, its is bounded between 0 and 1.}
+\item{startList}{the initial set of parameters that algorithm tries for the fit. Where the parameters are the 'maximumValue' that represents the maximum value that the function that can take, 'slope1Param' represents the maximum slope related parameter on the normalized y axis at the exponential phase, 'midPoint1Param' represents the x axis value for the maximum slope (before numerical correction) related parameter in exponential phase, 'slope2Param' represents the maximum slope related parameter in the normalized y axis during lysis, 'midPointDistanceParam' represents the x axis distance between the maximum slope in first sigmoidal and the maximum slope in second sigmoidal, 'finalAsymptoteIntensityRatio' represents the intensity value at infinite time as the ratio with respect to maximum value reached, its is bounded between 0 and 1.}
 
 \item{lowerBounds}{the lower bounds for the randomly generated start parameters.}
 
@@ -32,7 +33,7 @@ doublesigmoidalFitFunction(dataInput, tryCounter,
 Returns the fitted parameters and goodness of fit metrics.
 }
 \description{
-The function fits a double sigmoidal curve to given data by using likelihood maximization (LM) and gives the parameters (maximum, final asymptote intensity, slope1, midpoint1, slope2, and mid point distance) describing the double-sigmoidal fit as output. It also provides information about goodness of fit such as AIC, BIC, residual sum of squares, and log likelihood.
+The function fits a double sigmoidal curve to given data by using likelihood maximization (LM) and gives the parameters (maximum, final asymptote intensity, slope1Param, midpoint1Param, slope2Param, and mid point distance) describing the double-sigmoidal fit as output. It also provides information about goodness of fit such as AIC, BIC, residual sum of squares, and log likelihood.
 }
 \examples{
 time=seq(3,24,0.1)
@@ -41,12 +42,12 @@ time=seq(3,24,0.1)
 noise_parameter=0.2
 intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=doublesigmoidalFitFormula(time,
-                                   finalAsymptoteIntensity=.3,
+                                   finalAsymptoteIntensityRatio=.3,
                                    maximum=4,
-                                   slope1=1,
-                                   midPoint1=7,
-                                   slope2=1,
-                                   midPointDistance=8)
+                                   slope1Param=1,
+                                   midPoint1Param=7,
+                                   slope2Param=1,
+                                   midPointDistanceParam=8)
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)
@@ -59,12 +60,12 @@ if(parameterVector$isThisaFit){
     intensityTheoretical=
          doublesigmoidalFitFormula(
              time,
-             finalAsymptoteIntensity=parameterVector$finalAsymptoteIntensity_Estimate,
+             finalAsymptoteIntensityRatio=parameterVector$finalAsymptoteIntensityRatio_Estimate,
              maximum=parameterVector$maximum_Estimate,
-             slope1=parameterVector$slope1_Estimate,
-             midPoint1=parameterVector$midPoint1_Estimate,
-             slope2=parameterVector$slope2_Estimate,
-             midPointDistance=parameterVector$midPointDistance_Estimate)
+             slope1Param=parameterVector$slope1Param_Estimate,
+             midPoint1Param=parameterVector$midPoint1Param_Estimate,
+             slope2Param=parameterVector$slope2Param_Estimate,
+             midPointDistanceParam=parameterVector$midPointDistanceParam_Estimate)
 
  comparisonData=cbind(dataInput,intensityTheoretical)
 

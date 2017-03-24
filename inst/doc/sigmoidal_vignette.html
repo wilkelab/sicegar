@@ -12,7 +12,7 @@
 
 <meta name="author" content="Umut Caglar" />
 
-<meta name="date" content="2017-03-20" />
+<meta name="date" content="2017-03-23" />
 
 <title>(2/3) Sigmoidal model</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">(2/3) Sigmoidal model</h1>
 <h4 class="author"><em>Umut Caglar</em></h4>
-<h4 class="date"><em>2017-03-20</em></h4>
+<h4 class="date"><em>2017-03-23</em></h4>
 
 
 
@@ -78,18 +78,18 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="data-generation" class="section level2">
 <h2>Data generation</h2>
 <p>To simulate the results, we will go backwards and firstly generate some data to analize. To add some randomness to the input data I will use some noise. The input of all package must be in the form of a data frame with at least 2 columns time and intensity.</p>
-<p><code>sicegar::sigmoidalFitFormula</code> generate a set of intensity values based on maximum, slope and midPoint values supplied. So here we are generating a set of points that are on a sigmoidal with a <em>/slope parameter/</em> of 1, maximum of 4 and midpoint of 8.</p>
+<p><code>sicegar::sigmoidalFitFormula</code> generate a set of intensity values based on maximum, slope parameter and midPoint values supplied. So here we are generating a set of points that are on a sigmoidal with a <em>/slope parameter/</em> of 1, maximum of 4 and midpoint of 8.</p>
 <p>The sigmoidal fit formula uses the function<br />
-      <code>y = (0 + (maximum - 0) / (1 + exp((-slope)*(x - midPoint))))</code><br />
+      <code>y = (0 + (maximum - 0) / (1 + exp((-slopeParam)*(x - midPoint))))</code><br />
 and if we calculate the derivative of it at the midpoint we find the slope as<br />
-      <code>max_slope = 1/4 * slope * maximum</code><br />
-<strong>i.e what we provide to <code>sicegar::sigmoidalFitFormula</code> as slope is not the maximum slope but a parameter related with maximum slope</strong>.</p>
+      <code>max_slope = 1/4 * slopeParam * maximum</code><br />
+<strong>i.e what we provide to <code>sicegar::sigmoidalFitFormula</code> as slope parameter is not the maximum slope but a parameter related with maximum slope</strong>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">time=<span class="kw">seq</span>(<span class="dv">3</span>,<span class="dv">24</span>,<span class="fl">0.5</span>)
 
 <span class="co">#simulate intensity data and add noise</span>
 noise_parameter=<span class="fl">0.1</span>
 intensity_noise=stats::<span class="kw">runif</span>(<span class="dt">n =</span> <span class="kw">length</span>(time),<span class="dt">min =</span> <span class="dv">0</span>,<span class="dt">max =</span> <span class="dv">1</span>)*noise_parameter
-intensity=<span class="kw">sigmoidalFitFormula</span>(time, <span class="dt">maximum=</span><span class="dv">4</span>, <span class="dt">slope=</span><span class="dv">1</span>, <span class="dt">midPoint=</span><span class="dv">8</span>)
+intensity=<span class="kw">sigmoidalFitFormula</span>(time, <span class="dt">maximum =</span> <span class="dv">4</span>, <span class="dt">slopeParam =</span> <span class="dv">1</span>, <span class="dt">midPoint =</span> <span class="dv">8</span>)
 intensity=intensity+intensity_noise
 
 dataInput=<span class="kw">data.frame</span>(<span class="dt">intensity=</span>intensity,<span class="dt">time=</span>time)</code></pre></div>
@@ -149,10 +149,10 @@ intensityData=intensityData/intensityRatio</code></pre></div>
 ## maximum_Std_Error                    &quot;0.00172638&quot;  
 ## maximum_t_value                      &quot;573.035&quot;     
 ## maximum_Pr_t                         &quot;6.473165e-80&quot;
-## slope_N_Estimate                     &quot;24.91311&quot;    
-## slope_Std_Error                      &quot;0.3550745&quot;   
-## slope_t_value                        &quot;70.16306&quot;    
-## slope_Pr_t                           &quot;1.684373e-43&quot;
+## slopeParam_N_Estimate                &quot;24.91311&quot;    
+## slopeParam_Std_Error                 &quot;0.3550745&quot;   
+## slopeParam_t_value                   &quot;70.16306&quot;    
+## slopeParam_Pr_t                      &quot;1.684373e-43&quot;
 ## midPoint_N_Estimate                  &quot;0.3352606&quot;   
 ## midPoint_Std_Error                   &quot;0.0006568671&quot;
 ## midPoint_t_value                     &quot;510.3933&quot;    
@@ -163,7 +163,7 @@ intensityData=intensityData/intensityRatio</code></pre></div>
 ## BIC_value                            &quot;-274.1389&quot;   
 ## isThisaFit                           &quot;TRUE&quot;        
 ## startVector.maximum                  &quot;0.702167&quot;    
-## startVector.slope                    &quot;94.52226&quot;    
+## startVector.slopeParam               &quot;94.52226&quot;    
 ## startVector.midPoint                 &quot;0.3882737&quot;   
 ## dataScalingParameters.timeRatio      &quot;24&quot;          
 ## dataScalingParameters.intensityMin   &quot;0.1065867&quot;   
@@ -171,7 +171,7 @@ intensityData=intensityData/intensityRatio</code></pre></div>
 ## dataScalingParameters.intensityRatio &quot;3.990373&quot;    
 ## model                                &quot;sigmoidal&quot;   
 ## maximum_Estimate                     &quot;4.054168&quot;    
-## slope_Estimate                       &quot;1.038046&quot;    
+## slopeParam_Estimate                  &quot;1.038046&quot;    
 ## midPoint_Estimate                    &quot;8.046254&quot;</code></pre>
 <p>Here is the brief explanations of the parameters that are given by <code>sicegar::sigmoidalFitFunction</code> (In different order then than the output vector of the sigmoidalFitFunction)</p>
 <p>These are the parameters of the normalization step</p>
@@ -190,7 +190,7 @@ intensityData=intensityData/intensityRatio</code></pre></div>
 <p>Likelihood maximization algorithm starts from a random initiation (if tryCounter!=1) point and goes down the fitness space by a gradient decent algorithm. these parameters represent the start point of the gradient decent algorithm.</p>
 <ul>
 <li><code>startVector.maximum</code>: Maximum value of the initiation point</li>
-<li><code>startVector.slope</code>: Slope value of the initiation point</li>
+<li><code>startVector.slopeParam</code>: Slope Parameter value of the initiation point</li>
 <li><code>startVector.midPoint</code>: Mid-point value of the initiation point</li>
 </ul>
 <p>For each parameter that needs to fitted by LM algorithm; the algorithm gives a bunch of statistical parameters; including the estimated value of the parameter</p>
@@ -203,10 +203,10 @@ intensityData=intensityData/intensityRatio</code></pre></div>
 </ul>
 <p>They are the parameters associated with parameter “slope”</p>
 <ul>
-<li><code>slope_N_Estimate</code>: Here N stand for the intersection in the normalized scale</li>
-<li><code>slope_Std_Error</code></li>
-<li><code>slope_t_value</code></li>
-<li><code>slope_Pr_t</code></li>
+<li><code>slopeParam_N_Estimate</code>: Here N stand for the intersection in the normalized scale. It is not slope it is a parameter related with slope</li>
+<li><code>slopeParam_Std_Error</code></li>
+<li><code>slopeParam_t_value</code></li>
+<li><code>slopeParam_Pr_t</code></li>
 </ul>
 <p>They are the parameters associated with parameter “midpoint”</p>
 <ul>
@@ -225,16 +225,16 @@ intensityData=intensityData/intensityRatio</code></pre></div>
 <p>They are the fitted values after converting everything from normalized to un-normalized scale.</p>
 <ul>
 <li><code>maximum_Estimate</code>Maximum intensity estimate for the raw data</li>
-<li><code>slope_Estimate</code>: <strong>Slope parameter</strong> estimate for the raw data</li>
+<li><code>slopeParam_Estimate</code>: <strong>Slope parameter</strong> estimate for the raw data</li>
 <li><code>midPoint_Estimate</code>: Mid-point estimate (time the intensity reaches 1/2 of maximum) for the raw data</li>
 </ul>
 </div>
 <div id="check-the-results-to-see-if-the-results-are-meaningfull" class="section level2">
 <h2>Check the results to see if the results are meaningfull</h2>
-<p>By using the <code>maximum_Estimate</code>, <code>slope_Estimate</code>, <code>midPoint_Estimate</code> parameters of the sigmoidalfit and the time sequence that we already created we can calculate the intensity values by the help of <code>sicegar::sigmoidalFitFormula()</code>. We can draw the best sigmoidal fit on top of our initial data.</p>
+<p>By using the <code>maximum_Estimate</code>, <code>slopeParam_Estimate</code>, <code>midPoint_Estimate</code> parameters of the sigmoidalfit and the time sequence that we already created we can calculate the intensity values by the help of <code>sicegar::sigmoidalFitFormula()</code>. We can draw the best sigmoidal fit on top of our initial data.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">intensityTheoretical=sicegar::<span class="kw">sigmoidalFitFormula</span>(time,
                                                   <span class="dt">maximum=</span>parameterVector$maximum_Estimate,
-                                                  <span class="dt">slope=</span>parameterVector$slope_Estimate,
+                                                  <span class="dt">slopeParam=</span>parameterVector$slopeParam_Estimate,
                                                   <span class="dt">midPoint=</span>parameterVector$midPoint_Estimate)
 comparisonData=<span class="kw">cbind</span>(dataInput,intensityTheoretical)
 

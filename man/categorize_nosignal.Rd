@@ -32,12 +32,12 @@ time=seq(3,24,0.1)
 noise_parameter=0.2
 intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity=doublesigmoidalFitFormula(time,
-                                   finalAsymptoteIntensity=.3,
+                                   finalAsymptoteIntensityRatio=.3,
                                    maximum=4,
-                                   slope1=1,
-                                   midPoint1=7,
-                                   slope2=1,
-                                   midPointDistance=8)
+                                   slope1Param=1,
+                                   midPoint1Param=7,
+                                   slope2Param=1,
+                                   midPointDistanceParam=8)
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)
@@ -63,12 +63,12 @@ time=seq(3,24,0.1)
 noise_parameter=0.05
 intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter*2e-04
 intensity=doublesigmoidalFitFormula(time,
-                                   finalAsymptoteIntensity=.3,
+                                   finalAsymptoteIntensityRatio=.3,
                                    maximum=2e-04,
-                                   slope1=1,
-                                   midPoint1=7,
-                                   slope2=1,
-                                   midPointDistance=8)
+                                   slope1Param=1,
+                                   midPoint1Param=7,
+                                   slope2Param=1,
+                                   midPointDistanceParam=8)
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)

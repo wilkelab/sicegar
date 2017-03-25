@@ -28,9 +28,9 @@ intensity=doublesigmoidalFitFormula(time,
                                     finalAsymptoteIntensityRatio=.3,
                                     maximum=4,
                                     slope1Param=1,
-                                    midPoint1=7,
+                                    midPoint1Param=7,
                                     slope2Param=1,
-                                    midPointDistance=8)
+                                    midPointDistanceParam=8)
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)
@@ -84,9 +84,9 @@ intensityTheoretical=
     finalAsymptoteIntensityRatio=parameterVector$finalAsymptoteIntensityRatio_Estimate,
     maximum=parameterVector$maximum_Estimate,
     slope1Param=parameterVector$slope1Param_Estimate,
-    midPoint1=parameterVector$midPoint1_Estimate,
+    midPoint1Param=parameterVector$midPoint1Param_Estimate,
     slope2Param=parameterVector$slope2Param_Estimate,
-    midPointDistance=parameterVector$midPointDistance_Estimate)
+    midPointDistanceParam=parameterVector$midPointDistanceParam_Estimate)
 
 comparisonData=cbind(dataInput,intensityTheoretical)
 

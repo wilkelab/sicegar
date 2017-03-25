@@ -36,9 +36,9 @@ intensity=doublesigmoidalFitFormula(time,
                                     finalAsymptoteIntensityRatio=.3,
                                     maximum=4,
                                     slope1=1,
-                                    midPoint1=7,
+                                    midPoint1Param=7,
                                     slope2=1,
-                                    midPointDistance=8)
+                                    midPointDistanceParam=8)
 intensity=intensity+intensity_noise
 
 dataInputDoubleSigmoidal=data.frame(intensity=intensity,time=time)

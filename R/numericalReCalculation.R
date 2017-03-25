@@ -46,7 +46,8 @@ numericalReCalculation<-function(parameterVector, stepSize=0.00001){
   if(parameterVector$model=="doublesigmoidal")
   {
     # calculate xmax argument (the time that function reaches maximum)
-    parameterVector$numerical.maximum_x_Estimate=f_argmax_doublesigmoidal(parameterVector)
+    maximum_y = parameterVector$maximum_Estimate 
+    parameterVector$maximum_x = f_argmax_doublesigmoidal(parameterVector)
 
     # calculate x values of midpoint1 (the time that function reaches half of maximum)
     parameterVector$numerical.midPoint1_x_Estimate=f_mid1_doublesigmoidal(parameterVector)

@@ -38,7 +38,7 @@ require("ggplot2")
 ## Data generation
 To simulate the results, we will go backwards and firstly generate some data to analize. To add some randomness to the input data I will use some noise. The input of all package must be in the form of a data frame with at least 2 columns time and intensity. 
 
-`sicegar::doublesigmoidalFitFormula` generate a set of intensity values based on finalAsymptoteIntensityRatio, maximum, slope1 parameter, midPoint1, slope2 parameter, midPointDistance values supplied. So here we are generating a set of points that are on two sigmoidals glued side by side from the maximum of the combined function.
+`sicegar::doublesigmoidalFitFormula` generate a set of intensity values based on finalAsymptoteIntensityRatio, maximum, slope1 parameter, midPoint1Param, slope2 parameter, midPointDistanceParam values supplied. So here we are generating a set of points that are on two sigmoidals glued side by side from the maximum of the combined function.
 
 note that slope1Param and slope2Param and finalAsymptoteIntensityRatio are not exactly the  slope1 slope2 and final asymtote intensity of the final function. they are parameters related with them.
 
@@ -52,9 +52,9 @@ intensity=doublesigmoidalFitFormula(time,
                                     finalAsymptoteIntensityRatio=.3,
                                     maximum=4,
                                     slope1Param=1,
-                                    midPoint1=7,
+                                    midPoint1Param=7,
                                     slope2Param=1,
-                                    midPointDistance=8)
+                                    midPointDistanceParam=8)
 intensity=intensity+intensity_noise
 
 dataInput=data.frame(intensity=intensity,time=time)
@@ -150,9 +150,9 @@ Likelihood maximization algorithm starts from a random initiation (if tryCounter
 
 * `startVector.maximum`: maximum value of initiation point
 * `startVector.slopeParam1`: slope1 value of initiation point
-* `startVector.midPoint1`: midPoint1 value of initiation point
+* `startVector.midPoint1Param`: midPoint1Param value of initiation point
 * `startVector.slope2Param`: slope2 value of initiation point
-* `startVector.midPointDistance`: midPointDistance value of initiation point
+* `startVector.midPointDistanceParam`: midPointDistanceParam value of initiation point
 * `startVector.finalAsymptoteIntensityRatio`: finalAsymptoteIntensityRatio value of initiation point.
 
 For each parameter that needs to fitted by LM algorithm; the algorithm gives a bunch of statistical parameters; including the estimated value of the parameter
@@ -171,12 +171,12 @@ They are the parameters associated with parameter “slope1”
 * `slope1Param_t_value`
 * `slope1Param_Pr_t`
 
-They are the parameters associated with parameter “midPoint1” 
+They are the parameters associated with parameter “midPoint1Param” 
 
-* `midPoint1_N_Estimate`: Here N stand for the intersection in the normalized scale
-* `midPoint1_Std_Error`
-* `midPoint1_t_value`
-* `midPoint1_Pr_t`
+* `midPoint1Param_N_Estimate`: Here N stand for the intersection in the normalized scale
+* `midPoint1Param_Std_Error`
+* `midPoint1Param_t_value`
+* `midPoint1Param_Pr_t`
 
 They are the parameters associated with parameter “slope2” 
 
@@ -186,12 +186,12 @@ They are the parameters associated with parameter “slope2”
 * `slope2Param_Pr_t`
 
 
-They are the parameters associated with parameter “midPointDistance” 
+They are the parameters associated with parameter “midPointDistanceParam” 
 
-* `midPointDistance_N_Estimate`: Here N stand for the intersection in the normalized scale 
-* `midPointDistance_Std_Error`
-* `midPointDistance_t_value`
-* `midPointDistance_Pr_t`
+* `midPointDistanceParam_N_Estimate`: Here N stand for the intersection in the normalized scale 
+* `midPointDistanceParam_Std_Error`
+* `midPointDistanceParam_t_value`
+* `midPointDistanceParam_Pr_t`
 
 They are the parameters associated with parameter “finalAsymptoteIntensityRatio” 
 
@@ -211,14 +211,14 @@ They are the fitted values after converting everything from normalized to un-nor
 
 * `maximum_Estimate`: Maximum intensity estimate for the raw data
 * `slope1Param_Estimate`: __Slope1 parameter__ estimate for the raw data 
-* `midPoint1_Estimate`: Mid-point 1 estimate (time the intensity reaches 1/2 of maximum) for the raw data. _Needs numerical correction_
+* `midPoint1Param_Estimate`: Mid-point 1 estimate (time the intensity reaches 1/2 of maximum) for the raw data. _Needs numerical correction_
 * `slope2Param_Estimate`: __Slope2 parameter__ estimate for the raw data 
-* `midPointDistance_Estimate`: Distance between mid- point 1 and mid-point 2. Where mid-point 2 is the time that intensity decreases to the value in between final asymptote intensity and maximum value. _Needs numerical correction_
+* `midPointDistanceParam_Estimate`: Distance between mid- point 1 and mid-point 2. Where mid-point 2 is the time that intensity decreases to the value in between final asymptote intensity and maximum value. _Needs numerical correction_
 * `finalAsymptoteIntensityRatio_Estimate`: This is the __ratio__ between asymptote intensity and maximum value of the function.
 
 ## Check the results to see if the results are meaningfull
 
-By using the `maximum_Estimate`, `slope1Param_Estimate`, `midPoint1_Estimate`, `slope2Param_Estimate`, `midPoint2_Estimate`, `midPointDistance_Estimate` parameters of the doublesigmoidalfit and the time sequence that we already created; we can calculate the intensity values by the help of `sicegar::doublesigmoidalFitFormula()`. We can draw the best double sigmoidal fit on top of our initial data.
+By using the `maximum_Estimate`, `slope1Param_Estimate`, `midPoint1Param_Estimate`, `slope2Param_Estimate`, `midPoint2_Estimate`, `midPointDistanceParam_Estimate` parameters of the doublesigmoidalfit and the time sequence that we already created; we can calculate the intensity values by the help of `sicegar::doublesigmoidalFitFormula()`. We can draw the best double sigmoidal fit on top of our initial data.
 
 ```{r plot raw data and fit, fig.height=4, fig.width=8}
 intensityTheoretical=
@@ -227,9 +227,9 @@ intensityTheoretical=
     finalAsymptoteIntensityRatio=parameterVector$finalAsymptoteIntensityRatio_Estimate,
     maximum=parameterVector$maximum_Estimate,
     slope1Param=parameterVector$slope1Param_Estimate,
-    midPoint1=parameterVector$midPoint1_Estimate,
+    midPoint1Param=parameterVector$midPoint1Param_Estimate,
     slope2Param=parameterVector$slope2Param_Estimate,
-    midPointDistance=parameterVector$midPointDistance_Estimate)
+    midPointDistanceParam=parameterVector$midPointDistanceParam_Estimate)
 
 comparisonData=cbind(dataInput,intensityTheoretical)
 

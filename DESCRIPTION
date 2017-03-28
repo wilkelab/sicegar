@@ -13,6 +13,7 @@ Imports:
     minpack.lm,
     fBasics,
     ggplot2,
+    cowplot,
     stats
 License: GPL-2 | GPL-3
 LazyData: true
@@ -22,7 +23,6 @@ VignetteBuilder: knitr
 BugReports: https://github.com/wilkelab/sicegar/issues
 Collate:
     'categorize.R'
-    'categorizeV2.R'
     'mainFunctions.R'
     'lineFitFunctions.R'
     'multipleFitFunction.R'

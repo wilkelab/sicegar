@@ -16,6 +16,7 @@ set.seed(seedNo)
 require("sicegar")
 require("dplyr")
 require("ggplot2")
+require("cowplot")
 ###*****************************
 
 ## ----generate data for sigmoidal-----------------------------------------

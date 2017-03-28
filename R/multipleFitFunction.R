@@ -1,13 +1,12 @@
 #' @title multiple fit function.
 #'
 #' @param dataInput normalized input data that will be fitted transferred into related functions
-#' @param model type of fit function that will be used. Can be "linear", "sigmoidal", "double_sigmoidal", or "test".
+#' @param model type of fit function that will be used. Can be "linear", "sigmoidal", or "double_sigmoidal".
 #' @param n_runs_max number of maximum number of times the fitting is attempted.
 #' @param n_runs_min number of minimum successfull runs returned by the fitting algorithm.
 #' @param showDetails if TRUE prints details of intermediate steps of individual fits (Default is FALSE).
 #' @param dataInputName name of data set (Default is 'NA').
-#' @param randomParameter a parameter needed to run the "test" model. Default is 'NA'
-#' @param ... all other arguments that model functions ("exampleFitFunction", "lineFitFunction", "sigmoidalFitFunction", "doublesigmoidalFitFunction") may need
+#' @param ... all other arguments that model functions ("lineFitFunction", "sigmoidalFitFunction", "doublesigmoidalFitFunction") may need
 #'
 #' @description Calls the fitting algorithms to fit the data starting from different randomly generated initial parameters. Multiple attempts at fitting the data are necessary to avoid local minima.
 #' @return Returns the parameters related with the model fitted for the input data.
@@ -138,13 +137,12 @@ multipleFitFunction <-
            model,
            n_runs_min=20,
            n_runs_max=500,
-           showDetails=FALSE,
-           randomParameter=NA, ...)
+           showDetails=FALSE, ...)
   {
     dataInputCheck=dataCheck(dataInput)
 
-    if(!(model %in% c("linear", "sigmoidal", "doublesigmoidal", "test")) )
-    {stop("model should be one of linear, sigmoidal, doublesigmoidal, test")}
+    if(!(model %in% c("linear", "sigmoidal", "doublesigmoidal")) )
+    {stop("model should be one of linear, sigmoidal, doublesigmoidal")}
 
     counterBetterFit=0
     counterCorrectFit=0
@@ -156,7 +154,6 @@ multipleFitFunction <-
     while(counterCorrectFit<n_runs_min & counterTotalFit<n_runs_max)
     {
       counterTotalFit=counterTotalFit+1
-      if(model == "test"){modelOutput=exampleFitFunction(randomParameter,...)}
       if(model == "linear"){modelOutput=lineFitFunction(dataInput=dataInput,tryCounter=counterTotalFit,...)}
       if(model == "sigmoidal"){modelOutput=sigmoidalFitFunction(dataInput=dataInput,tryCounter=counterTotalFit,...)}
       if(model == "doublesigmoidal"){modelOutput=doublesigmoidalFitFunction(dataInput=dataInput,tryCounter=counterTotalFit,...)}
@@ -222,27 +219,4 @@ multipleFitFunction <-
     storedModelOutput$totalFit=counterTotalFit
 
     return(storedModelOutput)
-  }
-
-# @title Produces an example
-#
-# @param randomParameter defines the probability that the exampleFitFunction returns TRUE values for isThisaFit parameter. The value should be in the interval of 0 and 1.
-# @description Generates TRUE values for isThisaFit parameter with the given probability.
-# @return Returns TRUE or FALSE for isThisaFit parameter and also residual_Sum_of_Squares parameter that determines the goodness of fit.
-# @export
-# @examples
-#
-# print(exampleFitFunction(.5))
-exampleFitFunction<-
-  function(randomParameter)
-  {
-    if(randomParameter<0 | randomParameter>1)
-      {stop("the random parameter for model test should be between 0 and 1")}
-    randomNumber=stats::runif(1, 0, 1)
-    if(randomNumber<randomParameter){isThisaFit=TRUE; residual_Sum_of_Squares=stats::runif(1, 0, 1)}
-    if(randomNumber>randomParameter){isThisaFit=FALSE; residual_Sum_of_Squares=NA}
-    outputList=list(isThisaFit=isThisaFit,
-                    randomParameter=randomParameter,
-                    residual_Sum_of_Squares=residual_Sum_of_Squares)
-    return(outputList)
   }

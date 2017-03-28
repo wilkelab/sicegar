@@ -32,6 +32,7 @@ set.seed(seedNo)
 require("sicegar")
 require("dplyr")
 require("ggplot2")
+require("cowplot")
 ###*****************************
 ```
 
@@ -164,20 +165,38 @@ sigmoidalModel_dsd = sicegar::parameterCalculation(sigmoidalModel_dsd)
 doubleSigmoidalModel_dsd = sicegar::parameterCalculation(doubleSigmoidalModel_dsd)
 ```
 
+
+## Generate figures
+
+Here are the two datasets that we want to categorize
+```{r cowplor figure, echo=TRUE, message=FALSE, warning=FALSE, comment=FALSE, fig.height=4, fig.width=8}
+fig03a=sicegar::figureModelCurves(dataInput=normalizedSigmoidalInput,
+                                  sigmoidalFitVector=sigmoidalModel_sd,
+                                  showParameterRelatedLines=TRUE)
+#print(fig03a)
+
+# Double Sigmoidal Fit with parameter related lines
+fig03b=sicegar::figureModelCurves(dataInput=normalizedDoubleSigmoidalInput,
+                                  doubleSigmoidalFitVector=doubleSigmoidalModel_dsd,
+                                  showParameterRelatedLines=TRUE)
+#print(fig03b)
+
+fig03 <- cowplot::plot_grid(fig03a, fig03b, ncol = 2)
+print(fig03)
+```
+
 ## Model decision
 
 Now we have attempts of fits for linear, sigmoidal and double sigmoidal models on our datasets. By using the results of those atempts one can make decisions about the category of the input data; wheather it is sigmoidal or double sigmoidal.
 
 ```{r decide wheather the data is sigmoidal or double sigmoidal}
-# outputCluster_sd=sicegar::categorizeV2(parameterVectorLinear=linearModel_sd,
-#                             parameterVectorSigmoidal=sigmoidalModel_sd,
-#                             parameterVectorDoubleSigmoidal=doubleSigmoidalModel_sd)
-# 
-# print(outputCluster_sd) # This should give sigmoidal 
-# 
-# outputCluster_dsd=sicegar::categorizeV2(parameterVectorLinear=linearModel_dsd,
-#                              parameterVectorSigmoidal=sigmoidalModel_dsd,
-#                              parameterVectorDoubleSigmoidal=doubleSigmoidalModel_dsd)
-# 
-# print(outputCluster_dsd) # This should give double sigmoidal 
+outputCluster_sd=sicegar::categorize(parameterVectorSigmoidal=sigmoidalModel_sd,
+                                     parameterVectorDoubleSigmoidal=doubleSigmoidalModel_sd)
+
+utils::str(outputCluster_sd) # This should give sigmoidal
+
+outputCluster_dsd=sicegar::categorize(parameterVectorSigmoidal=sigmoidalModel_dsd,
+                                      parameterVectorDoubleSigmoidal=doubleSigmoidalModel_dsd)
+
+utils::str(outputCluster_dsd) # This should give double-sigmoidal
 ```

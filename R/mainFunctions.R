@@ -1,294 +1,155 @@
 #' @title fit function.
 #'
 #' @param dataInput normalized input data that will be fitted transferred into related functions
-#' @param model type of fit function that will be used. Can be "linear", "sigmoidal", "double_sigmoidal", or "test".
-#' @param n_runs_max number of maximum number of times the fitting is attempted.
-#' @param n_runs_min number of minimum successfull runs returned by the fitting algorithm.
+#' @param n_runs_max_sm number of maximum number of times the fitting is attempted for sigmoidal model.
+#' @param n_runs_min_sm number of minimum successfull runs returned by the fitting algorithm for sigmoidal model.
+#' @param n_runs_max_dsm number of maximum number of times the fitting is attempted for double sigmoidal model.
+#' @param n_runs_min_dsm number of minimum successfull runs returned by the fitting algorithm for double sigmoidal model.
+#' @param startList_sm the initial set of parameters that algorithm tries to fit. The parameters are 'maximumValue' that represents the maximum value that the function can take,  'slope parameter' that represents the slope parameter in normalized y axis, and 'midPointValue' that represents the midpoint for sigmoidal model.
+#' @param lowerBounds_sm the lower bounds for the randomly generated start parameters for sigmoidal model.
+#' @param upperBounds_sm the upper bounds for the randomly generated start parameters for sigmoidal model.
+#' @param min_Factor_sm the minimum step size in the iterations used by the fitting algorithm for sigmoidal model.
+#' @param n_iterations_sm the maximum number of iterations used by the fitting algorithm for sigmoidal model.
+#' @param startList_dsm the initial set of parameters that algorithm tries for the fit. Where the parameters are the 'maximumValue' that represents the maximum value that the function that can take, 'slope1Param' represents the maximum slope related parameter on the normalized y axis at the exponential phase, 'midPoint1Param' represents the x axis value for the maximum slope (before numerical correction) related parameter in exponential phase, 'slope2Param' represents the maximum slope related parameter in the normalized y axis during lysis, 'midPointDistanceParam' represents the x axis distance between the maximum slope in first sigmoidal and the maximum slope in second sigmoidal, 'finalAsymptoteIntensityRatio' represents the intensity value at infinite time as the ratio with respect to maximum value reached, its is bounded between 0 and 1 for double sigmoidal model.
+#' @param lowerBounds_dsm the lower bounds for the randomly generated start parameters for double sigmoidal model.
+#' @param upperBounds_dsm the upper bounds for the randomly generated start parameters for double sigmoidal model.
+#' @param min_Factor_dsm defines the minimum step size used by the fitting algorithm for double sigmoidal model.
+#' @param n_iterations_dsm define maximum number of iterations used by the fitting algorithm for double sigmoidal model.
+#' @param threshold_intensity_range minimum for intensity range (Default is 0.1).
+#' @param threshold_minimum_for_intensity_maximum minimum allowed value for intensity maximum
+#' @param threshold_bonus_sigmoidal_AIC bonus AIC points for sigmoidal fit. Negative values help sigmoidal model to win. Only helps in competittion between sigmoidal and double sigmoidal fit at decision step "9". (Default is 0)
+#' @param threshold_sm_tmax_IntensityRatio sigmoidal model must reach that percent of intensity at last observed point; otherwise it is not sigmoidal.
+#' @param threshold_dsm_tmax_IntensityRatio minimum allowed amount of decrease for double sigmoidal model from intensity_tmax / maximum_y (Default is 0.75). If intensity decrease less than that ratio than it is NOT double-sigmoidal model
+#' @param threshold_AIC maximum AIC values in order to have a meaningful fit (Default is -10).
+#' @param threshold_t0_max_int maximum allowed intensity at t=0
+#' @param stepSize step size used by the calculate parameters algorithm.
 #' @param showDetails if TRUE prints details of intermediate steps of individual fits (Default is FALSE).
 #' @param dataInputName name of data set (Default is 'NA').
-#' @param randomParameter a parameter needed to run the "test" model. Default is 'NA'
-#' @param ... all other arguments that model functions ("exampleFitFunction", "lineFitFunction", "sigmoidalFitFunction", "doublesigmoidalFitFunction") may need
+#' @param ... all other arguments that model functions ("lineFitFunction", "sigmoidalFitFunction", "doublesigmoidalFitFunction") may need
 #'
 #' @description Calls the fitting algorithms to fit the data starting from random initial parameters. Multiple attempts at fitting the data are necessary to avoid local minima.
 #' @return Returns the parameters related with the curve fitted to the input data.
 #' @export
 #'
 #' @examples
-#' # Example 1 (test function without normalization)
-#' # data sent to algorithm directly as data frame
-#' # a- Generate data
-#' time = seq(3,48,0.5)
-#' intensity=stats::runif(length(time), 3.0, 7.5)
-#' dataInput = data.frame(time,intensity)
-#' # b- generate "random Parameter" for model "test"
-#' randomParameterValue=0.7 # it should be a parameter between 0 and 1
-#' # c- use the function "test"
-#' parameterOutput=fitFunction(dataInput=dataInput,
-#'                             model="test",
-#'                             n_runs_min=5,
-#'                             n_runs_max=15,
-#'                             randomParameter=randomParameterValue)
-#'
-#' # Example 2 (test function with normalization)
-#' # data sent to algorithm after normalization
-#' # a- Generate data
-#' time = seq(3,48,0.5)
-#' intensity=stats::runif(length(time), 3.0, 7.5)
-#' dataInput = data.frame(time,intensity)
-#' # b- normalize data
-#' dataOutput = normalizeData(dataInput)
-#' # c- generate "random Parameter" for model "test"
-#' randomParameter=0.7 # it should be a parameter between 0 and 1
-#' # d- use the function "test"
-#' dataInput2=dataOutput
-#' parameterOutput=fitFunction(dataInput=dataInput2,
-#'                             model="test",
-#'                             n_runs_min=5,
-#'                             n_runs_max=15,
-#'                             randomParameter=randomParameterValue)
-#'
-#' # Example 3 (linear function without normalization)
-#' # data sent to algorithm directly as data frame
-#' # a- Generate data
-#' time = seq(3,48,0.5)
-#' intensity=stats::runif(length(time), 3.0, 7.5)
-#' dataInput = data.frame(time,intensity)
-#' # b- use the function "linear"
-#' parameterOutput=fitFunction(dataInput=dataInput,
-#'                             model="linear",
-#'                             n_runs_min=5,
-#'                             n_runs_max=15)
-#'
-#'
-#'# Example 4 (linear function with normalization)
-#'time=seq(3,24,0.5)
-#'
-#'#simulate intensity data with noise
-#'noise_parameter=20
-#'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
-#'intensity=lineFitFormula(time, slope=4, intersection=-2)
-#'intensity=intensity+intensity_noise
-#'
-#'dataInput=data.frame(intensity=intensity,time=time)
-#'normalizedInput = normalizeData(dataInput)
-#'parameterVector=fitFunction(dataInput=normalizedInput,
-#'                            model="linear",
-#'                            n_runs_min=5,
-#'                            n_runs_max=15)
-#'
-#'#Check the results
-#'if(parameterVector$isThisaFit){
-#'  intensityTheoretical=lineFitFormula(time,
-#'                                      slope=parameterVector$slope_Estimate,
-#'                                      intersection=parameterVector$intersection_Estimate)
-#'
-#'  comparisonData=cbind(dataInput,intensityTheoretical)
-#'
-#'  print(parameterVector$residual_Sum_of_Squares)
-#'  require(ggplot2)
-#'  ggplot(comparisonData)+
-#'    geom_point(aes(x=time, y=intensity))+
-#'    geom_line(aes(x=time,y=intensityTheoretical))+
-#'    expand_limits(x = 0, y = 0)}
-#'
-#'if(!parameterVector$isThisaFit){print(parameterVector)}
-#'
-#'# Example 5 (sigmoidal function with normalization)
-
+#' # Example 1
 #'time=seq(3,24,0.5)
 #'
 #'#simulate intensity data and add noise
-#'noise_parameter=2.5
-#'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
-#'intensity=sigmoidalFitFormula(time, maximum=4, slopeParam=1, midPoint=8)
-#'intensity=intensity+intensity_noise
-#'
-#'dataInput=data.frame(intensity=intensity,time=time)
-#'normalizedInput = normalizeData(dataInput, dataInputName="batch_01_21_2016_samp007623")
-#'parameterVector=fitFunction(dataInput=normalizedInput,
-#'                            model="sigmoidal",
-#'                            n_runs_min=20,
-#'                            n_runs_max=500)
-#'
-#'#Check the results
-#'if(parameterVector$isThisaFit){
-#'  intensityTheoretical=sigmoidalFitFormula(time,
-#'                                           maximum=parameterVector$maximum_Estimate,
-#'                                           slopeParam=parameterVector$slopeParam_Estimate,
-#'                                           midPoint=parameterVector$midPoint_Estimate)
-#'
-#'  comparisonData=cbind(dataInput,intensityTheoretical)
-#'
-#'  print(parameterVector$residual_Sum_of_Squares)
-#'
-#'  require(ggplot2)
-#'  ggplot(comparisonData)+
-#'    geom_point(aes(x=time, y=intensity))+
-#'    geom_line(aes(x=time,y=intensityTheoretical),color="orange")+
-#'    expand_limits(x = 0, y = 0)}
-#'
-#'
-#'
-#'if(!parameterVector$isThisaFit){print(parameterVector)}
-#'
-
-#'# Example 6 (doublesigmoidal function with normalization)
-#'time=seq(3,24,0.1)
-#'
-#'#simulate intensity data with noise
 #'noise_parameter=0.2
 #'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
-#'intensity=doublesigmoidalFitFormula(time,
-#'                                    finalAsymptoteIntensityRatio=.3,
-#'                                    maximum=4,
-#'                                    slope1Param=1,
-#'                                    midPoint1Param=7,
-#'                                    slope2Param=1,
-#'                                    midPointDistanceParam=8)
+#'intensity = sicegar::doublesigmoidalFitFormula(time,
+#'                                             finalAsymptoteIntensityRatio=.3,
+#'                                             maximum=4,
+#'                                             slope1Param=1,
+#'                                             midPoint1Param=7,
+#'                                             slope2Param=1,
+#'                                             midPointDistanceParam=8)
 #'intensity=intensity+intensity_noise
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
-#'normalizedInput = normalizeData(dataInput)
-#'parameterVector=fitFunction(dataInput=normalizedInput,
-#'                            dataInputName="batch_01_21_2016_samp007623",
-#'                            model="doublesigmoidal",
-#'                            n_runs_min=20,
-#'                            n_runs_max=500,
-#'                            showDetails=FALSE)
 #'
+#'fitObj<-sicegar::fitFunction(dataInput = dataInput)
 #'
-#'#Check the results
-#'if(parameterVector$isThisaFit){
-#'  intensityTheoretical=
-#'        doublesigmoidalFitFormula(
-#'                time,
-#'                finalAsymptoteIntensityRatio=parameterVector$finalAsymptoteIntensityRatio_Estimate,
-#'                maximum=parameterVector$maximum_Estimate,
-#'                slope1Param=parameterVector$slope1Param_Estimate,
-#'                midPoint1Param=parameterVector$midPoint1Param_Estimate,
-#'                slope2Param=parameterVector$slope2Param_Estimate,
-#'                midPointDistanceParam=parameterVector$midPointDistanceParam_Estimate)
-#'
-#'  comparisonData=cbind(dataInput,intensityTheoretical)
-#'
-#'  require(ggplot2)
-#'  ggplot(comparisonData)+
-#'    geom_point(aes(x=time, y=intensity))+
-#'    geom_line(aes(x=time,y=intensityTheoretical),color="orange")+
-#'    expand_limits(x = 0, y = 0)}
-#'
-#'if(!parameterVector$isThisaFit){print(parameterVector)}
 fitFunction <-
   function(dataInput,
-           dataInputName=NA,
-           model,
-           n_runs_min,
-           n_runs_max,
-           showDetails=FALSE,
-           randomParameter=NA, ...)
+           dataInputName="sample_01",
+           n_runs_min_sm=20,
+           n_runs_max_sm=500,
+           n_runs_min_dsm=20,
+           n_runs_max_dsm=500,
+           startList_sm=list(maximum = 1, slopeParam = 36, midPoint = 0.3333333),
+           lowerBounds_sm=c(maximum=0.3, slopeParam=0.00001,  midPoint=0.3125-0.8333333),
+           upperBounds_sm=c(maximum=1.5, slopeParam=180,  midPoint=0.3125+0.8333333),
+           min_Factor_sm=1/2^20,
+           n_iterations_sm=1000,
+           startList_dsm=list(finalAsymptoteIntensityRatio = 0,
+                              maximum = 1,
+                              slope1Param = 1,
+                              midPoint1Param = 0.3333333,
+                              slope2Param=1,
+                              midPointDistanceParam=0.2916667),
+           lowerBounds_dsm=c(finalAsymptoteIntensityRatio = 0,
+                             maximum = 0.3,
+                             slope1Param = .01,
+                             midPoint1Param = -0.5208333,
+                             slope2Param=.01,
+                             midPointDistanceParam=0.04166667),
+           upperBounds_dsm=c(finalAsymptoteIntensityRatio = 1,
+                             maximum = 1.5,
+                             slope1Param = 180,
+                             midPoint1Param = 1.145833,
+                             slope2Param=180,
+                             midPointDistanceParam=0.625),
+           min_Factor_dsm=1/2^20,
+           n_iterations_dsm=1000,
+           threshold_intensity_range=0.1,
+           threshold_minimum_for_intensity_maximum=0.3,
+           threshold_bonus_sigmoidal_AIC=0,
+           threshold_sm_tmax_IntensityRatio=0.85,
+           threshold_dsm_tmax_IntensityRatio=0.75,
+           threshold_AIC=-10,
+           threshold_t0_max_int = 0.05,
+           stepSize=0.00001,
+           showDetails=FALSE,...)
   {
-    dataInputCheck=dataCheck(dataInput)
+    normalizedInput = sicegar::normalizeData(dataInput = dataInput, dataInputName = dataInputName)
+    preDecision = sicegar::pre_categorize(normalizedInput = normalizedInput,
+                                          threshold_intensity_range = threshold_intensity_range,
+                                          threshold_minimum_for_intensity_maximum = threshold_minimum_for_intensity_maximum)
 
-    if(!(model %in% c("linear", "sigmoidal", "doublesigmoidal", "test")) )
-    {stop("model should be one of linear, sigmoidal, doublesigmoidal, test")}
+    if(showDetails){utils::str(preDecision)}
+    if(preDecision$decision=="no_signal"){return(list(normalizedInput = normalizedInput,
+                                                      preDecision = preDecision))}
 
-    counterBetterFit=0
-    counterCorrectFit=0
-    counterTotalFit=0
-    residual_Sum_of_Squares_min=Inf
-    storedModelOutput=list()
-    storedModelOutput$residual_Sum_of_Squares=Inf
-
-    while(counterCorrectFit<n_runs_min & counterTotalFit<n_runs_max)
+    if(preDecision$decision=="not_no_signal")
     {
-      counterTotalFit=counterTotalFit+1
-      if(model == "test"){modelOutput=exampleFitFunction(randomParameter,...)}
-      if(model == "linear"){modelOutput=lineFitFunction(dataInput=dataInput,tryCounter=counterTotalFit,...)}
-      if(model == "sigmoidal"){modelOutput=sigmoidalFitFunction(dataInput=dataInput,tryCounter=counterTotalFit,...)}
-      if(model == "doublesigmoidal"){modelOutput=doublesigmoidalFitFunction(dataInput=dataInput,tryCounter=counterTotalFit,...)}
+      # Fit sigmoidal model
+      sigmoidalModel=sicegar::multipleFitFunction(dataInput=normalizedInput,
+                                                  model="sigmoidal",
+                                                  n_runs_min=n_runs_min_sm,
+                                                  n_runs_max=n_runs_max_sm,
+                                                  showDetails=showDetails,
+                                                  startList=startList_sm,
+                                                  lowerBounds=lowerBounds_sm,
+                                                  upperBounds=upperBounds_sm,
+                                                  min_Factor=min_Factor_sm,
+                                                  n_iterations=n_iterations_sm)
 
-      if(is.na(dataInputName))
-      {
-        isalist=(is.list(dataInput) & !is.data.frame(dataInput))
-        if(isalist)
-        {
-          modelOutput$dataInputName=dataInput$dataInputName
-        }
-        if(!isalist)
-        {
-          modelOutput$dataInputName=NA
-        }
-      }
+      # Fit double sigmoidal model
+      doubleSigmoidalModel=sicegar::multipleFitFunction(dataInput=normalizedInput,
+                                                        model="doublesigmoidal",
+                                                        n_runs_min=n_runs_min_dsm,
+                                                        n_runs_max=n_runs_max_dsm,
+                                                        showDetails=showDetails,
+                                                        startList=startList_dsm,
+                                                        lowerBounds=lowerBounds_dsm,
+                                                        upperBounds=upperBounds_dsm,
+                                                        min_Factor=min_Factor_dsm,
+                                                        n_iterations=n_iterations_dsm)
 
-      if(!is.na(dataInputName))
-      {
-        isalist=(is.list(dataInput) & !is.data.frame(dataInput))
-        if(isalist)
-        {
-          if(is.na(dataInput$dataInputName))
-          {
-            modelOutput$dataInputName=dataInputName
-          }
-          if(!is.na(dataInput$dataInputName))
-          {
-            if(dataInput$dataInputName!=dataInputName)
-              {stop("the input data has already have a name")}
-            if(dataInput$dataInputName==dataInputName)
-            {modelOutput$dataInputName=dataInputName}
-          }
-        }
-        if(!isalist)
-        {modelOutput$dataInputName=dataInputName}
-      }
+      # Parameter Calculations
+      sigmoidalModel = sicegar::parameterCalculation(parameterVector = sigmoidalModel,
+                                                     stepSize = stepSize)
+      doubleSigmoidalModel = sicegar::parameterCalculation(parameterVector = doubleSigmoidalModel,
+                                                           stepSize = stepSize)
+      # Categorization
+      outputCluster=sicegar::categorize(parameterVectorSigmoidal=sigmoidalModel,
+                                        parameterVectorDoubleSigmoidal=doubleSigmoidalModel,
+                                        threshold_intensity_range = threshold_intensity_range,
+                                        threshold_minimum_for_intensity_maximum = threshold_minimum_for_intensity_maximum,
+                                        threshold_bonus_sigmoidal_AIC = threshold_bonus_sigmoidal_AIC,
+                                        threshold_sm_tmax_IntensityRatio = threshold_sm_tmax_IntensityRatio,
+                                        threshold_dsm_tmax_IntensityRatio = threshold_dsm_tmax_IntensityRatio,
+                                        threshold_AIC = threshold_AIC,
+                                        threshold_t0_max_int = threshold_t0_max_int,
+                                        showDetails = showDetails)
 
-
-      if(modelOutput[["isThisaFit"]]){
-        counterCorrectFit=counterCorrectFit+1
-        if(residual_Sum_of_Squares_min>modelOutput$residual_Sum_of_Squares){
-          counterBetterFit=counterBetterFit+1
-          residual_Sum_of_Squares_min=modelOutput$residual_Sum_of_Squares
-          storedModelOutput=modelOutput
-        }
-      }
-
-      if(showDetails){
-        print(c(betterFit=counterBetterFit,
-                correctFit=counterCorrectFit,
-                totalFit=counterTotalFit,
-                currentOutput=modelOutput$residual_Sum_of_Squares,
-                bestOutput=storedModelOutput$residual_Sum_of_Squares))}
+      if(showDetails){utils::str(outputCluster)}
+      return(list(normalizedInput = normalizedInput,
+                  sigmoidalModel = sigmoidalModel,
+                  doubleSigmoidalModel = doubleSigmoidalModel,
+                  outputCluster = outputCluster))
 
     }
-
-    # add number off independent runs to outputs
-    # might be important for quality checks
-    storedModelOutput=c(storedModelOutput,
-                        betterFit=counterBetterFit,
-                        correctFit=counterCorrectFit,
-                        totalFit=counterTotalFit)
-
-    return(storedModelOutput)
-  }
-
-# @title Produces an example
-#
-# @param randomParameter defines the probability that the exampleFitFunction returns TRUE values for isThisaFit parameter. The value should be in the interval of 0 and 1.
-# @description Generates TRUE values for isThisaFit parameter with the given probability.
-# @return Returns TRUE or FALSE for isThisaFit parameter and also residual_Sum_of_Squares parameter that determines the goodness of fit.
-# @export
-# @examples
-#
-# print(exampleFitFunction(.5))
-exampleFitFunction<-
-  function(randomParameter)
-  {
-    if(randomParameter<0 | randomParameter>1)
-      {stop("the random parameter for model test should be between 0 and 1")}
-    randomNumber=stats::runif(1, 0, 1)
-    if(randomNumber<randomParameter){isThisaFit=TRUE; residual_Sum_of_Squares=stats::runif(1, 0, 1)}
-    if(randomNumber>randomParameter){isThisaFit=FALSE; residual_Sum_of_Squares=NA}
-    outputList=list(isThisaFit=isThisaFit,
-                    randomParameter=randomParameter,
-                    residual_Sum_of_Squares=residual_Sum_of_Squares)
-    return(outputList)
   }

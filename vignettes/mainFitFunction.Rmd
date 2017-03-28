@@ -1,0 +1,115 @@
+---
+title: Main fit function
+author: "Umut Caglar"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Main fit function}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+  
+# Main fit function
+This is the wrapper that puts everything together; the input is raw data output is sigmoidal & double sigmoidal fits with `sicegar::parameterCalculation()`, and results for classification. All other parameters can be arranged from this function; but without touch they are all arranged to default settings
+  
+  
+```{r install packages, echo=FALSE, warning=FALSE, results='hide',message=FALSE}
+
+###*****************************
+# INITIAL COMMANDS TO RESET THE SYSTEM
+rm(list = ls())
+if (is.integer(dev.list())){dev.off()}
+cat("\014")
+seedNo=14159
+set.seed(seedNo)
+###*****************************
+
+###*****************************
+require("sicegar")
+require("dplyr")
+require("ggplot2")
+require("cowplot")
+###*****************************
+```
+
+## Data generation
+To generate the figures, we will go backwards and firstly generate some data to analize. To add some randomness to the input data I will use some noise. The input of all package must be in the form of a data frame with at least 2 columns time and intensity. 
+
+We will generate data for both sigmoidal and double sigmoidal 
+
+### Generate data for sigmoidal
+```{r generate data for sigmoidal}
+time=seq(3,24,0.5)
+
+#simulate intensity data and add noise
+noise_parameter=0.1
+intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
+intensity=sicegar::sigmoidalFitFormula(time, maximum=4, slopeParam=1, midPoint=8)
+intensity=intensity+intensity_noise
+
+dataInputSigmoidal=data.frame(intensity=intensity,time=time)
+```
+
+
+### Generate data for double - sigmoidal
+```{r generate data for double - sigmoidal}
+noise_parameter=0.2
+intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
+intensity = sicegar::doublesigmoidalFitFormula(time,
+                                    finalAsymptoteIntensityRatio=.3,
+                                    maximum=4,
+                                    slope1Param=1,
+                                    midPoint1Param=7,
+                                    slope2Param=1,
+                                    midPointDistanceParam=8)
+intensity=intensity+intensity_noise
+dataInputDoubleSigmoidal=data.frame(intensity=intensity,time=time)
+```
+
+
+## Apply the main function to obtain all results
+
+```{r apply fitFunction for sigmoidal & double_sigmoidal datasets}
+fitObj_sm <- fitFunction(dataInput = dataInputSigmoidal)
+fitObj_dsm <- fitFunction(dataInput = dataInputDoubleSigmoidal)
+```
+
+### The results of the sigmoidal fit
+
+```{r The results of the sigmoidal fit}
+print(fitObj_sm$normalizedInput)
+print(t(fitObj_sm$sigmoidalModel))
+print(t(fitObj_sm$doubleSigmoidalModel))
+utils::str(fitObj_sm$outputCluster)
+```
+
+
+### The results of the double_sigmoidal fit
+
+```{r The results of the double_sigmoidal fit}
+print(fitObj_dsm$normalizedInput)
+print(t(fitObj_dsm$sigmoidalModel))
+print(t(fitObj_dsm$doubleSigmoidalModel))
+utils::str(fitObj_dsm$outputCluster)
+```
+
+## Generate figures
+
+Here are the two datasets that we want to categorize
+```{r cowplor figure, echo=TRUE, message=FALSE, warning=FALSE, comment=FALSE, fig.height=4, fig.width=8}
+fig_a=sicegar::figureModelCurves(dataInput=fitObj_sm$normalizedInput,
+                                  sigmoidalFitVector=fitObj_sm$sigmoidalModel,
+                                  showParameterRelatedLines=TRUE)
+
+# Double Sigmoidal Fit with parameter related lines
+fig_b=sicegar::figureModelCurves(dataInput=fitObj_dsm$normalizedInput,
+                                  doubleSigmoidalFitVector=fitObj_dsm$doubleSigmoidalModel,
+                                  showParameterRelatedLines=TRUE)
+
+fig <- cowplot::plot_grid(fig_a, fig_b, ncol = 2)
+print(fig)
+```

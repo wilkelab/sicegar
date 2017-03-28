@@ -5,14 +5,14 @@
 \title{multiple fit function.}
 \usage{
 multipleFitFunction(dataInput, dataInputName = NA, model, n_runs_min = 20,
-  n_runs_max = 500, showDetails = FALSE, randomParameter = NA, ...)
+  n_runs_max = 500, showDetails = FALSE, ...)
 }
 \arguments{
 \item{dataInput}{normalized input data that will be fitted transferred into related functions}
 
 \item{dataInputName}{name of data set (Default is 'NA').}
 
-\item{model}{type of fit function that will be used. Can be "linear", "sigmoidal", "double_sigmoidal", or "test".}
+\item{model}{type of fit function that will be used. Can be "linear", "sigmoidal", or "double_sigmoidal".}
 
 \item{n_runs_min}{number of minimum successfull runs returned by the fitting algorithm.}
 
@@ -20,9 +20,7 @@ multipleFitFunction(dataInput, dataInputName = NA, model, n_runs_min = 20,
 
 \item{showDetails}{if TRUE prints details of intermediate steps of individual fits (Default is FALSE).}
 
-\item{randomParameter}{a parameter needed to run the "test" model. Default is 'NA'}
-
-\item{...}{all other arguments that model functions ("exampleFitFunction", "lineFitFunction", "sigmoidalFitFunction", "doublesigmoidalFitFunction") may need}
+\item{...}{all other arguments that model functions ("lineFitFunction", "sigmoidalFitFunction", "doublesigmoidalFitFunction") may need}
 }
 \value{
 Returns the parameters related with the model fitted for the input data.

@@ -4,7 +4,7 @@ author: "Umut Caglar"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Figure Generation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -47,7 +47,7 @@ time=seq(3,24,0.5)
 #simulate intensity data and add noise
 noise_parameter=0.1
 intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
-intensity=sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
+intensity=sicegar::sigmoidalFitFormula(time, maximum=4, slope=1, midPoint=8)
 intensity=intensity+intensity_noise
 
 dataInputSigmoidal=data.frame(intensity=intensity,time=time)
@@ -58,7 +58,7 @@ dataInputSigmoidal=data.frame(intensity=intensity,time=time)
 ```{r generate data for double - sigmoidal}
 noise_parameter=0.2
 intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
-intensity=doublesigmoidalFitFormula(time,
+intensity=sicegar::doublesigmoidalFitFormula(time,
                                     finalAsymptoteIntensityRatio=.3,
                                     maximum=4,
                                     slope1=1,
@@ -78,10 +78,10 @@ The normalization code is
 
 ```{r normalize_data}
 normalizedSigmoidalInput = sicegar::normalizeData(dataInput = dataInputSigmoidal, 
-                                         dataInputName = "sigmoidalSample")
+                                                  dataInputName = "sigmoidalSample")
 
 normalizedDoubleSigmoidalInput = sicegar::normalizeData(dataInput = dataInputDoubleSigmoidal, 
-                                         dataInputName = "doubleSigmoidalSample")
+                                                        dataInputName = "doubleSigmoidalSample")
 ```
 
 
@@ -91,22 +91,29 @@ We will now recalculate the parameters for sigmoidal and double sigmoidal datase
 
 ```{r sigmoidal and double sigmoidal fit to datasets}
 # Do the sigmoidal fit
-sigmoidalModel=fitFunction(dataInput=normalizedSigmoidalInput,
-                           model="sigmoidal",
-                           n_runs_min=20,
-                           n_runs_max=500,
-                           showDetails=FALSE)
+sigmoidalModel=sicegar::multipleFitFunction(dataInput=normalizedSigmoidalInput,
+                                            model="sigmoidal",
+                                            n_runs_min=20,
+                                            n_runs_max=500,
+                                            showDetails=FALSE)
 
 # Do the double sigmoidal fit
-doubleSigmoidalModel=fitFunction(dataInput=normalizedDoubleSigmoidalInput,
-                                 model="doublesigmoidal",
-                                 n_runs_min=20,
-                                 n_runs_max=500,
-                                 showDetails=FALSE)
+doubleSigmoidalModel=sicegar::multipleFitFunction(dataInput=normalizedDoubleSigmoidalInput,
+                                                  model="doublesigmoidal",
+                                                  n_runs_min=20,
+                                                  n_runs_max=500,
+                                                  showDetails=FALSE)
+```
 
-doubleSigmoidalModel = numericalReCalculation(doubleSigmoidalModel,
-                                              stepSize=0.00001)
-# The double sigmoidal model needs one more step for obtaining correct values named as "numericalReCalculation"
+Now we will apply `sicegar::parameterCalculation` function to generate additional variables.
+
+```{r generate additional parameters for sigmoidalModel and doubleSigmoidalModel}
+# Generate additional parameters for sigmoidalModel 
+sigmoidalModel = sicegar::parameterCalculation(sigmoidalModel)
+
+
+# Generate additional parameters for doubleSigmoidalModel
+doubleSigmoidalModel = sicegar::parameterCalculation(doubleSigmoidalModel)
 ```
 
 
@@ -116,11 +123,11 @@ The figure generation function have multiple options.
 One can only draw the input data
 ```{r plot raw data, echo=TRUE, fig.height=4, fig.width=8}
 # Sigmoidal Raw Data
-fig01a=printInfectionCurves(dataInput=normalizedSigmoidalInput)
+fig01a=sicegar::figureModelCurves(dataInput=normalizedSigmoidalInput)
 print(fig01a)
 
 # Double Sigmoidal Raw Data
-fig01b=printInfectionCurves(dataInput=normalizedDoubleSigmoidalInput)
+fig01b=sicegar::figureModelCurves(dataInput=normalizedDoubleSigmoidalInput)
 print(fig01b)
 ```
 
@@ -129,13 +136,13 @@ or we can generate raw data with fits
 
 ```{r plot raw data and fit, echo=TRUE, message=FALSE, warning=FALSE, comment=FALSE, fig.height=4, fig.width=8}
 # Sigmoidal Fit
-fig02a=printInfectionCurves(dataInput=normalizedSigmoidalInput,
-                           sigmoidalFitVector=sigmoidalModel)
+fig02a=sicegar::figureModelCurves(dataInput=normalizedSigmoidalInput,
+                                  sigmoidalFitVector=sigmoidalModel)
 print(fig02a)
 
 # Double Sigmoidal Fit
-fig02b=printInfectionCurves(dataInput=normalizedDoubleSigmoidalInput,
-                           doubleSigmoidalFitVector=doubleSigmoidalModel)
+fig02b=sicegar::figureModelCurves(dataInput=normalizedDoubleSigmoidalInput,
+                                  doubleSigmoidalFitVector=doubleSigmoidalModel)
 print(fig02b)
 ```
 
@@ -143,14 +150,14 @@ We can see the quantified parameters on the figues too; by the help of `showPara
 
 ```{r plot raw data and fit with parameter related lines, echo=TRUE, message=FALSE, warning=FALSE, comment=FALSE, fig.height=4, fig.width=8}
 # Sigmoidal Fit with parameter related lines
-fig03a=printInfectionCurves(dataInput=normalizedSigmoidalInput,
-                           sigmoidalFitVector=sigmoidalModel,
-                           showParameterRelatedLines=TRUE)
+fig03a=sicegar::figureModelCurves(dataInput=normalizedSigmoidalInput,
+                                  sigmoidalFitVector=sigmoidalModel,
+                                  showParameterRelatedLines=TRUE)
 print(fig03a)
 
 # Double Sigmoidal Fit with parameter related lines
-fig03b=printInfectionCurves(dataInput=normalizedDoubleSigmoidalInput,
-                           doubleSigmoidalFitVector=doubleSigmoidalModel,
-                           showParameterRelatedLines=TRUE)
+fig03b=sicegar::figureModelCurves(dataInput=normalizedDoubleSigmoidalInput,
+                                  doubleSigmoidalFitVector=doubleSigmoidalModel,
+                                  showParameterRelatedLines=TRUE)
 print(fig03b)
 ```

@@ -132,9 +132,8 @@ doublesigmoidalFitFunction<-function(dataInput,
     parameterList$isThisaFit=TRUE
     parameterList$startVector=counterDependentStartList
     if(isalist){parameterList$dataScalingParameters=as.list(dataInput$dataScalingParameters)}
-    parameterList$model="doublesigmoidal"
-    parameterList$numericalParameters=FALSE
-
+    parameterList$model=as.character("doublesigmoidal")
+    parameterList$additionalParameters=FALSE
 
     parameterDf=as.data.frame(parameterList)
     #Renormalize Parameters

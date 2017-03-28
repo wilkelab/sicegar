@@ -91,7 +91,8 @@ sigmoidalFitFunction<-function(dataInput,
     parameterList$isThisaFit=TRUE
     parameterList$startVector=counterDependentStartList
     if(isalist){parameterList$dataScalingParameters=as.list(dataInput$dataScalingParameters)}
-    parameterList$model="sigmoidal"
+    parameterList$model=as.character("sigmoidal")
+    parameterList$additionalParameters=FALSE
 
     parameterDf=as.data.frame(parameterList)
     #Renormalize Parameters

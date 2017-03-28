@@ -22,13 +22,15 @@ VignetteBuilder: knitr
 BugReports: https://github.com/wilkelab/sicegar/issues
 Collate:
     'categorize.R'
+    'categorizeV2.R'
     'mainFunctions.R'
     'lineFitFunctions.R'
+    'multipleFitFunction.R'
     'sigmoidalFitFunctions.R'
     'doublesigmoidalFitFunctions.R'
     'normalizationFunction.R'
     'sicegar.R'
     'dataInputCheck.R'
-    'numericalReCalculation.R'
-    'generateFigures.R'
+    'parameterCalculation.R'
+    'figureGeneration.R'
 RoxygenNote: 5.0.1

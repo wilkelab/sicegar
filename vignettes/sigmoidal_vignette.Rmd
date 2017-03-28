@@ -4,7 +4,7 @@ author: "Umut Caglar"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{(2/3) Sigmoidal model}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -141,6 +141,7 @@ These are the parameters of the normalization step
 They are the meta summary of the result parameters
 
 * `model`: Gives the used model for fitting
+* `additionalParameters`: Wheather the additional parameters are calculated or not. The additional parameters are the meaningful parameters for external usage. They can be calculated with the help of `sicegar::parameterCalculation` function.
 * `isThisaFit`: FALSE means there is not any successful fit. TRUE means there is at least one successful fit 
 
 Likelihood maximization algorithm starts from a random initiation (if tryCounter!=1) point and goes down the fitness space by a gradient decent algorithm. these parameters represent the start point of the gradient decent algorithm. 

@@ -4,7 +4,7 @@ author: "Umut Caglar"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{(3/3) Double Sigmoidal model}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -144,7 +144,7 @@ They are the meta summary of the result parameters
 
 * `isThisaFit`
 * `model`
-* `numericalParameters`: __"FALSE"__ in this case  
+* `additionalParameters`: Wheather the additional parameters are calculated or not. The additional parameters are the meaningful parameters for external usage. They can be calculated with the help of `sicegar::parameterCalculation` function.
 
 Likelihood maximization algorithm starts from a random initiation (if tryCounter!=1) point and goes down the fitness space by a gradient decent algorithm. these parameters represent the start point of the gradient decent algorithm.
 
@@ -207,7 +207,7 @@ They are the parameters associated with the quality of the fit.
 * `AIC_value`: Smaller value indicate a better fit
 * `BIC_value`: Smaller value indicate a better fit
 
-They are the fitted values after converting everything from normalized to un-normalized scale. (Without numeric correction)
+They are the fitted values after converting everything from normalized to un-normalized scale. (Without additional parameters)
 
 * `maximum_Estimate`: Maximum intensity estimate for the raw data
 * `slope1Param_Estimate`: __Slope1 parameter__ estimate for the raw data 

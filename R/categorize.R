@@ -271,7 +271,7 @@ categorize<-
     {choices=setdiff(choices,c("ambiguous"))}
 
     # 9. if at this point we have both "sigmoidal" or "double_sigmoidal", then we will choose with the help of AIC scores
-    decisionList$threshold_bonus_sigmoidal_AIC = threshold_bonus_sigmoidal_AIC
+    # decisionList$threshold_bonus_sigmoidal_AIC ?? threshold_bonus_sigmoidal_AIC
     if(length(intersect(choices, c("sigmoidal", "double_sigmoidal"))) == 2)
     {
       if(decisionList$sigmoidalAIC + threshold_bonus_sigmoidal_AIC < decisionList$doublesigmoidalAIC)

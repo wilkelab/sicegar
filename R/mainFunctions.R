@@ -99,8 +99,16 @@ fitFunction <-
                                           threshold_minimum_for_intensity_maximum = threshold_minimum_for_intensity_maximum)
 
     if(showDetails){utils::str(preDecision)}
-    if(preDecision$decision=="no_signal"){return(list(normalizedInput = normalizedInput,
-                                                      preDecision = preDecision))}
+    if(preDecision$decision=="no_signal")
+    {
+      summaryVector=c()
+      summaryVector$decision = "no_signal"
+      return(list(normalizedInput = normalizedInput,
+                  sigmoidalModel = NA,
+                  doubleSigmoidalModel = NA,
+                  outputCluster = preDecision,
+                  summaryVector=summaryVector))
+    }
 
     if(preDecision$decision=="not_no_signal")
     {
@@ -145,11 +153,63 @@ fitFunction <-
                                         threshold_t0_max_int = threshold_t0_max_int,
                                         showDetails = showDetails)
 
+      # Summary
+      summaryVector=c()
+      if(outputCluster$decision=="sigmoidal")
+      {
+        summaryVector$decision = "sigmoidal"
+        summaryVector$maximum_x = sigmoidalModel$maximum_x
+        summaryVector$maximum_y = sigmoidalModel$maximum_y
+        summaryVector$midPoint_x = sigmoidalModel$midPoint_x
+        summaryVector$midPoint_y = sigmoidalModel$midPoint_y
+        summaryVector$slope = sigmoidalModel$slope
+        summaryVector$incrementTime = sigmoidalModel$incrementTime
+        summaryVector$startPoint_x = sigmoidalModel$startPoint_x
+        summaryVector$startPoint_y = sigmoidalModel$startPoint_y
+        summaryVector$reachMaximum_x = sigmoidalModel$reachMaximum_x
+        summaryVector$reachMaximum_y = sigmoidalModel$reachMaximum_y
+      }
+
+      if(outputCluster$decision=="double_sigmoidal")
+      {
+        summaryVector$decision = "double_sigmoidal"
+        summaryVector$maximum_x = doubleSigmoidalModel$maximum_x
+        summaryVector$maximum_y = doubleSigmoidalModel$maximum_y
+        summaryVector$midPoint1_x = doubleSigmoidalModel$midPoint1_x
+        summaryVector$midPoint1_y = doubleSigmoidalModel$midPoint1_y
+        summaryVector$midPoint2_x = doubleSigmoidalModel$midPoint2_x
+        summaryVector$midPoint2_y = doubleSigmoidalModel$midPoint2_y
+        summaryVector$slope1 = doubleSigmoidalModel$slope1
+        summaryVector$slope2 = doubleSigmoidalModel$slope2
+        summaryVector$finalAsymptoteIntensity = doubleSigmoidalModel$finalAsymptoteIntensity
+        summaryVector$incrementTime = doubleSigmoidalModel$incrementTime
+        summaryVector$startPoint_x = doubleSigmoidalModel$startPoint_x
+        summaryVector$startPoint_y = doubleSigmoidalModel$startPoint_y
+        summaryVector$reachMaximum_x = doubleSigmoidalModel$reachMaximum_x
+        summaryVector$reachMaximum_y = doubleSigmoidalModel$reachMaximum_y
+        summaryVector$decrementTime = doubleSigmoidalModel$decrementTime
+        summaryVector$startDeclinePoint_x = doubleSigmoidalModel$startDeclinePoint_x
+        summaryVector$startDeclinePoint_y = doubleSigmoidalModel$startDeclinePoint_y
+        summaryVector$endDeclinePoint_x = doubleSigmoidalModel$endDeclinePoint_x
+        summaryVector$endDeclinePoint_y = doubleSigmoidalModel$endDeclinePoint_y
+      }
+
+      if(outputCluster$decision=="no_signal")
+      {
+        summaryVector$decision = "no_signal"
+      }
+
+      if(outputCluster$decision=="ambiguous")
+      {
+        summaryVector$decision = "ambiguous"
+      }
+
       if(showDetails){utils::str(outputCluster)}
       return(list(normalizedInput = normalizedInput,
                   sigmoidalModel = sigmoidalModel,
                   doubleSigmoidalModel = doubleSigmoidalModel,
-                  outputCluster = outputCluster))
+                  outputCluster = outputCluster,
+                  summaryVector=summaryVector))
 
     }
   }

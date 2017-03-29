@@ -217,7 +217,7 @@ categorize<-
     if(!decisionList$test.minimum_for_intensity_maximum)
     {choices=setdiff(choices,c("sigmoidal", "double_sigmoidal", "ambiguous"))}
 
-    # 1b. intensity_max - intensity_min must be greater than "threshold_intensity_range", otherwise "no_signal"
+    # 1b. "intensity_max, intensity_min difference" must be greater than "threshold_intensity_range", otherwise "no_signal"
     if(!decisionList$test.minimum_for_intensity_maximum)
     {choices=setdiff(choices,c("sigmoidal", "double_sigmoidal", "ambiguous"))}
 

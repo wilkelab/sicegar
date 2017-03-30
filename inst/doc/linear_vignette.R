@@ -30,15 +30,15 @@ intensity=intensity+intensity_noise
 dataInput=data.frame(intensity=intensity,time=time)
 
 ## ----time normalization, eval=FALSE--------------------------------------
-#  timeRatio=max(timeData); timeData=timeData/timeRatio
+#  timeRange=max(timeData); timeData=timeData/timeRange
 
 ## ----intensity normalization, eval=FALSE---------------------------------
 #  intensityMin = min(dataInput$intensity)
 #  intensityMax = max(dataInput$intensity)
-#  intensityRatio = intensityMax - intensityMin
+#  intensityRange = intensityMax - intensityMin
 #  
 #  intensityData=dataInput$intensity-intensityMin
-#  intensityData=intensityData/intensityRatio
+#  intensityData=intensityData/intensityRange
 
 ## ----normalize_data------------------------------------------------------
 normalizedInput = sicegar::normalizeData(dataInput = dataInput, 

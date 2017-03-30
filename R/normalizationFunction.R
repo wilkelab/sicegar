@@ -22,21 +22,21 @@ normalizeData <-function(dataInput,dataInputName=NA)
 
     #timeMin=min(dataInput$time)
     timeData=dataInput$time
-    timeRatio=max(timeData)
-    timeData=timeData/timeRatio
+    timeRange=max(timeData)
+    timeData=timeData/timeRange
 
     intensityMin=min(dataInput$intensity)
     intensityMax=max(dataInput$intensity)
     intensityData=dataInput$intensity-intensityMin
-    intensityRatio=max(intensityData)
-    intensityData=intensityData/intensityRatio
+    intensityRange=max(intensityData)
+    intensityData=intensityData/intensityRange
 
     dataOutput = data.frame(time=timeData,intensity=intensityData)
     return(list(timeIntensityData=dataOutput,
-                dataScalingParameters=c(timeRatio=timeRatio,
+                dataScalingParameters=c(timeRange=timeRange,
                                         intensityMin=intensityMin,
                                         intensityMax=intensityMax,
-                                        intensityRatio=intensityRatio),
+                                        intensityRange=intensityRange),
                 dataInputName=dataInputName))
   }
 
@@ -66,9 +66,9 @@ unnormalizeData <-
   function(dataInput)
   {
     dataInputCheckVariable=dataCheck(dataInput)
-    time=dataInput$dataScalingParameters[["timeRatio"]]*dataInput$timeIntensityData[["time"]]
+    time=dataInput$dataScalingParameters[["timeRange"]]*dataInput$timeIntensityData[["time"]]
     intensity=dataInput$dataScalingParameters[["intensityMin"]]+
-      dataInput$dataScalingParameters[["intensityRatio"]]*dataInput$timeIntensityData[["intensity"]]
+      dataInput$dataScalingParameters[["intensityRange"]]*dataInput$timeIntensityData[["intensity"]]
 
     dataOutput = list(timeIntensityData=data.frame(time,intensity))
     return(dataOutput)

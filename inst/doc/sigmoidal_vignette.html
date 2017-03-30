@@ -12,7 +12,7 @@
 
 <meta name="author" content="Umut Caglar" />
 
-<meta name="date" content="2017-03-29" />
+<meta name="date" content="2017-03-30" />
 
 <title>(2/3) Sigmoidal model</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">(2/3) Sigmoidal model</h1>
 <h4 class="author"><em>Umut Caglar</em></h4>
-<h4 class="date"><em>2017-03-29</em></h4>
+<h4 class="date"><em>2017-03-30</em></h4>
 
 
 
@@ -101,16 +101,16 @@ dataInput=<span class="kw">data.frame</span>(<span class="dt">intensity=</span>i
 <ul>
 <li>Time is normalized with respect to maximum value the time parameter takes.</li>
 </ul>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">timeRatio=<span class="kw">max</span>(timeData); timeData=timeData/timeRatio</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">timeRange=<span class="kw">max</span>(timeData); timeData=timeData/timeRange</code></pre></div>
 <ul>
 <li>Intensity is normalized with respect to intensity interval</li>
 </ul>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">intensityMin =<span class="st"> </span><span class="kw">min</span>(dataInput$intensity)
 intensityMax =<span class="st"> </span><span class="kw">max</span>(dataInput$intensity)
-intensityRatio =<span class="st"> </span>intensityMax -<span class="st"> </span>intensityMin
+intensityRange =<span class="st"> </span>intensityMax -<span class="st"> </span>intensityMin
 
 intensityData=dataInput$intensity-intensityMin
-intensityData=intensityData/intensityRatio</code></pre></div>
+intensityData=intensityData/intensityRange</code></pre></div>
 <p>The normalization code is</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">normalizedInput =<span class="st"> </span>sicegar::<span class="kw">normalizeData</span>(<span class="dt">dataInput =</span> dataInput, 
                                          <span class="dt">dataInputName =</span> <span class="st">&quot;Sample001&quot;</span>)</code></pre></div>
@@ -124,7 +124,7 @@ intensityData=intensityData/intensityRatio</code></pre></div>
 ## 5 0.2083333 0.026984704
 ## 6 0.2291667 0.052748267</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(normalizedInput$dataScalingParameters) <span class="co"># the normalization parameters that is needed to go back to original scale</span></code></pre></div>
-<pre><code>##      timeRatio   intensityMin   intensityMax intensityRatio 
+<pre><code>##      timeRange   intensityMin   intensityMax intensityRange 
 ##     24.0000000      0.1065867      4.0969597      3.9903731</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(normalizedInput$dataInputName) <span class="co"># a useful feature to track the sample in all the process</span></code></pre></div>
 <pre><code>## [1] &quot;Sample001&quot;</code></pre>
@@ -165,10 +165,10 @@ intensityData=intensityData/intensityRatio</code></pre></div>
 ## startVector.maximum                  &quot;0.702167&quot;    
 ## startVector.slopeParam               &quot;94.52226&quot;    
 ## startVector.midPoint                 &quot;0.3882737&quot;   
-## dataScalingParameters.timeRatio      &quot;24&quot;          
+## dataScalingParameters.timeRange      &quot;24&quot;          
 ## dataScalingParameters.intensityMin   &quot;0.1065867&quot;   
 ## dataScalingParameters.intensityMax   &quot;4.09696&quot;     
-## dataScalingParameters.intensityRatio &quot;3.990373&quot;    
+## dataScalingParameters.intensityRange &quot;3.990373&quot;    
 ## model                                &quot;sigmoidal&quot;   
 ## additionalParameters                 &quot;FALSE&quot;       
 ## maximum_Estimate                     &quot;4.054168&quot;    
@@ -177,11 +177,11 @@ intensityData=intensityData/intensityRatio</code></pre></div>
 <p>Here is the brief explanations of the parameters that are given by <code>sicegar::sigmoidalFitFunction</code> (In different order then than the output vector of the sigmoidalFitFunction)</p>
 <p>These are the parameters of the normalization step</p>
 <ul>
-<li><code>dataScalingParameters.timeRatio</code>: Maximum of raw time data<br />
+<li><code>dataScalingParameters.timeRange</code>: Maximum of raw time data<br />
 </li>
 <li><code>dataScalingParameters.intensityMin</code>: Minimum of raw intensity data</li>
 <li><code>dataScalingParameters.intensityMax</code>: Maximum of raw intensity data</li>
-<li><code>dataScalingParameters.intensityRatio</code>: Maximum - Minimum of intensity data</li>
+<li><code>dataScalingParameters.intensityRange</code>: Maximum - Minimum of intensity data</li>
 </ul>
 <p>They are the meta summary of the result parameters</p>
 <ul>

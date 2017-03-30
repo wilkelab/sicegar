@@ -187,18 +187,18 @@ sigmoidalFitFormula<-function(x, maximum, slopeParam, midPoint){
 #        *maximum_N_Estimate (normalized Maximum Estimate)
 #        *slopeParam_N_Estimate (normalzied Slope Parameter Estimate)
 #        *midPoint_N_Estimate (normalized Midpoint Estimate)
-#        *dataScalingParameters.intensityRatio the range of initial unnormalized intensity. Provieded if the data is normalized
+#        *dataScalingParameters.intensityRange the range of initial unnormalized intensity. Provieded if the data is normalized
 #        *parameterDF$dataScalingParameters.intensityMin the minimum of unnormalized intensity. Provieded if the data is normalized
-#        *parameterDF$dataScalingParameters.timeRatio tha maximum time that the experiment reach. Provieded if the data is normalized
+#        *parameterDF$dataScalingParameters.timeRange tha maximum time that the experiment reach. Provieded if the data is normalized
 # @param isalist defines if the input is provided as a list (i.e normalized) or as a data frame (i.e not normalized)
 # @details If the fit was done in normalized data frame then the found fit parameters will belong to normalized data.
 #          This function generates unnormalized counterparts of those parameters.
 sigmoidalRenormalizeParameters<-function(parameterDF,isalist)
 {
   if(isalist){
-    parameterDF$maximum_Estimate=parameterDF$maximum_N_Estimate*parameterDF$dataScalingParameters.intensityRatio+parameterDF$dataScalingParameters.intensityMin
-    parameterDF$slopeParam_Estimate=parameterDF$slopeParam_N_Estimate/parameterDF$dataScalingParameters.timeRatio
-    parameterDF$midPoint_Estimate=parameterDF$midPoint_N_Estimate*parameterDF$dataScalingParameters.timeRatio
+    parameterDF$maximum_Estimate=parameterDF$maximum_N_Estimate*parameterDF$dataScalingParameters.intensityRange+parameterDF$dataScalingParameters.intensityMin
+    parameterDF$slopeParam_Estimate=parameterDF$slopeParam_N_Estimate/parameterDF$dataScalingParameters.timeRange
+    parameterDF$midPoint_Estimate=parameterDF$midPoint_N_Estimate*parameterDF$dataScalingParameters.timeRange
   }
   if(!isalist){
     parameterDF$maximum_Estimate=parameterDF$maximum_N_Estimate

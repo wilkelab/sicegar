@@ -12,7 +12,7 @@
 
 <meta name="author" content="Umut Caglar" />
 
-<meta name="date" content="2017-03-29" />
+<meta name="date" content="2017-03-30" />
 
 <title>Main fit function</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Main fit function</h1>
 <h4 class="author"><em>Umut Caglar</em></h4>
-<h4 class="date"><em>2017-03-29</em></h4>
+<h4 class="date"><em>2017-03-30</em></h4>
 
 
 
@@ -163,7 +163,7 @@ fitObj_dsm &lt;-<span class="st"> </span><span class="kw">fitFunction</span>(<sp
 ## 43 1.0000000 0.976195853
 ## 
 ## $dataScalingParameters
-##      timeRatio   intensityMin   intensityMax intensityRatio 
+##      timeRange   intensityMin   intensityMax intensityRange 
 ##     24.0000000      0.1065867      4.0969597      3.9903731 
 ## 
 ## $dataInputName
@@ -191,10 +191,10 @@ fitObj_dsm &lt;-<span class="st"> </span><span class="kw">fitFunction</span>(<sp
 ## startVector.maximum                  &quot;1.469176&quot;    
 ## startVector.slopeParam               &quot;47.06382&quot;    
 ## startVector.midPoint                 &quot;0.5558083&quot;   
-## dataScalingParameters.timeRatio      &quot;24&quot;          
+## dataScalingParameters.timeRange      &quot;24&quot;          
 ## dataScalingParameters.intensityMin   &quot;0.1065867&quot;   
 ## dataScalingParameters.intensityMax   &quot;4.09696&quot;     
-## dataScalingParameters.intensityRatio &quot;3.990373&quot;    
+## dataScalingParameters.intensityRange &quot;3.990373&quot;    
 ## model                                &quot;sigmoidal&quot;   
 ## additionalParameters                 &quot;TRUE&quot;        
 ## maximum_Estimate                     &quot;4.054168&quot;    
@@ -252,10 +252,10 @@ fitObj_dsm &lt;-<span class="st"> </span><span class="kw">fitFunction</span>(<sp
 ## startVector.midPoint1Param               &quot;0.4024245&quot;      
 ## startVector.slope2Param                  &quot;36.33399&quot;       
 ## startVector.midPointDistanceParam        &quot;0.3970594&quot;      
-## dataScalingParameters.timeRatio          &quot;24&quot;             
+## dataScalingParameters.timeRange          &quot;24&quot;             
 ## dataScalingParameters.intensityMin       &quot;0.1065867&quot;      
 ## dataScalingParameters.intensityMax       &quot;4.09696&quot;        
-## dataScalingParameters.intensityRatio     &quot;3.990373&quot;       
+## dataScalingParameters.intensityRange     &quot;3.990373&quot;       
 ## model                                    &quot;doublesigmoidal&quot;
 ## additionalParameters                     &quot;TRUE&quot;           
 ## finalAsymptoteIntensityRatio_Estimate    &quot;0.9885998&quot;      
@@ -311,7 +311,7 @@ utils::<span class="kw">str</span>(fitObj_sm$outputCluster)</code></pre></div>
 ##  $ doublesigmoidalAIC                      : num -279
 ##  $ test.doublesigmoidalAIC                 : logi TRUE
 ##  $ dsm_maximum_x                           : num 21
-##  $ timeRatio                               : num 24
+##  $ timeRange                               : num 24
 ##  $ test.dsm_maximum_x                      : logi TRUE
 ##  $ sm_tmax_IntensityRatio                  : num 1
 ##  $ threshold_sm_tmax_IntensityRatio        : num 0.85
@@ -395,7 +395,7 @@ utils::<span class="kw">str</span>(fitObj_sm$summaryVector)</code></pre></div>
 ## 43 1.0000000 0.27312104
 ## 
 ## $dataScalingParameters
-##      timeRatio   intensityMin   intensityMax intensityRatio 
+##      timeRange   intensityMin   intensityMax intensityRange 
 ##     24.0000000      0.1416318      4.0938816      3.9522498 
 ## 
 ## $dataInputName
@@ -423,10 +423,10 @@ utils::<span class="kw">str</span>(fitObj_sm$summaryVector)</code></pre></div>
 ## startVector.maximum                  &quot;1.325411&quot;    
 ## startVector.slopeParam               &quot;107.2864&quot;    
 ## startVector.midPoint                 &quot;0.1971991&quot;   
-## dataScalingParameters.timeRatio      &quot;24&quot;          
+## dataScalingParameters.timeRange      &quot;24&quot;          
 ## dataScalingParameters.intensityMin   &quot;0.1416318&quot;   
 ## dataScalingParameters.intensityMax   &quot;4.093882&quot;    
-## dataScalingParameters.intensityRatio &quot;3.95225&quot;     
+## dataScalingParameters.intensityRange &quot;3.95225&quot;     
 ## model                                &quot;sigmoidal&quot;   
 ## additionalParameters                 &quot;TRUE&quot;        
 ## maximum_Estimate                     &quot;2.477844&quot;    
@@ -484,10 +484,10 @@ utils::<span class="kw">str</span>(fitObj_sm$summaryVector)</code></pre></div>
 ## startVector.midPoint1Param               &quot;0.5416556&quot;      
 ## startVector.slope2Param                  &quot;88.05782&quot;       
 ## startVector.midPointDistanceParam        &quot;0.3474758&quot;      
-## dataScalingParameters.timeRatio          &quot;24&quot;             
+## dataScalingParameters.timeRange          &quot;24&quot;             
 ## dataScalingParameters.intensityMin       &quot;0.1416318&quot;      
 ## dataScalingParameters.intensityMax       &quot;4.093882&quot;       
-## dataScalingParameters.intensityRatio     &quot;3.95225&quot;        
+## dataScalingParameters.intensityRange     &quot;3.95225&quot;        
 ## model                                    &quot;doublesigmoidal&quot;
 ## additionalParameters                     &quot;TRUE&quot;           
 ## finalAsymptoteIntensityRatio_Estimate    &quot;0.2935536&quot;      
@@ -543,7 +543,7 @@ utils::<span class="kw">str</span>(fitObj_dsm$outputCluster)</code></pre></div>
 ##  $ doublesigmoidalAIC                      : num -234
 ##  $ test.doublesigmoidalAIC                 : logi TRUE
 ##  $ dsm_maximum_x                           : num 11
-##  $ timeRatio                               : num 24
+##  $ timeRange                               : num 24
 ##  $ test.dsm_maximum_x                      : logi TRUE
 ##  $ sm_tmax_IntensityRatio                  : num 1
 ##  $ threshold_sm_tmax_IntensityRatio        : num 0.85

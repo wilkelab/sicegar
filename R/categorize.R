@@ -95,9 +95,9 @@ categorize<-
     decisionList$test.dsm_modelCheck = parameterVectorDoubleSigmoidal$model == "doublesigmoidal"
 
     # Do both models have same scaling parameters
-    test.timeRatio = parameterVectorSigmoidal$dataScalingParameters.timeRatio ==
-                        parameterVectorDoubleSigmoidal$dataScalingParameters.timeRatio
-    if(test.timeRatio){timeRatio = parameterVectorSigmoidal$dataScalingParameters.timeRatio}
+    test.timeRange = parameterVectorSigmoidal$dataScalingParameters.timeRange ==
+                        parameterVectorDoubleSigmoidal$dataScalingParameters.timeRange
+    if(test.timeRange){timeRange = parameterVectorSigmoidal$dataScalingParameters.timeRange}
 
     test.intensityMin = parameterVectorSigmoidal$dataScalingParameters.intensityMin ==
                           parameterVectorDoubleSigmoidal$dataScalingParameters.intensityMin
@@ -106,12 +106,12 @@ categorize<-
                           parameterVectorDoubleSigmoidal$dataScalingParameters.intensityMax
     if(test.intensityMax){intensityMax = parameterVectorSigmoidal$dataScalingParameters.intensityMax}
 
-    test.intensityRatio = parameterVectorSigmoidal$dataScalingParameters.intensityRatio ==
-                            parameterVectorDoubleSigmoidal$dataScalingParameters.intensityRatio
-    if(test.intensityRatio){intensityRatio = parameterVectorSigmoidal$dataScalingParameters.intensityRatio}
+    test.intensityRange = parameterVectorSigmoidal$dataScalingParameters.intensityRange ==
+                            parameterVectorDoubleSigmoidal$dataScalingParameters.intensityRange
+    if(test.intensityRange){intensityRange = parameterVectorSigmoidal$dataScalingParameters.intensityRange}
 
-    decisionList$test.dataScalingParameters = test.timeRatio & test.intensityMin &
-                                                  test.intensityMax & test.intensityRatio
+    decisionList$test.dataScalingParameters = test.timeRange & test.intensityMin &
+                                                  test.intensityMax & test.intensityRange
 
     # minimum for intensity maximum test
     decisionList$intensityMaximum = intensityMax
@@ -119,9 +119,9 @@ categorize<-
     decisionList$test.minimum_for_intensity_maximum <- threshold_minimum_for_intensity_maximum < intensityMax
 
     # Intensity range test
-    decisionList$intensityRange <- intensityRatio
+    decisionList$intensityRange <- intensityRange
     decisionList$threshold_intensity_range <- threshold_intensity_range
-    decisionList$test.intensity_range <- threshold_intensity_range < intensityRatio
+    decisionList$test.intensity_range <- threshold_intensity_range < intensityRange
 
     # Test if both models have a succesful fit
     decisionList$test.sigmoidalFit = parameterVectorSigmoidal$isThisaFit
@@ -140,12 +140,12 @@ categorize<-
 
     # Check if double sigmoidal maximum_x > last observed time point
     decisionList$dsm_maximum_x = parameterVectorDoubleSigmoidal$maximum_x
-    decisionList$timeRatio = timeRatio
-    decisionList$test.dsm_maximum_x = decisionList$dsm_maximum_x < timeRatio
+    decisionList$timeRange = timeRange
+    decisionList$test.dsm_maximum_x = decisionList$dsm_maximum_x < timeRange
 
 
     # Calculate predicted intensity for sigmoidal model at last observed time point
-    sm_intensity_at_tmax = sicegar::sigmoidalFitFormula(x = timeRatio,
+    sm_intensity_at_tmax = sicegar::sigmoidalFitFormula(x = timeRange,
                                                         maximum = parameterVectorSigmoidal$maximum_y,
                                                         slopeParam = parameterVectorSigmoidal$slopeParam_Estimate,
                                                         midPoint = parameterVectorSigmoidal$midPoint_Estimate)
@@ -155,8 +155,8 @@ categorize<-
     decisionList$test.sm_tmax_IntensityRatio = decisionList$sm_tmax_IntensityRatio > threshold_dsm_tmax_IntensityRatio
 
     # Calculate predicted intensity for double-sigmoidal model at last observed time point
-    # The intensity of double-sigmoidal at timeRatio point
-    dsm_intensity_at_tmax = sicegar::doublesigmoidalFitFormula(x=timeRatio,
+    # The intensity of double-sigmoidal at timeRange point
+    dsm_intensity_at_tmax = sicegar::doublesigmoidalFitFormula(x=timeRange,
                                                 finalAsymptoteIntensityRatio=parameterVectorDoubleSigmoidal$finalAsymptoteIntensityRatio_Estimate,
                                                 maximum=parameterVectorDoubleSigmoidal$maximum_y,
                                                 slope1Param=parameterVectorDoubleSigmoidal$slope1Param_Estimate,
@@ -372,7 +372,7 @@ pre_categorize<-
     decisionList$test.minimum_for_intensity_maximum <- threshold_minimum_for_intensity_maximum < decisionList$intensityMaximum
 
     # Intensity range test
-    decisionList$intensityRange <- normalizedInput$dataScalingParameters[["intensityRatio"]]
+    decisionList$intensityRange <- normalizedInput$dataScalingParameters[["intensityRange"]]
     decisionList$threshold_intensity_range <- threshold_intensity_range
     decisionList$test.intensity_range <- threshold_intensity_range < decisionList$intensityRange
 

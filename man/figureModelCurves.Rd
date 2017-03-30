@@ -24,7 +24,7 @@ figureModelCurves(dataInput, sigmoidalFitVector = NULL,
 
 \item{fittedXmin}{the minimum of the fitted data that plotted (Default 0)}
 
-\item{fittedXmax}{the maximum of the fitted data that plotted (Default timeRatio)}
+\item{fittedXmax}{the maximum of the fitted data that plotted (Default timeRange)}
 }
 \value{
 Returns infection curve figures.

@@ -7,7 +7,7 @@
 #' @param xlabelText the x-axis name; with default "time"
 #' @param ylabelText the y-axis name; with default "intensity"
 #' @param fittedXmin the minimum of the fitted data that plotted (Default 0)
-#' @param fittedXmax the maximum of the fitted data that plotted (Default timeRatio)
+#' @param fittedXmax the maximum of the fitted data that plotted (Default timeRange)
 #'
 #' @description Generates figures using ggplot that shows the input data and the fitted curves.
 #' @return Returns infection curve figures.
@@ -98,7 +98,7 @@ figureModelCurves<-function(dataInput,
 
       # Generate the Time Series for Fitted Data
       if(is.na(fittedXmax))
-      {fittedXmax_sigmoidal = sigmoidalFitVector$dataScalingParameters.timeRatio}
+      {fittedXmax_sigmoidal = sigmoidalFitVector$dataScalingParameters.timeRange}
       if(!is.na(fittedXmax))
       {fittedXmax_sigmoidal = fittedXmax}
 
@@ -164,7 +164,7 @@ figureModelCurves<-function(dataInput,
 
       # Generate the Time Series for Fitted Data
       if(is.na(fittedXmax))
-      {fittedXmax_doublesigmoidal = doubleSigmoidalFitVector$dataScalingParameters.timeRatio}
+      {fittedXmax_doublesigmoidal = doubleSigmoidalFitVector$dataScalingParameters.timeRange}
       if(!is.na(fittedXmax))
       {fittedXmax_doublesigmoidal = fittedXmax}
 

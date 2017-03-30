@@ -295,7 +295,7 @@ f0mid <- function (x, B1, M1, B2, L,const) {
 #
 # @param parameterDf is a dataFrame that includes columns with names:
 #
-# *"dataScalingParameters.timeRatio" that represents maximum time of intensity measurements,
+# *"dataScalingParameters.timeRange" that represents maximum time of intensity measurements,
 #
 # parameters of double sigmoidal model:
 #  *"slope1Param_Estimate",
@@ -317,7 +317,7 @@ f0mid <- function (x, B1, M1, B2, L,const) {
 #cat("\014")
 #
 ## Generate a parameters DF
-#parameterDf=data.frame(dataScalingParameters.timeRatio=24,
+#parameterDf=data.frame(dataScalingParameters.timeRange=24,
 #                       slope1Param_Estimate=1,
 #                       midPoint1Param_Estimate=7,
 #                       slope2Param_Estimate=1,
@@ -325,7 +325,7 @@ f0mid <- function (x, B1, M1, B2, L,const) {
 #                       model="doublesigmoidal")
 #
 # # Find the x value of the maximum for this model
-# # with in the range of [0, dataScalingParameters.timeRatio]
+# # with in the range of [0, dataScalingParameters.timeRange]
 # maximum_x=f_argmax_doublesigmoidal(parameterDf)
 #
 f_argmax_doublesigmoidal <- function(parameterVector){
@@ -336,7 +336,7 @@ f_argmax_doublesigmoidal <- function(parameterVector){
   finalAsymptoteIntensityRatio<-parameterVector$finalAsymptoteIntensityRatio_N_Estimate
   maximum<-parameterVector$maximum_N_Estimate
   midPoint1Param<-parameterVector$midPoint1Param_N_Estimate
-  timeRatio<-parameterVector$dataScalingParameters.timeRatio
+  timeRange<-parameterVector$dataScalingParameters.timeRange
 
   if(slope1Param<0){stop("slope1Param should be a positive number")}
   if(slope2Param<0){stop("slope2Param should be a positive number. It is the absolute value of the slope2Param")}
@@ -350,7 +350,7 @@ f_argmax_doublesigmoidal <- function(parameterVector){
                           c(optimizeIntervalMin,optimizeIntervalMax),
                           tol=0.0001,
                           B1=slope1Param, M1=midPoint1Param, B2=slope2Param, L=midPointDistanceParam, maximum = TRUE);
-  argumentt = xmax$maximum * timeRatio;
+  argumentt = xmax$maximum * timeRange;
   return(argumentt)}
 #**************************************
 
@@ -360,7 +360,7 @@ f_argmax_doublesigmoidal <- function(parameterVector){
 #
 # @param parameterDf is a dataFrame that includes columns with names:
 #
-# *"dataScalingParameters.timeRatio" that represents maximum time of intensity measurements,
+# *"dataScalingParameters.timeRange" that represents maximum time of intensity measurements,
 #
 # parameters of double sigmoidal model:
 #  *"slope1Param_Estimate",
@@ -384,7 +384,7 @@ f_argmax_doublesigmoidal <- function(parameterVector){
 #cat("\014")
 #
 ## Generate a parameters DF
-#parameterDf=data.frame(dataScalingParameters.timeRatio=24,
+#parameterDf=data.frame(dataScalingParameters.timeRange=24,
 #                       slope1Param_Estimate=1,
 #                       midPoint1Param_Estimate=7,
 #                       slope2Param_Estimate=1,
@@ -392,12 +392,12 @@ f_argmax_doublesigmoidal <- function(parameterVector){
 #                       model="doublesigmoidal")
 #
 # # Find the x value of the maximum for this model
-# # with in the range of [0, dataScalingParameters.timeRatio]
+# # with in the range of [0, dataScalingParameters.timeRange]
 # midPoint1Param_x=f_mid1_doublesigmoidal(parameterDf)
 #
 f_mid1_doublesigmoidal <- function(parameterDf){
 
-  max_x = parameterDf$dataScalingParameters.timeRatio
+  max_x = parameterDf$dataScalingParameters.timeRange
   xmax <- stats::optimize(f1,
                           interval=c(-1.125*max_x,max_x*3),
                           tol=0.0001,
@@ -431,7 +431,7 @@ f_mid1_doublesigmoidal <- function(parameterDf){
 #
 # @param parameterDf is a dataFrame that includes columns with names:
 #
-# *"dataScalingParameters.timeRatio" that represents maximum time of intensity measurements,
+# *"dataScalingParameters.timeRange" that represents maximum time of intensity measurements,
 #
 # parameters of double sigmoidal model:
 #  *"slope1Param_Estimate",
@@ -455,7 +455,7 @@ f_mid1_doublesigmoidal <- function(parameterDf){
 #cat("\014")
 #
 ## Generate a parameters DF
-#parameterDf=data.frame(dataScalingParameters.timeRatio=24,
+#parameterDf=data.frame(dataScalingParameters.timeRange=24,
 #                       slope1Param_Estimate=1,
 #                       midPoint1Param_Estimate=7,
 #                       slope2Param_Estimate=1,
@@ -463,12 +463,12 @@ f_mid1_doublesigmoidal <- function(parameterDf){
 #                       model="doublesigmoidal")
 #
 # # Find the x value of the maximum for this model
-# # with in the range of [0, dataScalingParameters.timeRatio]
+# # with in the range of [0, dataScalingParameters.timeRange]
 # midPoint2_x=f_mid2_doublesigmoidal(parameterDf)
 #
 f_mid2_doublesigmoidal <- function(parameterDf){
 
-  max_x = parameterDf$dataScalingParameters.timeRatio
+  max_x = parameterDf$dataScalingParameters.timeRange
   xmax <- stats::optimize(f1,
                           interval=c(-1.125*max_x,max_x*3),
                           tol=0.0001,
@@ -503,7 +503,7 @@ f_mid2_doublesigmoidal <- function(parameterDf){
 # @param x as a single time point or a sequence of time points that one wants to calculate the derivative of.
 # @param parameterDf is a dataFrame that includes columns with names:
 #
-# *"dataScalingParameters.timeRatio" which represents the maximum time of intensity measurements,
+# *"dataScalingParameters.timeRange" which represents the maximum time of intensity measurements,
 #
 # parameters of double sigmoidal model:
 #  *"finalAsymptoteIntensityRatio_Estimate",
@@ -531,7 +531,7 @@ f_mid2_doublesigmoidal <- function(parameterDf){
 #cat("\014")
 #
 ## Generate a parameters DF
-#parameterDataframe=data.frame(dataScalingParameters.timeRatio=24,
+#parameterDataframe=data.frame(dataScalingParameters.timeRange=24,
 #                              finalAsymptoteIntensityRatio_Estimate=.3,
 #                              maximum_Estimate=4,
 #                              slope1Param_Estimate=1,
@@ -541,7 +541,7 @@ f_mid2_doublesigmoidal <- function(parameterDf){
 #                              model="doublesigmoidal")
 #
 # # Find the x value of the maximum for this model
-# # with in the range of [0, dataScalingParameters.timeRatio]
+# # with in the range of [0, dataScalingParameters.timeRange]
 # slopeParam_Estimate=f_slope_doublesigmoidal(x=6.5,
 #                                        parameterDf=parameterDataframe,
 #                                        timeStep=0.00001)
@@ -553,7 +553,7 @@ f_mid2_doublesigmoidal <- function(parameterDf){
 #cat("\014")
 #
 ## Generate a parameters DF
-#parameterDataframe=data.frame(dataScalingParameters.timeRatio=24,
+#parameterDataframe=data.frame(dataScalingParameters.timeRange=24,
 #                              finalAsymptoteIntensityRatio_Estimate=.3,
 #                              maximum_Estimate=4,
 #                              slope1Param_Estimate=1,
@@ -563,12 +563,12 @@ f_mid2_doublesigmoidal <- function(parameterDf){
 #                              model="doublesigmoidal")
 #
 # # Find the x value of the maximum for this model
-# # with in the range of [0, dataScalingParameters.timeRatio]
+# # with in the range of [0, dataScalingParameters.timeRange]
 # slopeParam_Estimate=f_slope_doublesigmoidal(x=seq(-6.5,50,0.5),
 #                                        parameterDf=parameterDataframe,
 #                                        timeStep=0.00001)
 ## Note that some points in the x sequence are out of the range of
-## time = [0, dataScalingParameters.timeRatio]
+## time = [0, dataScalingParameters.timeRange]
 #
 f_slope_doublesigmoidal <- function(x, parameterDf, timeStep=0.00001){
 
@@ -619,9 +619,9 @@ f_slope_doublesigmoidal <- function(x, parameterDf, timeStep=0.00001){
 #        *midPoint1Param_N_Estimate (normalized Midpoint1Param Estimate)
 #        *slope2Param_N_Estimate (normalzied Slope2Param Estimate)
 #        *midPointDistanceParam_N_Estimate (normalized distance between midpoints estimate)
-#        *dataScalingParameters.intensityRatio the range of initial unnormalized intensity. Provided if the data is normalized
+#        *dataScalingParameters.intensityRange the range of initial unnormalized intensity. Provided if the data is normalized
 #        *parameterDF$dataScalingParameters.intensityMin the minimum of unnormalized intensity. Provided if the data is normalized
-#        *parameterDF$dataScalingParameters.timeRatio tha maximum time that the experiment reach. Provided if the data is normalized
+#        *parameterDF$dataScalingParameters.timeRange tha maximum time that the experiment reach. Provided if the data is normalized
 # @param isalist defines if the input is provided as a list (i.e normalized) or as a data frame (i.e not normalized)
 # @details If the fit was done in normalized data frame then the found fit parameters will belong to normalized data.
 #          This function generates unnormalized counterparts of those parameters.
@@ -629,11 +629,11 @@ doublesigmoidalRenormalizeParameters<-function(parameterDF,isalist)
 {
   if(isalist){
     parameterDF$finalAsymptoteIntensityRatio_Estimate=parameterDF$finalAsymptoteIntensityRatio_N_Estimate
-    parameterDF$maximum_Estimate=parameterDF$maximum_N_Estimate*parameterDF$dataScalingParameters.intensityRatio+parameterDF$dataScalingParameters.intensityMin
-    parameterDF$slope1Param_Estimate=parameterDF$slope1Param_N_Estimate/parameterDF$dataScalingParameters.timeRatio
-    parameterDF$midPoint1Param_Estimate=parameterDF$midPoint1Param_N_Estimate*parameterDF$dataScalingParameters.timeRatio
-    parameterDF$slope2Param_Estimate=parameterDF$slope2Param_N_Estimate/parameterDF$dataScalingParameters.timeRatio
-    parameterDF$midPointDistanceParam_Estimate=parameterDF$midPointDistanceParam_N_Estimate*parameterDF$dataScalingParameters.timeRatio
+    parameterDF$maximum_Estimate=parameterDF$maximum_N_Estimate*parameterDF$dataScalingParameters.intensityRange+parameterDF$dataScalingParameters.intensityMin
+    parameterDF$slope1Param_Estimate=parameterDF$slope1Param_N_Estimate/parameterDF$dataScalingParameters.timeRange
+    parameterDF$midPoint1Param_Estimate=parameterDF$midPoint1Param_N_Estimate*parameterDF$dataScalingParameters.timeRange
+    parameterDF$slope2Param_Estimate=parameterDF$slope2Param_N_Estimate/parameterDF$dataScalingParameters.timeRange
+    parameterDF$midPointDistanceParam_Estimate=parameterDF$midPointDistanceParam_N_Estimate*parameterDF$dataScalingParameters.timeRange
   }
   if(!isalist){
     parameterDF$finalAsymptoteIntensityRatio_Estimate=parameterDF$finalAsymptoteIntensityRatio_N_Estimate

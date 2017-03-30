@@ -185,17 +185,17 @@ lineFitFormula<-function(x, slope, intersection){
 #        includes the parameters named
 #        *slope_N_Estimate (normalzied Slope Estimate)
 #        *intersection_N_Estimate (normalized Intersection Estimate)
-#        *dataScalingParameters.intensityRatio the range of initial unnormalized intensity. Provieded if the data is normalized
+#        *dataScalingParameters.intensityRange the range of initial unnormalized intensity. Provieded if the data is normalized
 #        *parameterDF$dataScalingParameters.intensityMin the minimum of unnormalized intensity. Provieded if the data is normalized
-#        *parameterDF$dataScalingParameters.timeRatio tha maximum time that the experiment reach. Provieded if the data is normalized
+#        *parameterDF$dataScalingParameters.timeRange tha maximum time that the experiment reach. Provieded if the data is normalized
 # @param isalist defines if the input is provided as a list (i.e normalized) or as a data frame (i.e not normalized)
 # @details If the fit was done in normalized data frame then the found fit parameters will belong to normalized data.
 #          This function generates unnormalized counterparts of those parameters
 linearRenormalizeParameters<-function(parameterDF,isalist)
 {
   if(isalist){
-    parameterDF$intersection_Estimate=parameterDF$intersection_N_Estimate*parameterDF$dataScalingParameters.intensityRatio+parameterDF$dataScalingParameters.intensityMin
-    parameterDF$slope_Estimate=parameterDF$slope_N_Estimate*parameterDF$dataScalingParameters.intensityRatio/parameterDF$dataScalingParameters.timeRatio
+    parameterDF$intersection_Estimate=parameterDF$intersection_N_Estimate*parameterDF$dataScalingParameters.intensityRange+parameterDF$dataScalingParameters.intensityMin
+    parameterDF$slope_Estimate=parameterDF$slope_N_Estimate*parameterDF$dataScalingParameters.intensityRange/parameterDF$dataScalingParameters.timeRange
   }
   if(!isalist){
     parameterDF$intersection_Estimate=parameterDF$intersection_N_Estimate

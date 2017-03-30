@@ -68,17 +68,17 @@ There is a nuance
 
 *  Time is normalized with respect to maximum value the time parameter takes.
 ```{r time normalization, eval=FALSE}
-timeRatio=max(timeData); timeData=timeData/timeRatio
+timeRange=max(timeData); timeData=timeData/timeRange
 ```
 
 *  Intensity is normalized with respect to intensity interval
 ```{r intensity normalization, eval=FALSE}
 intensityMin = min(dataInput$intensity)
 intensityMax = max(dataInput$intensity)
-intensityRatio = intensityMax - intensityMin
+intensityRange = intensityMax - intensityMin
 
 intensityData=dataInput$intensity-intensityMin
-intensityData=intensityData/intensityRatio
+intensityData=intensityData/intensityRange
 ```
 
 The normalization code is 
@@ -135,10 +135,10 @@ Here is the brief explanations of the parameters that are given by `sicegar::dou
 
 These are the parameters of the normalization step
 
-* `dataScalingParameters.timeRatio`: Maximum of raw time data       
+* `dataScalingParameters.timeRange`: Maximum of raw time data       
 * `dataScalingParameters.intensityMin`: Minimum of raw intensity data
 * `dataScalingParameters.intensityMax`: Maximum of raw intensity data
-* `dataScalingParameters.intensityRatio`: Maximum - Minimum of intensity data
+* `dataScalingParameters.intensityRange`: Maximum - Minimum of intensity data
 
 They are the meta summary of the result parameters
 

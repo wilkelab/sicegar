@@ -53,7 +53,7 @@
 #'
 fitFunction <-
   function(dataInput,
-           dataInputName="sample_01",
+           dataInputName = NA,
            n_runs_min_sm=20,
            n_runs_max_sm=500,
            n_runs_min_dsm=20,
@@ -98,11 +98,21 @@ fitFunction <-
                                           threshold_intensity_range = threshold_intensity_range,
                                           threshold_minimum_for_intensity_maximum = threshold_minimum_for_intensity_maximum)
 
+
+
     if(showDetails){utils::str(preDecision)}
+
     if(preDecision$decision=="no_signal")
     {
       summaryVector=c()
+
+      if(!is.na(normalizedInput$dataInputName))
+      {summaryVector$dataInputName = as.vector(normalizedInput$dataInputName)} else
+      {summaryVector$dataInputName = NA}
+
       summaryVector$decision = "no_signal"
+
+
       return(list(normalizedInput = normalizedInput,
                   sigmoidalModel = NA,
                   doubleSigmoidalModel = NA,
@@ -157,6 +167,7 @@ fitFunction <-
       summaryVector=c()
       if(outputCluster$decision=="sigmoidal")
       {
+        summaryVector$dataInputName = outputCluster$dataInputName
         summaryVector$decision = "sigmoidal"
         summaryVector$maximum_x = sigmoidalModel$maximum_x
         summaryVector$maximum_y = sigmoidalModel$maximum_y
@@ -172,6 +183,7 @@ fitFunction <-
 
       if(outputCluster$decision=="double_sigmoidal")
       {
+        summaryVector$dataInputName = outputCluster$dataInputName
         summaryVector$decision = "double_sigmoidal"
         summaryVector$maximum_x = doubleSigmoidalModel$maximum_x
         summaryVector$maximum_y = doubleSigmoidalModel$maximum_y
@@ -196,11 +208,13 @@ fitFunction <-
 
       if(outputCluster$decision=="no_signal")
       {
+        summaryVector$dataInputName = outputCluster$dataInputName
         summaryVector$decision = "no_signal"
       }
 
       if(outputCluster$decision=="ambiguous")
       {
+        summaryVector$dataInputName = outputCluster$dataInputName
         summaryVector$decision = "ambiguous"
       }
 

@@ -4,7 +4,7 @@
 \alias{fitFunction}
 \title{fit function.}
 \usage{
-fitFunction(dataInput, dataInputName = "sample_01", n_runs_min_sm = 20,
+fitFunction(dataInput, dataInputName = NA, n_runs_min_sm = 20,
   n_runs_max_sm = 500, n_runs_min_dsm = 20, n_runs_max_dsm = 500,
   startList_sm = list(maximum = 1, slopeParam = 36, midPoint = 0.3333333),
   lowerBounds_sm = c(maximum = 0.3, slopeParam = 1e-05, midPoint = 0.3125 -

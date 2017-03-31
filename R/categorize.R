@@ -87,8 +87,16 @@ categorize<-
     decisionList=list()
 
     # Do both models came from same source & have same name
-    decisionList$test.name = parameterVectorSigmoidal$dataInputName==parameterVectorDoubleSigmoidal$dataInputName
-    decisionList$dataInputName = as.vector(parameterVectorSigmoidal$dataInputName)
+    if((!is.na(parameterVectorSigmoidal$dataInputName))&(!is.na(parameterVectorDoubleSigmoidal$dataInputName)))
+    {
+      decisionList$test.name = parameterVectorSigmoidal$dataInputName==parameterVectorDoubleSigmoidal$dataInputName
+      decisionList$dataInputName = as.vector(parameterVectorSigmoidal$dataInputName)
+    } else
+    {
+      decisionList$test.name = NA
+      decisionList$dataInputName = NA
+    }
+
 
     # Does sigmoidal model come from sigmoidal fit and double-sigmoidal model come from double sigmoidal fit
     decisionList$test.sm_modelCheck = parameterVectorSigmoidal$model == "sigmoidal"
@@ -96,22 +104,22 @@ categorize<-
 
     # Do both models have same scaling parameters
     test.timeRange = parameterVectorSigmoidal$dataScalingParameters.timeRange ==
-                        parameterVectorDoubleSigmoidal$dataScalingParameters.timeRange
+      parameterVectorDoubleSigmoidal$dataScalingParameters.timeRange
     if(test.timeRange){timeRange = parameterVectorSigmoidal$dataScalingParameters.timeRange}
 
     test.intensityMin = parameterVectorSigmoidal$dataScalingParameters.intensityMin ==
-                          parameterVectorDoubleSigmoidal$dataScalingParameters.intensityMin
+      parameterVectorDoubleSigmoidal$dataScalingParameters.intensityMin
 
     test.intensityMax = parameterVectorSigmoidal$dataScalingParameters.intensityMax ==
-                          parameterVectorDoubleSigmoidal$dataScalingParameters.intensityMax
+      parameterVectorDoubleSigmoidal$dataScalingParameters.intensityMax
     if(test.intensityMax){intensityMax = parameterVectorSigmoidal$dataScalingParameters.intensityMax}
 
     test.intensityRange = parameterVectorSigmoidal$dataScalingParameters.intensityRange ==
-                            parameterVectorDoubleSigmoidal$dataScalingParameters.intensityRange
+      parameterVectorDoubleSigmoidal$dataScalingParameters.intensityRange
     if(test.intensityRange){intensityRange = parameterVectorSigmoidal$dataScalingParameters.intensityRange}
 
     decisionList$test.dataScalingParameters = test.timeRange & test.intensityMin &
-                                                  test.intensityMax & test.intensityRange
+      test.intensityMax & test.intensityRange
 
     # minimum for intensity maximum test
     decisionList$intensityMaximum = intensityMax
@@ -157,12 +165,12 @@ categorize<-
     # Calculate predicted intensity for double-sigmoidal model at last observed time point
     # The intensity of double-sigmoidal at timeRange point
     dsm_intensity_at_tmax = sicegar::doublesigmoidalFitFormula(x=timeRange,
-                                                finalAsymptoteIntensityRatio=parameterVectorDoubleSigmoidal$finalAsymptoteIntensityRatio_Estimate,
-                                                maximum=parameterVectorDoubleSigmoidal$maximum_y,
-                                                slope1Param=parameterVectorDoubleSigmoidal$slope1Param_Estimate,
-                                                midPoint1Param=parameterVectorDoubleSigmoidal$midPoint1Param_Estimate,
-                                                slope2Param=parameterVectorDoubleSigmoidal$slope2Param_Estimate,
-                                                midPointDistanceParam=parameterVectorDoubleSigmoidal$midPointDistanceParam_Estimate)
+                                                               finalAsymptoteIntensityRatio=parameterVectorDoubleSigmoidal$finalAsymptoteIntensityRatio_Estimate,
+                                                               maximum=parameterVectorDoubleSigmoidal$maximum_y,
+                                                               slope1Param=parameterVectorDoubleSigmoidal$slope1Param_Estimate,
+                                                               midPoint1Param=parameterVectorDoubleSigmoidal$midPoint1Param_Estimate,
+                                                               slope2Param=parameterVectorDoubleSigmoidal$slope2Param_Estimate,
+                                                               midPointDistanceParam=parameterVectorDoubleSigmoidal$midPointDistanceParam_Estimate)
 
     decisionList$dsm_tmax_IntensityRatio = dsm_intensity_at_tmax/parameterVectorDoubleSigmoidal$maximum_y
     decisionList$threshold_dsm_tmax_IntensityRatio = threshold_dsm_tmax_IntensityRatio
@@ -183,12 +191,12 @@ categorize<-
     decisionList$test.sm_startIntensity = decisionList$sm_startIntensity < threshold_t0_max_int
 
     decisionList$dsm_startIntensity = sicegar::doublesigmoidalFitFormula(x=0,
-                                       finalAsymptoteIntensityRatio=parameterVectorDoubleSigmoidal$finalAsymptoteIntensityRatio_Estimate,
-                                       maximum=parameterVectorDoubleSigmoidal$maximum_y,
-                                       slope1Param=parameterVectorDoubleSigmoidal$slope1Param_Estimate,
-                                       midPoint1Param=parameterVectorDoubleSigmoidal$midPoint1Param_Estimate,
-                                       slope2Param=parameterVectorDoubleSigmoidal$slope2Param_Estimate,
-                                       midPointDistanceParam=parameterVectorDoubleSigmoidal$midPointDistanceParam_Estimate)
+                                                                         finalAsymptoteIntensityRatio=parameterVectorDoubleSigmoidal$finalAsymptoteIntensityRatio_Estimate,
+                                                                         maximum=parameterVectorDoubleSigmoidal$maximum_y,
+                                                                         slope1Param=parameterVectorDoubleSigmoidal$slope1Param_Estimate,
+                                                                         midPoint1Param=parameterVectorDoubleSigmoidal$midPoint1Param_Estimate,
+                                                                         slope2Param=parameterVectorDoubleSigmoidal$slope2Param_Estimate,
+                                                                         midPointDistanceParam=parameterVectorDoubleSigmoidal$midPointDistanceParam_Estimate)
     decisionList$test.dsm_startIntensity = decisionList$dsm_startIntensity < threshold_t0_max_int
 
 
@@ -196,18 +204,21 @@ categorize<-
     # Overal Decision Process
 
     # Tests that stop the categorize functions
-    if(!decisionList$test.name)
+    if(!is.na(decisionList$test.name))
+    {
+      if(!decisionList$test.name)
       {stop("dataNames of sigmoidal and double-sigmoidal fits must be same")}
+    }
     if(!decisionList$test.sm_modelCheck)
-      {stop("provided sigmoidal model must be fitted by sicegar::sigmoidalFitFunction()")}
+    {stop("provided sigmoidal model must be fitted by sicegar::sigmoidalFitFunction()")}
     if(!decisionList$test.dsm_modelCheck)
-      {stop("provided double_sigmoidal model must be fitted by sicegar::doublesigmoidalFitFunction()")}
+    {stop("provided double_sigmoidal model must be fitted by sicegar::doublesigmoidalFitFunction()")}
     if(!decisionList$test.dataScalingParameters)
-      {stop("data scaling parameters of provided sigmoidal and double_sigmoidal parameterVectors must be same")}
+    {stop("data scaling parameters of provided sigmoidal and double_sigmoidal parameterVectors must be same")}
     if(!decisionList$test.sigmoidalAdditionalParameters)
-      {stop("additional parameters for sigmoidal fit must be calculated")}
+    {stop("additional parameters for sigmoidal fit must be calculated")}
     if(!decisionList$test.doublesigmoidalAdditionalParameters)
-      {stop("additional parameters for double_sigmoidal fit must be calculated")}
+    {stop("additional parameters for double_sigmoidal fit must be calculated")}
 
     choices=c("no_signal", "sigmoidal", "double_sigmoidal", "ambiguous")
     # Tests that narrows choices
@@ -378,7 +389,7 @@ pre_categorize<-
 
     # Overal Decision
     decisionList$decision= ifelse(decisionList$test.minimum_for_intensity_maximum & decisionList$test.intensity_range,
-                                    "not_no_signal", "no_signal")
+                                  "not_no_signal", "no_signal")
 
     # Return
     return(decisionList)

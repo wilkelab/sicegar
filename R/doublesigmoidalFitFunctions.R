@@ -413,16 +413,36 @@ f_mid1_doublesigmoidal <- function(parameterDf){
             B2=parameterDf$slope2Param_Estimate ,
             L=parameterDf$midPointDistanceParam_Estimate);
 
-  mid1x <- stats::uniroot(f0mid,
-                          interval=c(-1.125*max_x,argumentt),
-                          tol=0.0001,
-                          B1=parameterDf$slope1Param_Estimate,
-                          M1=parameterDf$midPoint1Param_Estimate,
-                          B2=parameterDf$slope2Param_Estimate ,
-                          L=parameterDf$midPointDistanceParam_Estimate,
-                          const=constt);
+  mid1x <- try(expr = stats::uniroot(f0mid,
+                                     interval=c(-1.125*max_x,argumentt),
+                                     tol=0.0001,
+                                     B1=parameterDf$slope1Param_Estimate,
+                                     M1=parameterDf$midPoint1Param_Estimate,
+                                     B2=parameterDf$slope2Param_Estimate,
+                                     L=parameterDf$midPointDistanceParam_Estimate,const=constt),silent = TRUE);
+  if(class(mid1x)=="try-error")
+  {
+    rangeList=seq(-1,30)
+    rangeListCounter=-1
+    while(class(mid1x)=="try-error" & rangeListCounter<=30)
+    {
+      #print(rangeListCounter)
+      rangeListSelection=rangeList[rangeListCounter+2];
+      mid1x <- try(expr = stats::uniroot(f0mid,
+                                         interval=c((-1)*(2^rangeListSelection)*max_x,argumentt),
+                                         tol=0.0001,
+                                         B1=parameterDf$slope1Param_Estimate,
+                                         M1=parameterDf$midPoint1Param_Estimate,
+                                         B2=parameterDf$slope2Param_Estimate,
+                                         L=parameterDf$midPointDistanceParam_Estimate,const=constt),silent = TRUE);
+      rangeListCounter=rangeListCounter+1
+    }
+  }
+
   mid1x=mid1x$root
-  return(mid1x)}
+
+  return(mid1x)
+  }
 #**************************************
 
 
@@ -485,15 +505,32 @@ f_mid2_doublesigmoidal <- function(parameterDf){
             B2=parameterDf$slope2Param_Estimate ,
             L=parameterDf$midPointDistanceParam_Estimate);
 
-  mid2x <- stats::uniroot(f0mid, interval=c(argumentt,max_x*(150)),
-                          tol=0.0001,
-                          B1=parameterDf$slope1Param_Estimate,
-                          M1=parameterDf$midPoint1Param_Estimate,
-                          B2=parameterDf$slope2Param_Estimate ,
-                          L=parameterDf$midPointDistanceParam_Estimate,
-                          const=constt);
+  mid2x <- try(stats::uniroot(f0mid,
+                              interval=c(argumentt,max_x*(1.25)),
+                              tol=0.0001,
+                              B1=parameterDf$slope1Param_Estimate,
+                              M1=parameterDf$midPoint1Param_Estimate,
+                              B2=parameterDf$slope2Param_Estimate,
+                              L=parameterDf$midPointDistanceParam_Estimate,const=constt),silent = TRUE);
+  if(class(mid2x)=="try-error")
+  {
+    rangeList=seq(-1,30)
+    rangeListCounter=-1
+    while(class(mid2x)=="try-error" & rangeListCounter<=30)
+    {
+      rangeListSelection=rangeList[rangeListCounter+2];
+      mid2x <- try(stats::uniroot(f0mid,
+                                  interval=c(argumentt,max_x*(2^rangeListSelection)),
+                                  tol=0.0001,B1=parameterDf$slope1Param_Estimate,
+                                  M1=parameterDf$midPoint1Param_Estimate,
+                                  B2=parameterDf$slope2Param_Estimate,
+                                  L=parameterDf$midPointDistanceParam_Estimate,const=constt),silent = TRUE);
+      rangeListCounter=rangeListCounter+1
+    }
+  }
 
   mid2x=mid2x$root
+
   return(mid2x)}
 #**************************************
 

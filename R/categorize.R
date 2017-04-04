@@ -221,70 +221,115 @@ categorize<-
     {stop("additional parameters for double_sigmoidal fit must be calculated")}
 
     choices=c("no_signal", "sigmoidal", "double_sigmoidal", "ambiguous")
+    decisonSteps=c();
     # Tests that narrows choices
 
     # no signal tests
     # 1a. Observed intensity maximum must be bigger than "threshold_minimum_for_intensity_maximum", otherwise "no_signal"
     if(!decisionList$test.minimum_for_intensity_maximum)
-    {choices=setdiff(choices,c("sigmoidal", "double_sigmoidal", "ambiguous"))}
+    {
+      decisonSteps=c(decisonSteps,"1a");
+      choices=setdiff(choices,c("sigmoidal", "double_sigmoidal", "ambiguous"))
+    }
 
     # 1b. "intensity_max, intensity_min difference" must be greater than "threshold_intensity_range", otherwise "no_signal"
     if(!decisionList$test.minimum_for_intensity_maximum)
-    {choices=setdiff(choices,c("sigmoidal", "double_sigmoidal", "ambiguous"))}
+    {
+      decisonSteps=c(decisonSteps,"1b");
+      choices=setdiff(choices,c("sigmoidal", "double_sigmoidal", "ambiguous"))
+    }
 
     # 1c. If at this point it is not "no_signal" that it can not be "no signal"
     if(!setequal(choices, c("no_signal")))
-    {choices=setdiff(choices,c("no_signal"))}
+    {
+      decisonSteps=c(decisonSteps,"1c");
+      choices=setdiff(choices,c("no_signal"))
+    }
 
     # Other tests
     # 2a Provided sigmoidalfit must be a fit, otherwise it is not "sigmoidal"
     if(!decisionList$test.sigmoidalFit)
-    {choices=setdiff(choices,c("sigmoidal"))}
+    {
+      decisonSteps=c(decisonSteps,"2a");
+      choices=setdiff(choices,c("sigmoidal"))
+    }
 
     # 2b Provided double-sigmoidalfit must be a fit, otherwise it is not "double_sigmoidal"
     if(!decisionList$test.sigmoidalFit)
-    {choices=setdiff(choices,c("double_sigmoidal"))}
+    {
+      decisonSteps=c(decisonSteps,"2b");
+      choices=setdiff(choices,c("double_sigmoidal"))
+    }
 
     # 3a Sigmoidal fit must have an AIC score smaller than "threshold_AIC", otherwise it is not "sigmoidal"
     if(!decisionList$test.sigmoidalAIC)
-    {choices=setdiff(choices,c("sigmoidal"))}
+    {
+      decisonSteps=c(decisonSteps,"3a");
+      choices=setdiff(choices,c("sigmoidal"))
+    }
 
     # 3b Double-igmoidal fit must have an AIC score smaller than "threshold_AIC", otherwise it is not "double_sigmoidal"
     if(!decisionList$test.doublesigmoidalAIC)
-    {choices=setdiff(choices,c("double_sigmoidal"))}
+    {
+      decisonSteps=c(decisonSteps,"3b");
+      choices=setdiff(choices,c("double_sigmoidal"))
+    }
 
     # 4a Sigmoidal startPoint_x must be a positive number, otherwise it is not "sigmoidal"
     if(!decisionList$test.sm_startPoint_x)
-    {choices=setdiff(choices,c("sigmoidal"))}
+    {
+      decisonSteps=c(decisonSteps,"4a");
+      choices=setdiff(choices,c("sigmoidal"))
+    }
 
     # 4b Double-sigmoidal startPoint_x must be a positive number, otherwise it is not "double_sigmoidal"
     if(!decisionList$test.dsm_startPoint_x)
-    {choices=setdiff(choices,c("double_sigmoidal"))}
+    {
+      decisonSteps=c(decisonSteps,"4b");
+      choices=setdiff(choices,c("double_sigmoidal"))
+    }
 
     # 5a Sigmoidal startIntensity must be smaller than "threshold_t0_max_int", otherwise it is not "sigmoidal"
     if(!decisionList$test.sm_startIntensity)
-    {choices=setdiff(choices,c("sigmoidal"))}
+    {
+      decisonSteps=c(decisonSteps,"5a");
+      choices=setdiff(choices,c("sigmoidal"))
+    }
 
     # 5b Double-sigmoidal startIntensity must be smaller than "threshold_t0_max_int", otherwise it is not "double_sigmoidal"
     if(!decisionList$test.dsm_startIntensity)
-    {choices=setdiff(choices,c("double_sigmoidal"))}
+    {
+      decisonSteps=c(decisonSteps,"5b");
+      choices=setdiff(choices,c("double_sigmoidal"))
+    }
 
     # 6. Double-sigmoidal intensity at tmax must be at most "threshold_dsm_tmax_IntensityRatio" of maximum_y, otherwise it is not "double_sigmoidal"
     if(!decisionList$test.dsm_tmax_IntensityRatio)
-    {choices=setdiff(choices,c("double_sigmoidal"))}
+    {
+      decisonSteps=c(decisonSteps,"6");
+      choices=setdiff(choices,c("double_sigmoidal"))
+    }
 
     # 7. Sigmoidal intensity must reach "threshold_sm_tmax_IntensityRatio" percent of maximum_y at tmax, otherwise it is not "sigmoidal"
     if(!decisionList$test.sm_tmax_IntensityRatio)
-    {choices=setdiff(choices,c("sigmoidal"))}
+    {
+      decisonSteps=c(decisonSteps,"7");
+      choices=setdiff(choices,c("sigmoidal"))
+    }
 
     # 8. if at this point we have one of "sigmoidal" or "double_sigmoidal", than it is not "ambiguous"
     if(length(intersect(choices, c("sigmoidal", "double_sigmoidal"))) > 0)
-    {choices=setdiff(choices,c("ambiguous"))}
+    {
+      decisonSteps=c(decisonSteps,"8");
+      choices=setdiff(choices,c("ambiguous"))
+    }
 
     # 9. if at this point we have both "sigmoidal" or "double_sigmoidal", then we will choose with the help of AIC scores
     # decisionList$threshold_bonus_sigmoidal_AIC ?? threshold_bonus_sigmoidal_AIC
     if(length(intersect(choices, c("sigmoidal", "double_sigmoidal"))) == 2)
     {
+      decisonSteps=c(decisonSteps,"9");
+
       if(decisionList$sigmoidalAIC + threshold_bonus_sigmoidal_AIC < decisionList$doublesigmoidalAIC)
       {choices=setdiff(choices,c("double_sigmoidal"))}
 
@@ -294,6 +339,9 @@ categorize<-
 
     # 10 If at this point the length of choice is not 1 then there is an error
     if(!length(choices)==1){stop("At this point length of choice must be 1")}
+
+    # Write the decision steps
+    decisionList$decisonSteps=paste0(decisonSteps, collapse = "_")
 
     # Write the choice
     decisionList$decision=paste0(choices, collapse = "_")

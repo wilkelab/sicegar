@@ -1,10 +1,10 @@
 ---
-title: Main fit function
+title: Fit function
 author: "Umut Caglar"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Main fit function}
+  %\VignetteIndexEntry{Fit function}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -13,10 +13,39 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
   
-# Main fit function
-This is the wrapper that puts everything together; the input is raw data output is sigmoidal & double sigmoidal fits with `sicegar::parameterCalculation()`, and results for classification. All other parameters can be arranged from this function; but without touch they are all arranged to default settings
-  
-  
+# Fit function
+
+This is the main function that puts everything in the package together; the aim of the package is to decide if a given time intensity data can be modelled with a sigmoidal curve or a double sigmoidal curve. The double sigmoidal curve is composed of 2 sigmoidal curves. First one increases from 0 to maximum intensity and second one decreases from maximum intensity to final asymptote intensity. After calculating the best candidate curves for both of the models the algorithm decides which of the two candidates (if any) is a better fit to the given data. After making the decision between the models, function gives parameters that quantify the time - intensity data with respect to the decided model. 
+
+For sigmoidal model, some important ones of those parameters are: 
+
+* maximum: the maximum intensity the sigmoidal model reach
+* midpoint: where the sigmoidal curve reaches half of its maximum intensity
+* slope: the maximum slope of the sigmoidal curve.
+
+For double sigmoidal model, some important ones of those parameters are:
+
+* maximum: the maximum intensity the double sigmoidal model reach
+* final asymptote intensity: the intensity the model reaches at the end of decreasing part
+* midpoint1: where the sigmoidal curve reaches half of its maximum intensity in the climbing regime
+* slope1: The slope of the double sigmoidal model at midpoin1
+* midpoint2: where the sigmoidal curve reaches the intensity in the middle of maximum intensity and final asymptote intensity
+* slope2: The slope of the double sigmoidal model at midpoin2
+
+The algorithm first used to quantify single cell viral infections. The data was generated from the fluorescence microscopy of single cell viral infections. The modified viral particles have an additional green fluorescence protein genes on them so during the infection the host also generates green fluorescence proteins which can be detected by a fluorescence microscope. From the microscope images, we generate intensity time data corresponding to infection, and the package was used to characterize the infection.
+
+the input of main fit function is raw time - intensity data; after multiple steps the function returns an output composed of five distinct objects
+
+* `.$normalizedInput`: Normalized dataset with normalization parameters in order to generate the raw dataset from normalized one. 
+* `.$sigmoidalModel`: The parameters for sigmoidal fit.
+* `.$doubleSigmoidalModel`: The parameters for double sigmoidal fit.
+* `.$outputCluster`: The two fits compete with each other and the algorithm decides best model that represents the data. The detailed results of individual steps from competition process is in the outputCluster.
+* `.$summaryVector`: the most important parameters of the winner model
+
+In order to demonstrate how the function work; one needs to generate some synthetic time intensity data;
+
+
+## Generate Synthetic Time - Intensity Data
 ```{r install packages, echo=FALSE, warning=FALSE, results='hide',message=FALSE}
 
 ###*****************************
@@ -37,11 +66,11 @@ require("cowplot")
 ```
 
 
-To calculate the fits and generate the figures, we will go backwards and firstly generate some data to analize. To add some randomness to the input data I will use some noise. The input of all package must be in the form of a data frame with at least 2 columns time and intensity. 
+To calculate the fits and generate the figures, firstly one needs to generate some synthetic data to analyze. To add some randomness to the input data I will use some noise. The input of the fit function must be in the form of a data frame with 2 columns time and intensity. 
 
-We will generate data for both sigmoidal and double sigmoidal 
+We will generate data from both sigmoidal and double sigmoidal models with some arbitrarily chosen parameters:
 
-Generate data for sigmoidal
+Generate data based on sigmoidal model
 ```{r generate data for sigmoidal}
 time=seq(3,24,0.5)
 
@@ -55,7 +84,7 @@ dataInputSigmoidal=data.frame(intensity=intensity,time=time)
 ```
 
 
-Generate data for double - sigmoidal
+Generate data based on double - sigmoidal model
 ```{r generate data for double - sigmoidal}
 noise_parameter=0.2
 intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
@@ -71,37 +100,30 @@ dataInputDoubleSigmoidal=data.frame(intensity=intensity,time=time)
 ```
 
 
-## Apply the main function to obtain all results
+## Apply the main function to obtain fit results
 
 ```{r apply fitFunction for sigmoidal & double_sigmoidal datasets}
-fitObj_sm <- fitFunction(dataInput = dataInputSigmoidal)
-fitObj_dsm <- fitFunction(dataInput = dataInputDoubleSigmoidal)
+fitObj_sm <- sicegar::fitFunction(dataInput = dataInputSigmoidal)
+fitObj_dsm <- sicegar::fitFunction(dataInput = dataInputDoubleSigmoidal)
 ```
 
+## Results
+
+As mentioned above results of the fit function composes of five elements
+
+* Details of the `.$normalizedInput` can be found in "sigmoidal_vignette" and "double_sigmoidal_vignette"
+* Details of the `.$sigmoidalModel` can be found in "sigmoidal_vignette" , "multipleFit_vignette" and "parameterCalculation_vignette"
+* Details of the `.$doubleSigmoidalModel` can be found in "double_sigmoidal_vignette" , "multipleFit_vignette" and "parameterCalculation_vignette"
+* Details of the `.$outputCluster` can be found in "categorize_vignette"
+* `.$summaryVector` includes all important parameters related with the decided model. 
+
 ### The results of the sigmoidal fit
-
-The results of sigmoidal fit composes of four components
-
-* `$normalizedInput`: Normalized dataset with normalization parameters in order to generate the raw dataset from normalized one. 
-* `$sigmoidalModel`: The parameters for sigmoidal fit.
-* `$doubleSigmoidalModel`: The parameters for double sigmoidal fit.
-* `$outputCluster`: The two fits compete with eachother and the algorithm decides best model that represents the data. The parameters of competation is in the outputCluster.
-
 
 
 ```{r The results of the sigmoidal fit}
 
-# Normalized data generated by a sigmoidal model
-print(fitObj_sm$normalizedInput)
-
-# Parameters of sigmoidal fit for data generated by a sigmoidal model. For details look at "sigmoidal_vignette" and "parameterCalculation_vignette".
-print(t(fitObj_sm$sigmoidalModel))
-
-# Parameters of double_sigmoidal fit for data generated by a sigmoidal model. For details look at "double_sigmoidal_vignette" and "parameterCalculation_vignette".
-print(t(fitObj_sm$doubleSigmoidalModel))
-
-# comparison of sigmoidal and double_sigmoidal models for data generated by a sigmoidal model. Sigmoidal model is the winner. For details of the parameters look at "categorize_vignette"
-utils::str(fitObj_sm$outputCluster)
+# The output composes of five elements
+print(names(fitObj_sm))
 
 # Summary of the results
 utils::str(fitObj_sm$summaryVector)
@@ -112,17 +134,8 @@ utils::str(fitObj_sm$summaryVector)
 
 ```{r The results of the double_sigmoidal fit}
 
-# Normalized data generated by a double_sigmoidal model
-print(fitObj_dsm$normalizedInput)
-
-# Parameters of sigmoidal fit for data generated by a double_sigmoidal model. For details look at "sigmoidal_vignette" and "parameterCalculation_vignette".
-print(t(fitObj_dsm$sigmoidalModel))
-
-# Parameters of double_sigmoidal fit for data generated by a double_sigmoidal model. For details look at "double_sigmoidal_vignette" and "parameterCalculation_vignette".
-print(t(fitObj_dsm$doubleSigmoidalModel))
-
-# comparison of sigmoidal and double_sigmoidal models for data generated by a double_sigmoidal model. double_sigmoidal model is the winner. For details of the parameters look at "categorize_vignette"
-utils::str(fitObj_dsm$outputCluster)
+# The output composes of five elements
+print(names(fitObj_dsm))
 
 # Summary of the results
 utils::str(fitObj_dsm$summaryVector)
@@ -130,7 +143,9 @@ utils::str(fitObj_dsm$summaryVector)
 
 ## Generate figures
 
-Here are the two datasets that we want to categorize
+The figures of two synthetic datasets and corresponding model fits are generated by `sicegar::figureModelCurves`. In addition to the raw data and the decided model, the figures also emphasize important parameters that characterize decided models.
+
+
 ```{r cowplor figure, echo=TRUE, message=FALSE, warning=FALSE, comment=FALSE, fig.height=4, fig.width=8}
 fig_a=sicegar::figureModelCurves(dataInput=fitObj_sm$normalizedInput,
                                   sigmoidalFitVector=fitObj_sm$sigmoidalModel,

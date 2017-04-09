@@ -12,9 +12,9 @@
 
 <meta name="author" content="Umut Caglar" />
 
-<meta name="date" content="2017-04-03" />
+<meta name="date" content="2017-04-09" />
 
-<title>Main fit function</title>
+<title>Fit function</title>
 
 
 
@@ -68,18 +68,45 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<h1 class="title toc-ignore">Main fit function</h1>
+<h1 class="title toc-ignore">Fit function</h1>
 <h4 class="author"><em>Umut Caglar</em></h4>
-<h4 class="date"><em>2017-04-03</em></h4>
+<h4 class="date"><em>2017-04-09</em></h4>
 
 
 
-<div id="main-fit-function" class="section level1">
-<h1>Main fit function</h1>
-<p>This is the wrapper that puts everything together; the input is raw data output is sigmoidal &amp; double sigmoidal fits with <code>sicegar::parameterCalculation()</code>, and results for classification. All other parameters can be arranged from this function; but without touch they are all arranged to default settings</p>
-<p>To calculate the fits and generate the figures, we will go backwards and firstly generate some data to analize. To add some randomness to the input data I will use some noise. The input of all package must be in the form of a data frame with at least 2 columns time and intensity.</p>
-<p>We will generate data for both sigmoidal and double sigmoidal</p>
-<p>Generate data for sigmoidal</p>
+<div id="fit-function" class="section level1">
+<h1>Fit function</h1>
+<p>This is the main function that puts everything in the package together; the aim of the package is to decide if a given time intensity data can be modelled with a sigmoidal curve or a double sigmoidal curve. The double sigmoidal curve is composed of 2 sigmoidal curves. First one increases from 0 to maximum intensity and second one decreases from maximum intensity to final asymptote intensity. After calculating the best candidate curves for both of the models the algorithm decides which of the two candidates (if any) is a better fit to the given data. After making the decision between the models, function gives parameters that quantify the time - intensity data with respect to the decided model.</p>
+<p>For sigmoidal model, some important ones of those parameters are:</p>
+<ul>
+<li>maximum: the maximum intensity the sigmoidal model reach</li>
+<li>midpoint: where the sigmoidal curve reaches half of its maximum intensity</li>
+<li>slope: the maximum slope of the sigmoidal curve.</li>
+</ul>
+<p>For double sigmoidal model, some important ones of those parameters are:</p>
+<ul>
+<li>maximum: the maximum intensity the double sigmoidal model reach</li>
+<li>final asymptote intensity: the intensity the model reaches at the end of decreasing part</li>
+<li>midpoint1: where the sigmoidal curve reaches half of its maximum intensity in the climbing regime</li>
+<li>slope1: The slope of the double sigmoidal model at midpoin1</li>
+<li>midpoint2: where the sigmoidal curve reaches the intensity in the middle of maximum intensity and final asymptote intensity</li>
+<li>slope2: The slope of the double sigmoidal model at midpoin2</li>
+</ul>
+<p>The algorithm first used to quantify single cell viral infections. The data was generated from the fluorescence microscopy of single cell viral infections. The modified viral particles have an additional green fluorescence protein genes on them so during the infection the host also generates green fluorescence proteins which can be detected by a fluorescence microscope. From the microscope images, we generate intensity time data corresponding to infection, and the package was used to characterize the infection.</p>
+<p>the input of main fit function is raw time - intensity data; after multiple steps the function returns an output composed of five distinct objects</p>
+<ul>
+<li><code>.$normalizedInput</code>: Normalized dataset with normalization parameters in order to generate the raw dataset from normalized one.</li>
+<li><code>.$sigmoidalModel</code>: The parameters for sigmoidal fit.</li>
+<li><code>.$doubleSigmoidalModel</code>: The parameters for double sigmoidal fit.</li>
+<li><code>.$outputCluster</code>: The two fits compete with each other and the algorithm decides best model that represents the data. The detailed results of individual steps from competition process is in the outputCluster.</li>
+<li><code>.$summaryVector</code>: the most important parameters of the winner model</li>
+</ul>
+<p>In order to demonstrate how the function work; one needs to generate some synthetic time intensity data;</p>
+<div id="generate-synthetic-time---intensity-data" class="section level2">
+<h2>Generate Synthetic Time - Intensity Data</h2>
+<p>To calculate the fits and generate the figures, firstly one needs to generate some synthetic data to analyze. To add some randomness to the input data I will use some noise. The input of the fit function must be in the form of a data frame with 2 columns time and intensity.</p>
+<p>We will generate data from both sigmoidal and double sigmoidal models with some arbitrarily chosen parameters:</p>
+<p>Generate data based on sigmoidal model</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">time=<span class="kw">seq</span>(<span class="dv">3</span>,<span class="dv">24</span>,<span class="fl">0.5</span>)
 
 <span class="co">#simulate intensity data and add noise</span>
@@ -89,7 +116,7 @@ intensity=sicegar::<span class="kw">sigmoidalFitFormula</span>(time, <span class
 intensity=intensity+intensity_noise
 
 dataInputSigmoidal=<span class="kw">data.frame</span>(<span class="dt">intensity=</span>intensity,<span class="dt">time=</span>time)</code></pre></div>
-<p>Generate data for double - sigmoidal</p>
+<p>Generate data based on double - sigmoidal model</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">noise_parameter=<span class="fl">0.2</span>
 intensity_noise=<span class="kw">runif</span>(<span class="dt">n =</span> <span class="kw">length</span>(time),<span class="dt">min =</span> <span class="dv">0</span>,<span class="dt">max =</span> <span class="dv">1</span>)*noise_parameter
 intensity =<span class="st"> </span>sicegar::<span class="kw">doublesigmoidalFitFormula</span>(time,
@@ -101,235 +128,28 @@ intensity =<span class="st"> </span>sicegar::<span class="kw">doublesigmoidalFit
                                     <span class="dt">midPointDistanceParam=</span><span class="dv">8</span>)
 intensity=intensity+intensity_noise
 dataInputDoubleSigmoidal=<span class="kw">data.frame</span>(<span class="dt">intensity=</span>intensity,<span class="dt">time=</span>time)</code></pre></div>
-<div id="apply-the-main-function-to-obtain-all-results" class="section level2">
-<h2>Apply the main function to obtain all results</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fitObj_sm &lt;-<span class="st"> </span><span class="kw">fitFunction</span>(<span class="dt">dataInput =</span> dataInputSigmoidal)
-fitObj_dsm &lt;-<span class="st"> </span><span class="kw">fitFunction</span>(<span class="dt">dataInput =</span> dataInputDoubleSigmoidal)</code></pre></div>
+</div>
+<div id="apply-the-main-function-to-obtain-fit-results" class="section level2">
+<h2>Apply the main function to obtain fit results</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fitObj_sm &lt;-<span class="st"> </span>sicegar::<span class="kw">fitFunction</span>(<span class="dt">dataInput =</span> dataInputSigmoidal)
+fitObj_dsm &lt;-<span class="st"> </span>sicegar::<span class="kw">fitFunction</span>(<span class="dt">dataInput =</span> dataInputDoubleSigmoidal)</code></pre></div>
+</div>
+<div id="results" class="section level2">
+<h2>Results</h2>
+<p>As mentioned above results of the fit function composes of five elements</p>
+<ul>
+<li>Details of the <code>.$normalizedInput</code> can be found in “sigmoidal_vignette” and “double_sigmoidal_vignette”</li>
+<li>Details of the <code>.$sigmoidalModel</code> can be found in “sigmoidal_vignette” , “multipleFit_vignette” and “parameterCalculation_vignette”</li>
+<li>Details of the <code>.$doubleSigmoidalModel</code> can be found in “double_sigmoidal_vignette” , “multipleFit_vignette” and “parameterCalculation_vignette”</li>
+<li>Details of the <code>.$outputCluster</code> can be found in “categorize_vignette”</li>
+<li><code>.$summaryVector</code> includes all important parameters related with the decided model.</li>
+</ul>
 <div id="the-results-of-the-sigmoidal-fit" class="section level3">
 <h3>The results of the sigmoidal fit</h3>
-<p>The results of sigmoidal fit composes of four components</p>
-<ul>
-<li><code>$normalizedInput</code>: Normalized dataset with normalization parameters in order to generate the raw dataset from normalized one.</li>
-<li><code>$sigmoidalModel</code>: The parameters for sigmoidal fit.</li>
-<li><code>$doubleSigmoidalModel</code>: The parameters for double sigmoidal fit.</li>
-<li><code>$outputCluster</code>: The two fits compete with eachother and the algorithm decides best model that represents the data. The parameters of competation is in the outputCluster.</li>
-</ul>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Normalized data generated by a sigmoidal model</span>
-<span class="kw">print</span>(fitObj_sm$normalizedInput)</code></pre></div>
-<pre><code>## $timeIntensityData
-##         time   intensity
-## 1  0.1250000 0.000000000
-## 2  0.1458333 0.002079141
-## 3  0.1666667 0.002811145
-## 4  0.1875000 0.004563081
-## 5  0.2083333 0.026984704
-## 6  0.2291667 0.052748267
-## 7  0.2500000 0.100393124
-## 8  0.2708333 0.180674603
-## 9  0.2916667 0.249881438
-## 10 0.3125000 0.373202220
-## 11 0.3333333 0.476998349
-## 12 0.3541667 0.608299049
-## 13 0.3750000 0.714144681
-## 14 0.3958333 0.817623118
-## 15 0.4166667 0.865601164
-## 16 0.4375000 0.913040967
-## 17 0.4583333 0.943485218
-## 18 0.4791667 0.964762872
-## 19 0.5000000 0.970183576
-## 20 0.5208333 0.983378460
-## 21 0.5416667 0.983577407
-## 22 0.5625000 0.986217916
-## 23 0.5833333 0.983901461
-## 24 0.6041667 0.992217661
-## 25 0.6250000 0.998472739
-## 26 0.6458333 0.992769690
-## 27 0.6666667 1.000000000
-## 28 0.6875000 0.991968284
-## 29 0.7083333 0.979399880
-## 30 0.7291667 0.977007776
-## 31 0.7500000 0.979670984
-## 32 0.7708333 0.979984578
-## 33 0.7916667 0.999303693
-## 34 0.8125000 0.984513745
-## 35 0.8333333 0.996819304
-## 36 0.8541667 0.999112815
-## 37 0.8750000 0.996683532
-## 38 0.8958333 0.994287658
-## 39 0.9166667 0.990982183
-## 40 0.9375000 0.995534596
-## 41 0.9583333 0.985681917
-## 42 0.9791667 0.982317676
-## 43 1.0000000 0.976195853
-## 
-## $dataScalingParameters
-##      timeRange   intensityMin   intensityMax intensityRange 
-##     24.0000000      0.1065867      4.0969597      3.9903731 
-## 
-## $dataInputName
-## [1] NA</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Parameters of sigmoidal fit for data generated by a sigmoidal model. For details look at &quot;sigmoidal_vignette&quot; and &quot;parameterCalculation_vignette&quot;.</span>
-<span class="kw">print</span>(<span class="kw">t</span>(fitObj_sm$sigmoidalModel))</code></pre></div>
-<pre><code>##                                      [,1]          
-## maximum_N_Estimate                   &quot;0.9892762&quot;   
-## maximum_Std_Error                    &quot;0.00172638&quot;  
-## maximum_t_value                      &quot;573.035&quot;     
-## maximum_Pr_t                         &quot;6.473173e-80&quot;
-## slopeParam_N_Estimate                &quot;24.91311&quot;    
-## slopeParam_Std_Error                 &quot;0.3550744&quot;   
-## slopeParam_t_value                   &quot;70.16306&quot;    
-## slopeParam_Pr_t                      &quot;1.684368e-43&quot;
-## midPoint_N_Estimate                  &quot;0.3352606&quot;   
-## midPoint_Std_Error                   &quot;0.0006568671&quot;
-## midPoint_t_value                     &quot;510.3933&quot;    
-## midPoint_Pr_t                        &quot;6.635846e-78&quot;
-## residual_Sum_of_Squares              &quot;0.003021868&quot; 
-## log_likelihood                       &quot;144.5919&quot;    
-## AIC_value                            &quot;-281.1837&quot;   
-## BIC_value                            &quot;-274.1389&quot;   
-## isThisaFit                           &quot;TRUE&quot;        
-## startVector.maximum                  &quot;1.469176&quot;    
-## startVector.slopeParam               &quot;47.06382&quot;    
-## startVector.midPoint                 &quot;0.5558083&quot;   
-## dataScalingParameters.timeRange      &quot;24&quot;          
-## dataScalingParameters.intensityMin   &quot;0.1065867&quot;   
-## dataScalingParameters.intensityMax   &quot;4.09696&quot;     
-## dataScalingParameters.intensityRange &quot;3.990373&quot;    
-## model                                &quot;sigmoidal&quot;   
-## additionalParameters                 &quot;TRUE&quot;        
-## maximum_Estimate                     &quot;4.054168&quot;    
-## slopeParam_Estimate                  &quot;1.038046&quot;    
-## midPoint_Estimate                    &quot;8.046253&quot;    
-## dataInputName                        NA            
-## betterFit                            &quot;2&quot;           
-## correctFit                           &quot;20&quot;          
-## totalFit                             &quot;25&quot;          
-## maximum_x                            NA            
-## maximum_y                            &quot;4.054168&quot;    
-## midPoint_x                           &quot;8.046253&quot;    
-## midPoint_y                           &quot;2.027084&quot;    
-## slope                                &quot;1.052103&quot;    
-## incrementTime                        &quot;3.853393&quot;    
-## startPoint_x                         &quot;6.119557&quot;    
-## startPoint_y                         &quot;0&quot;           
-## reachMaximum_x                       &quot;9.97295&quot;     
-## reachMaximum_y                       &quot;4.054168&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Parameters of double_sigmoidal fit for data generated by a sigmoidal model. For details look at &quot;double_sigmoidal_vignette&quot; and &quot;parameterCalculation_vignette&quot;.</span>
-<span class="kw">print</span>(<span class="kw">t</span>(fitObj_sm$doubleSigmoidalModel))</code></pre></div>
-<pre><code>##                                          [,1]             
-## finalAsymptoteIntensityRatio_N_Estimate  &quot;0.9885998&quot;      
-## finalAsymptoteIntensityRatio_Std_Error   &quot;0.008785912&quot;    
-## finalAsymptoteIntensityRatio_t_value     &quot;112.521&quot;        
-## finalAsymptoteIntensityRatio_Pr_t        &quot;1.614902e-48&quot;   
-## maximum_N_Estimate                       &quot;0.9903424&quot;      
-## maximum_Std_Error                        &quot;0.001852526&quot;    
-## maximum_t_value                          &quot;534.5903&quot;       
-## maximum_Pr_t                             &quot;1.5447e-73&quot;     
-## slope1Param_N_Estimate                   &quot;24.85167&quot;       
-## slope1Param_Std_Error                    &quot;0.3549397&quot;      
-## slope1Param_t_value                      &quot;70.01659&quot;       
-## slope1Param_Pr_t                         &quot;6.242215e-41&quot;   
-## midPoint1Param_N_Estimate                &quot;0.3353946&quot;      
-## midPoint1Param_Std_Error                 &quot;0.0006609755&quot;   
-## midPoint1Param_t_value                   &quot;507.4236&quot;       
-## midPoint1Param_Pr_t                      &quot;1.063646e-72&quot;   
-## slope2Param_N_Estimate                   &quot;180&quot;            
-## slope2Param_Std_Error                    &quot;1361.004&quot;       
-## slope2Param_t_value                      &quot;0.1322553&quot;      
-## slope2Param_Pr_t                         &quot;0.8954989&quot;      
-## midPointDistanceParam_N_Estimate         &quot;0.625&quot;          
-## midPointDistanceParam_Std_Error          &quot;0.02689049&quot;     
-## midPointDistanceParam_t_value            &quot;23.24242&quot;       
-## midPointDistanceParam_Pr_t               &quot;1.13655e-23&quot;    
-## residual_Sum_of_Squares                  &quot;0.002782947&quot;    
-## log_likelihood                           &quot;146.3627&quot;       
-## AIC_value                                &quot;-278.7254&quot;      
-## BIC_value                                &quot;-266.397&quot;       
-## isThisaFit                               &quot;TRUE&quot;           
-## startVector.finalAsymptoteIntensityRatio &quot;0.3620635&quot;      
-## startVector.maximum                      &quot;0.8384534&quot;      
-## startVector.slope1Param                  &quot;47.56341&quot;       
-## startVector.midPoint1Param               &quot;0.4024245&quot;      
-## startVector.slope2Param                  &quot;36.33399&quot;       
-## startVector.midPointDistanceParam        &quot;0.3970594&quot;      
-## dataScalingParameters.timeRange          &quot;24&quot;             
-## dataScalingParameters.intensityMin       &quot;0.1065867&quot;      
-## dataScalingParameters.intensityMax       &quot;4.09696&quot;        
-## dataScalingParameters.intensityRange     &quot;3.990373&quot;       
-## model                                    &quot;doublesigmoidal&quot;
-## additionalParameters                     &quot;TRUE&quot;           
-## finalAsymptoteIntensityRatio_Estimate    &quot;0.9885998&quot;      
-## maximum_Estimate                         &quot;4.058422&quot;       
-## slope1Param_Estimate                     &quot;1.035486&quot;       
-## midPoint1Param_Estimate                  &quot;8.04947&quot;        
-## slope2Param_Estimate                     &quot;7.5&quot;            
-## midPointDistanceParam_Estimate           &quot;15&quot;             
-## dataInputName                            NA               
-## betterFit                                &quot;2&quot;              
-## correctFit                               &quot;20&quot;             
-## totalFit                                 &quot;482&quot;            
-## maximum_x                                &quot;20.99815&quot;       
-## maximum_y                                &quot;4.058422&quot;       
-## midPoint1_x                              &quot;8.049467&quot;       
-## midPoint1_y                              &quot;2.029211&quot;       
-## midPoint2_x                              &quot;23.04947&quot;       
-## midPoint2_y                              &quot;4.035289&quot;       
-## slope1                                   &quot;1.050612&quot;       
-## slope2                                   &quot;-0.0867501&quot;     
-## finalAsymptoteIntensity                  &quot;4.012156&quot;       
-## incrementTime                            &quot;3.862913&quot;       
-## startPoint_x                             &quot;6.11801&quot;        
-## startPoint_y                             &quot;0&quot;              
-## reachMaximum_x                           &quot;9.980923&quot;       
-## reachMaximum_y                           &quot;4.058422&quot;       
-## decrementTime                            &quot;0.5333325&quot;      
-## startDeclinePoint_x                      &quot;22.7828&quot;        
-## startDeclinePoint_y                      &quot;4.058422&quot;       
-## endDeclinePoint_x                        &quot;23.31614&quot;       
-## endDeclinePoint_y                        &quot;4.012156&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># comparison of sigmoidal and double_sigmoidal models for data generated by a sigmoidal model. Sigmoidal model is the winner. For details of the parameters look at &quot;categorize_vignette&quot;</span>
-utils::<span class="kw">str</span>(fitObj_sm$outputCluster)</code></pre></div>
-<pre><code>## List of 40
-##  $ test.name                               : logi NA
-##  $ dataInputName                           : logi NA
-##  $ test.sm_modelCheck                      : logi TRUE
-##  $ test.dsm_modelCheck                     : logi TRUE
-##  $ test.dataScalingParameters              : logi TRUE
-##  $ intensityMaximum                        : num 4.1
-##  $ threshold_minimum_for_intensity_maximum : num 0.3
-##  $ test.minimum_for_intensity_maximum      : logi TRUE
-##  $ intensityRange                          : num 3.99
-##  $ threshold_intensity_range               : num 0.1
-##  $ test.intensity_range                    : logi TRUE
-##  $ test.sigmoidalFit                       : logi TRUE
-##  $ test.doublesigmoidalFit                 : logi TRUE
-##  $ test.sigmoidalAdditionalParameters      : logi TRUE
-##  $ test.doublesigmoidalAdditionalParameters: logi TRUE
-##  $ threshold_AIC                           : num -10
-##  $ sigmoidalAIC                            : num -281
-##  $ test.sigmoidalAIC                       : logi TRUE
-##  $ doublesigmoidalAIC                      : num -279
-##  $ test.doublesigmoidalAIC                 : logi TRUE
-##  $ dsm_maximum_x                           : num 21
-##  $ timeRange                               : num 24
-##  $ test.dsm_maximum_x                      : logi TRUE
-##  $ sm_tmax_IntensityRatio                  : num 1
-##  $ threshold_sm_tmax_IntensityRatio        : num 0.85
-##  $ test.sm_tmax_IntensityRatio             : logi TRUE
-##  $ dsm_tmax_IntensityRatio                 : num 0.989
-##  $ threshold_dsm_tmax_IntensityRatio       : num 0.75
-##  $ test.dsm_tmax_IntensityRatio            : logi FALSE
-##  $ sm_startPoint_x                         : num 6.12
-##  $ test.sm_startPoint_x                    : logi TRUE
-##  $ dsm_startPoint_x                        : num 6.12
-##  $ test.dsm_startPoint_x                   : logi TRUE
-##  $ sm_startIntensity                       : num 0.000956
-##  $ threshold_t0_max_int                    : num 0.05
-##  $ test.sm_startIntensity                  : logi TRUE
-##  $ dsm_startIntensity                      : num 0.000974
-##  $ test.dsm_startIntensity                 : logi TRUE
-##  $ decisonSteps                            : chr &quot;1c_6_8&quot;
-##  $ decision                                : chr &quot;sigmoidal&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># The output composes of five elements</span>
+<span class="kw">print</span>(<span class="kw">names</span>(fitObj_sm))</code></pre></div>
+<pre><code>## [1] &quot;normalizedInput&quot;      &quot;sigmoidalModel&quot;       &quot;doubleSigmoidalModel&quot;
+## [4] &quot;outputCluster&quot;        &quot;summaryVector&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Summary of the results</span>
 utils::<span class="kw">str</span>(fitObj_sm$summaryVector)</code></pre></div>
 <pre><code>## List of 12
@@ -348,222 +168,10 @@ utils::<span class="kw">str</span>(fitObj_sm$summaryVector)</code></pre></div>
 </div>
 <div id="the-results-of-the-double_sigmoidal-fit" class="section level3">
 <h3>The results of the double_sigmoidal fit</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Normalized data generated by a double_sigmoidal model</span>
-<span class="kw">print</span>(fitObj_dsm$normalizedInput)</code></pre></div>
-<pre><code>## $timeIntensityData
-##         time  intensity
-## 1  0.1250000 0.00000000
-## 2  0.1458333 0.02150040
-## 3  0.1666667 0.04153937
-## 4  0.1875000 0.07667150
-## 5  0.2083333 0.12246434
-## 6  0.2291667 0.17323374
-## 7  0.2500000 0.28579963
-## 8  0.2708333 0.37836736
-## 9  0.2916667 0.48927416
-## 10 0.3125000 0.65875400
-## 11 0.3333333 0.74046767
-## 12 0.3541667 0.86004487
-## 13 0.3750000 0.90453940
-## 14 0.3958333 0.93127653
-## 15 0.4166667 0.95953303
-## 16 0.4375000 0.99013545
-## 17 0.4583333 1.00000000
-## 18 0.4791667 0.99356252
-## 19 0.5000000 0.96314887
-## 20 0.5208333 0.98351459
-## 21 0.5416667 0.95232792
-## 22 0.5625000 0.91278051
-## 23 0.5833333 0.80737229
-## 24 0.6041667 0.74653002
-## 25 0.6250000 0.64107818
-## 26 0.6458333 0.57598198
-## 27 0.6666667 0.50543230
-## 28 0.6875000 0.41573562
-## 29 0.7083333 0.37263686
-## 30 0.7291667 0.32638508
-## 31 0.7500000 0.33412245
-## 32 0.7708333 0.33565192
-## 33 0.7916667 0.31415027
-## 34 0.8125000 0.31591810
-## 35 0.8333333 0.30782818
-## 36 0.8541667 0.29377308
-## 37 0.8750000 0.29777393
-## 38 0.8958333 0.29169267
-## 39 0.9166667 0.27675702
-## 40 0.9375000 0.28275562
-## 41 0.9583333 0.29405737
-## 42 0.9791667 0.27888310
-## 43 1.0000000 0.27312104
-## 
-## $dataScalingParameters
-##      timeRange   intensityMin   intensityMax intensityRange 
-##     24.0000000      0.1416318      4.0938816      3.9522498 
-## 
-## $dataInputName
-## [1] NA</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Parameters of sigmoidal fit for data generated by a double_sigmoidal model. For details look at &quot;sigmoidal_vignette&quot; and &quot;parameterCalculation_vignette&quot;.</span>
-<span class="kw">print</span>(<span class="kw">t</span>(fitObj_dsm$sigmoidalModel))</code></pre></div>
-<pre><code>##                                      [,1]          
-## maximum_N_Estimate                   &quot;0.5911094&quot;   
-## maximum_Std_Error                    &quot;0.04633623&quot;  
-## maximum_t_value                      &quot;12.75696&quot;    
-## maximum_Pr_t                         &quot;1.111281e-15&quot;
-## slopeParam_N_Estimate                &quot;47.84047&quot;    
-## slopeParam_Std_Error                 &quot;47.1239&quot;     
-## slopeParam_t_value                   &quot;1.015206&quot;    
-## slopeParam_Pr_t                      &quot;0.3161093&quot;   
-## midPoint_N_Estimate                  &quot;0.2488228&quot;   
-## midPoint_Std_Error                   &quot;0.02349637&quot;  
-## midPoint_t_value                     &quot;10.58984&quot;    
-## midPoint_Pr_t                        &quot;3.604816e-13&quot;
-## residual_Sum_of_Squares              &quot;2.823893&quot;    
-## log_likelihood                       &quot;-2.468056&quot;   
-## AIC_value                            &quot;12.93611&quot;    
-## BIC_value                            &quot;19.98091&quot;    
-## isThisaFit                           &quot;TRUE&quot;        
-## startVector.maximum                  &quot;1.325411&quot;    
-## startVector.slopeParam               &quot;107.2864&quot;    
-## startVector.midPoint                 &quot;0.1971991&quot;   
-## dataScalingParameters.timeRange      &quot;24&quot;          
-## dataScalingParameters.intensityMin   &quot;0.1416318&quot;   
-## dataScalingParameters.intensityMax   &quot;4.093882&quot;    
-## dataScalingParameters.intensityRange &quot;3.95225&quot;     
-## model                                &quot;sigmoidal&quot;   
-## additionalParameters                 &quot;TRUE&quot;        
-## maximum_Estimate                     &quot;2.477844&quot;    
-## slopeParam_Estimate                  &quot;1.993353&quot;    
-## midPoint_Estimate                    &quot;5.971747&quot;    
-## dataInputName                        NA            
-## betterFit                            &quot;2&quot;           
-## correctFit                           &quot;20&quot;          
-## totalFit                             &quot;29&quot;          
-## maximum_x                            NA            
-## maximum_y                            &quot;2.477844&quot;    
-## midPoint_x                           &quot;5.971747&quot;    
-## midPoint_y                           &quot;1.238922&quot;    
-## slope                                &quot;1.234804&quot;    
-## incrementTime                        &quot;2.006669&quot;    
-## startPoint_x                         &quot;4.968412&quot;    
-## startPoint_y                         &quot;0&quot;           
-## reachMaximum_x                       &quot;6.975082&quot;    
-## reachMaximum_y                       &quot;2.477844&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Parameters of double_sigmoidal fit for data generated by a double_sigmoidal model. For details look at &quot;double_sigmoidal_vignette&quot; and &quot;parameterCalculation_vignette&quot;.</span>
-<span class="kw">print</span>(<span class="kw">t</span>(fitObj_dsm$doubleSigmoidalModel))</code></pre></div>
-<pre><code>##                                          [,1]             
-## finalAsymptoteIntensityRatio_N_Estimate  &quot;0.2935536&quot;      
-## finalAsymptoteIntensityRatio_Std_Error   &quot;0.004875493&quot;    
-## finalAsymptoteIntensityRatio_t_value     &quot;60.21004&quot;       
-## finalAsymptoteIntensityRatio_Pr_t        &quot;1.582681e-38&quot;   
-## maximum_N_Estimate                       &quot;0.9941972&quot;      
-## maximum_Std_Error                        &quot;0.005805047&quot;    
-## maximum_t_value                          &quot;171.2643&quot;       
-## maximum_Pr_t                             &quot;2.958662e-55&quot;   
-## slope1Param_N_Estimate                   &quot;24.42095&quot;       
-## slope1Param_Std_Error                    &quot;0.7015857&quot;      
-## slope1Param_t_value                      &quot;34.80822&quot;       
-## slope1Param_Pr_t                         &quot;7.061832e-30&quot;   
-## midPoint1Param_N_Estimate                &quot;0.2923032&quot;      
-## midPoint1Param_Std_Error                 &quot;0.001495442&quot;    
-## midPoint1Param_t_value                   &quot;195.4628&quot;       
-## midPoint1Param_Pr_t                      &quot;2.237123e-57&quot;   
-## slope2Param_N_Estimate                   &quot;24.61658&quot;       
-## slope2Param_Std_Error                    &quot;1.057588&quot;       
-## slope2Param_t_value                      &quot;23.27616&quot;       
-## slope2Param_Pr_t                         &quot;1.080757e-23&quot;   
-## midPointDistanceParam_N_Estimate         &quot;0.3337014&quot;      
-## midPointDistanceParam_Std_Error          &quot;0.003007652&quot;    
-## midPointDistanceParam_t_value            &quot;110.9508&quot;       
-## midPointDistanceParam_Pr_t               &quot;2.712175e-48&quot;   
-## residual_Sum_of_Squares                  &quot;0.00780131&quot;     
-## log_likelihood                           &quot;124.2009&quot;       
-## AIC_value                                &quot;-234.4018&quot;      
-## BIC_value                                &quot;-222.0734&quot;      
-## isThisaFit                               &quot;TRUE&quot;           
-## startVector.finalAsymptoteIntensityRatio &quot;0.4859528&quot;      
-## startVector.maximum                      &quot;0.899552&quot;       
-## startVector.slope1Param                  &quot;59.77961&quot;       
-## startVector.midPoint1Param               &quot;0.5416556&quot;      
-## startVector.slope2Param                  &quot;88.05782&quot;       
-## startVector.midPointDistanceParam        &quot;0.3474758&quot;      
-## dataScalingParameters.timeRange          &quot;24&quot;             
-## dataScalingParameters.intensityMin       &quot;0.1416318&quot;      
-## dataScalingParameters.intensityMax       &quot;4.093882&quot;       
-## dataScalingParameters.intensityRange     &quot;3.95225&quot;        
-## model                                    &quot;doublesigmoidal&quot;
-## additionalParameters                     &quot;TRUE&quot;           
-## finalAsymptoteIntensityRatio_Estimate    &quot;0.2935536&quot;      
-## maximum_Estimate                         &quot;4.070948&quot;       
-## slope1Param_Estimate                     &quot;1.01754&quot;        
-## midPoint1Param_Estimate                  &quot;7.015277&quot;       
-## slope2Param_Estimate                     &quot;1.025691&quot;       
-## midPointDistanceParam_Estimate           &quot;8.008832&quot;       
-## dataInputName                            NA               
-## betterFit                                &quot;2&quot;              
-## correctFit                               &quot;20&quot;             
-## totalFit                                 &quot;41&quot;             
-## maximum_x                                &quot;11.0317&quot;        
-## maximum_y                                &quot;4.070948&quot;       
-## midPoint1_x                              &quot;6.951607&quot;       
-## midPoint1_y                              &quot;2.035474&quot;       
-## midPoint2_x                              &quot;15.08724&quot;       
-## midPoint2_y                              &quot;2.632994&quot;       
-## slope1                                   &quot;1.068593&quot;       
-## slope2                                   &quot;-0.7609189&quot;     
-## finalAsymptoteIntensity                  &quot;1.195041&quot;       
-## incrementTime                            &quot;3.809635&quot;       
-## startPoint_x                             &quot;5.04679&quot;        
-## startPoint_y                             &quot;0&quot;              
-## reachMaximum_x                           &quot;8.856424&quot;       
-## reachMaximum_y                           &quot;4.070948&quot;       
-## decrementTime                            &quot;3.779517&quot;       
-## startDeclinePoint_x                      &quot;13.19748&quot;       
-## startDeclinePoint_y                      &quot;4.070948&quot;       
-## endDeclinePoint_x                        &quot;16.977&quot;         
-## endDeclinePoint_y                        &quot;1.195041&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># comparison of sigmoidal and double_sigmoidal models for data generated by a double_sigmoidal model. double_sigmoidal model is the winner. For details of the parameters look at &quot;categorize_vignette&quot;</span>
-utils::<span class="kw">str</span>(fitObj_dsm$outputCluster)</code></pre></div>
-<pre><code>## List of 40
-##  $ test.name                               : logi NA
-##  $ dataInputName                           : logi NA
-##  $ test.sm_modelCheck                      : logi TRUE
-##  $ test.dsm_modelCheck                     : logi TRUE
-##  $ test.dataScalingParameters              : logi TRUE
-##  $ intensityMaximum                        : num 4.09
-##  $ threshold_minimum_for_intensity_maximum : num 0.3
-##  $ test.minimum_for_intensity_maximum      : logi TRUE
-##  $ intensityRange                          : num 3.95
-##  $ threshold_intensity_range               : num 0.1
-##  $ test.intensity_range                    : logi TRUE
-##  $ test.sigmoidalFit                       : logi TRUE
-##  $ test.doublesigmoidalFit                 : logi TRUE
-##  $ test.sigmoidalAdditionalParameters      : logi TRUE
-##  $ test.doublesigmoidalAdditionalParameters: logi TRUE
-##  $ threshold_AIC                           : num -10
-##  $ sigmoidalAIC                            : num 12.9
-##  $ test.sigmoidalAIC                       : logi FALSE
-##  $ doublesigmoidalAIC                      : num -234
-##  $ test.doublesigmoidalAIC                 : logi TRUE
-##  $ dsm_maximum_x                           : num 11
-##  $ timeRange                               : num 24
-##  $ test.dsm_maximum_x                      : logi TRUE
-##  $ sm_tmax_IntensityRatio                  : num 1
-##  $ threshold_sm_tmax_IntensityRatio        : num 0.85
-##  $ test.sm_tmax_IntensityRatio             : logi TRUE
-##  $ dsm_tmax_IntensityRatio                 : num 0.294
-##  $ threshold_dsm_tmax_IntensityRatio       : num 0.75
-##  $ test.dsm_tmax_IntensityRatio            : logi TRUE
-##  $ sm_startPoint_x                         : num 4.97
-##  $ test.sm_startPoint_x                    : logi TRUE
-##  $ dsm_startPoint_x                        : num 5.05
-##  $ test.dsm_startPoint_x                   : logi TRUE
-##  $ sm_startIntensity                       : num 1.68e-05
-##  $ threshold_t0_max_int                    : num 0.05
-##  $ test.sm_startIntensity                  : logi TRUE
-##  $ dsm_startIntensity                      : num 0.00334
-##  $ test.dsm_startIntensity                 : logi TRUE
-##  $ decisonSteps                            : chr &quot;1c_3a_8&quot;
-##  $ decision                                : chr &quot;double_sigmoidal&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># The output composes of five elements</span>
+<span class="kw">print</span>(<span class="kw">names</span>(fitObj_dsm))</code></pre></div>
+<pre><code>## [1] &quot;normalizedInput&quot;      &quot;sigmoidalModel&quot;       &quot;doubleSigmoidalModel&quot;
+## [4] &quot;outputCluster&quot;        &quot;summaryVector&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Summary of the results</span>
 utils::<span class="kw">str</span>(fitObj_dsm$summaryVector)</code></pre></div>
 <pre><code>## List of 21
@@ -592,7 +200,7 @@ utils::<span class="kw">str</span>(fitObj_dsm$summaryVector)</code></pre></div>
 </div>
 <div id="generate-figures" class="section level2">
 <h2>Generate figures</h2>
-<p>Here are the two datasets that we want to categorize</p>
+<p>The figures of two synthetic datasets and corresponding model fits are generated by <code>sicegar::figureModelCurves</code>. In addition to the raw data and the decided model, the figures also emphasize important parameters that characterize decided models.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fig_a=sicegar::<span class="kw">figureModelCurves</span>(<span class="dt">dataInput=</span>fitObj_sm$normalizedInput,
                                   <span class="dt">sigmoidalFitVector=</span>fitObj_sm$sigmoidalModel,
                                   <span class="dt">showParameterRelatedLines=</span><span class="ot">TRUE</span>)

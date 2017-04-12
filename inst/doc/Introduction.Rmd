@@ -13,7 +13,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
   
-# Fit function
+# Introduction
 
 This is the main function that puts everything in the package together; the aim of the package is to decide if a given time intensity data can be modelled with a sigmoidal curve or a double sigmoidal curve. The double sigmoidal curve is composed of 2 sigmoidal curves. First one increases from 0 to maximum intensity and second one decreases from maximum intensity to final asymptote intensity. After calculating the best candidate curves for both of the models the algorithm decides which of the two candidates (if any) is a better fit to the given data. After making the decision between the models, function gives parameters that quantify the time - intensity data with respect to the decided model. 
 

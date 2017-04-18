@@ -131,6 +131,23 @@ dataInputDoubleSigmoidal=<span class="kw">data.frame</span>(<span class="dt">int
 </div>
 <div id="apply-the-main-function-to-obtain-fit-results" class="section level2">
 <h2>Apply the main function to obtain fit results</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Here is how the input data looks like</span>
+<span class="kw">head</span>(dataInputSigmoidal)</code></pre></div>
+<pre><code>##   intensity time
+## 1 0.1065867  3.0
+## 2 0.1148832  3.5
+## 3 0.1178042  4.0
+## 4 0.1247951  4.5
+## 5 0.2142657  5.0
+## 6 0.3170719  5.5</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(dataInputDoubleSigmoidal)</code></pre></div>
+<pre><code>##   intensity time
+## 1 0.1416318  3.0
+## 2 0.2266067  3.5
+## 3 0.3058058  4.0
+## 4 0.4446567  4.5
+## 5 0.6256414  5.0
+## 6 0.8262948  5.5</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fitObj_sm &lt;-<span class="st"> </span>sicegar::<span class="kw">fitFunction</span>(<span class="dt">dataInput =</span> dataInputSigmoidal)
 fitObj_dsm &lt;-<span class="st"> </span>sicegar::<span class="kw">fitFunction</span>(<span class="dt">dataInput =</span> dataInputDoubleSigmoidal)</code></pre></div>
 </div>

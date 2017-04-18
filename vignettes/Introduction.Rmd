@@ -103,6 +103,10 @@ dataInputDoubleSigmoidal=data.frame(intensity=intensity,time=time)
 ## Apply the main function to obtain fit results
 
 ```{r apply fitFunction for sigmoidal & double_sigmoidal datasets}
+# Here is how the input data looks like
+head(dataInputSigmoidal)
+head(dataInputDoubleSigmoidal)
+
 fitObj_sm <- sicegar::fitFunction(dataInput = dataInputSigmoidal)
 fitObj_dsm <- sicegar::fitFunction(dataInput = dataInputDoubleSigmoidal)
 ```

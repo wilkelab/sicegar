@@ -55,4 +55,3 @@ if(!parameterVector$isThisaFit){print(parameterVector)}
 
 
 }
-

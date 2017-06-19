@@ -116,7 +116,6 @@ figureModelCurves<-function(dataInput,
                                                                  slopeParam=slopeParam,
                                                                  midPoint=midPoint_x)
       intensityTheoreticalSigmoidalDf=data.frame(time,intensityTheoreticalSigmoidal)
-      dplyr::full_join(intensityTheoreticalSigmoidalDf,dataFrameInput)->dataFrameInput
     }
   }
 
@@ -185,12 +184,11 @@ figureModelCurves<-function(dataInput,
                                                                     slope2Param=slope2Param,
                                                                     midPointDistanceParam=midPointDistanceParam)
       intensityTheoreticalDoubleSigmoidalDf=data.frame(time,intensityTheoreticalDoubleSigmoidal)
-      dplyr::full_join(intensityTheoreticalDoubleSigmoidalDf,dataFrameInput)->dataFrameInput
     }
   }
 
   output=ggplot2::ggplot(dataFrameInput)+
-    ggplot2::geom_point(ggplot2::aes(x=dataFrameInput$time, y=dataFrameInput$intensity))+
+    ggplot2::geom_point(ggplot2::aes_(x=~time, y=~intensity))+
     ggplot2::expand_limits(x = 0, y = 0)+
     ggplot2::theme_bw()+
     ggplot2::theme(panel.grid.minor = ggplot2::element_blank())+
@@ -200,29 +198,40 @@ figureModelCurves<-function(dataInput,
   {
     if(sigmoidalFitVector$isThisaFit)
     {
-      output=output+ggplot2::geom_line(ggplot2::aes(x=time,y=intensityTheoreticalSigmoidal),color="orange",size=1.5)
+
       if(showParameterRelatedLines)
       {
         if(!sigmoidalFitVector$additionalParameters )
         {stop("to show parameter related lines one needs to run sicegar::parameterCalculation for sigmoidalModel ")}
         if(sigmoidalFitVector$additionalParameters)
         {
-          # Points related with the sigmoidal fit line
-          output=output+
-            ggplot2::geom_point(ggplot2::aes(x=midPoint_x,
-                                             y=midPoint_y),
-                                colour="red",size=6,shape=13)
-
           # Lines related with the sigmoidal fit line
           output=output+
-            ggplot2::geom_hline(ggplot2::aes(yintercept=0),colour="#bdbdbd",size=0.5,linetype="longdash")+
-            ggplot2::geom_hline(ggplot2::aes(yintercept=maximum_y),
+            ggplot2::geom_hline(yintercept=0,colour="#bdbdbd",size=0.5,linetype="longdash")+
+            ggplot2::geom_hline(yintercept=maximum_y,
                                 colour="#bdbdbd",size=0.5,linetype="longdash")+
-            ggplot2::geom_segment(ggplot2::aes(x = startPoint_x,
-                                               y = startPoint_y,
-                                               xend = reachMaximum_x,
-                                               yend = reachMaximum_y),
+            ggplot2::geom_segment(x = startPoint_x,
+                                  y = startPoint_y,
+                                  xend = reachMaximum_x,
+                                  yend = reachMaximum_y,
                                   colour="#bdbdbd",size=0.5,linetype="longdash")
+        }
+      }
+
+      output=output+
+        ggplot2::geom_point(data=dataFrameInput, ggplot2::aes_(x=~time, y=~intensity))+
+        ggplot2::geom_line(data=intensityTheoreticalSigmoidalDf,
+                           ggplot2::aes_(x=~time,y=~intensityTheoreticalSigmoidal),color="orange",size=1.5)
+
+      if(showParameterRelatedLines)
+      {
+        if(sigmoidalFitVector$additionalParameters)
+        {
+          # Points related with the sigmoidal fit line
+          output=output+
+            ggplot2::geom_point(x=midPoint_x,
+                                y=midPoint_y,
+                                colour="red",size=6,shape=13)
         }
       }
     }
@@ -232,42 +241,53 @@ figureModelCurves<-function(dataInput,
   {
     if(doubleSigmoidalFitVector$isThisaFit)
     {
-      output=output+ggplot2::geom_line(ggplot2::aes(x=time,y=intensityTheoreticalDoubleSigmoidal),color="orange",size=1.5)
+
       if(showParameterRelatedLines)
       {
         if(!doubleSigmoidalFitVector$additionalParameters )
         {stop("to show parameter related lines one needs to run sicegar::parameterCalculation for doubleSigmoidalModel ")}
         if(doubleSigmoidalFitVector$additionalParameters)
         {
-          # Points related with the double sigmoidal fit line (with numerical correction)
-          output=output+
-            ggplot2::geom_point(ggplot2::aes(x=maximum_x, y=maximum_y),
-                                colour="red",size=6,shape=13)+
-            ggplot2::geom_point(ggplot2::aes(x=midPoint1_x, y=midPoint1_y),
-                                colour="red",size=6,shape=13)+
-            ggplot2::geom_point(ggplot2::aes(x=midPoint2_x, y=midPoint2_y),
-                                colour="red", size=6, shape=13)
-
           # Lines related with the double sigmoidal fit line (with numerical correction)
           output=output+
-            ggplot2::geom_hline(ggplot2::aes(yintercept=0),colour="#bdbdbd",size=0.5,linetype="longdash")+
-            ggplot2::geom_hline(ggplot2::aes(yintercept=maximum_y),
+            ggplot2::geom_hline(yintercept=0,colour="#bdbdbd",size=0.5,linetype="longdash")+
+            ggplot2::geom_hline(yintercept=maximum_y,
                                 colour="#bdbdbd",size=0.5,linetype="longdash")+
-            ggplot2::geom_segment(ggplot2::aes(x = maximum_x,
-                                               y = finalAsymptoteIntensity,
-                                               xend = Inf,
-                                               yend = finalAsymptoteIntensity),
+            ggplot2::geom_segment(x = maximum_x,
+                                  y = finalAsymptoteIntensity,
+                                  xend = Inf,
+                                  yend = finalAsymptoteIntensity,
                                   colour="#bdbdbd",size=0.5,linetype="longdash")+
-            ggplot2::geom_segment(ggplot2::aes(x = startPoint_x,
-                                               y = startPoint_y,
-                                               xend = reachMaximum_x,
-                                               yend = reachMaximum_y),
+            ggplot2::geom_segment(x = startPoint_x,
+                                  y = startPoint_y,
+                                  xend = reachMaximum_x,
+                                  yend = reachMaximum_y,
                                   colour="#bdbdbd",size=0.5,linetype="longdash")+
-            ggplot2::geom_segment(ggplot2::aes(x = startDeclinePoint_x,
-                                               y = startDeclinePoint_y,
-                                               xend = endDeclinePoint_x,
-                                               yend = endDeclinePoint_y),
+            ggplot2::geom_segment(x = startDeclinePoint_x,
+                                  y = startDeclinePoint_y,
+                                  xend = endDeclinePoint_x,
+                                  yend = endDeclinePoint_y,
                                   colour="#bdbdbd",size=0.5,linetype="longdash")
+        }
+      }
+
+      output=output+
+        ggplot2::geom_point(data=dataFrameInput, ggplot2::aes_(x=~time, y=~intensity))+
+        ggplot2::geom_line(data=intensityTheoreticalDoubleSigmoidalDf,
+                           ggplot2::aes_(x=~time,y=~intensityTheoreticalDoubleSigmoidal),color="orange",size=1.5)
+
+      if(showParameterRelatedLines)
+      {
+        if(doubleSigmoidalFitVector$additionalParameters)
+        {
+          # Points related with the double sigmoidal fit line (with numerical correction)
+          output=output+
+            ggplot2::geom_point(x=maximum_x, y=maximum_y,
+                                colour="red",size=6,shape=13)+
+            ggplot2::geom_point(x=midPoint1_x, y=midPoint1_y,
+                                colour="red",size=6,shape=13)+
+            ggplot2::geom_point(x=midPoint2_x, y=midPoint2_y,
+                                colour="red", size=6, shape=13)
 
         }
       }

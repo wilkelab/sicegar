@@ -29,4 +29,3 @@ dataInput2=dataOutput
 dataOutput2 = unnormalizeData(dataInput2)
 
 }
-

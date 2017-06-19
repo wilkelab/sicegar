@@ -91,4 +91,3 @@ outputCluster=sicegar::categorize(parameterVectorSigmoidal=sigmoidalModel,
 utils::str(outputCluster)
 
 }
-

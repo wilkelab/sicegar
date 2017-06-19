@@ -146,4 +146,3 @@ if(parameterVector$isThisaFit){
 
 if(!parameterVector$isThisaFit){print(parameterVector)}
 }
-

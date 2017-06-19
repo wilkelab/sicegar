@@ -62,4 +62,3 @@ ggplot(comparisonData)+
 if(!parameterVector$isThisaFit){print(parameterVector)}
 
 }
-

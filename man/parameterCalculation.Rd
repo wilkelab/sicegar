@@ -46,4 +46,3 @@ if(parameterVector$isThisaFit)
 print(t(parameterVector))
 
 }
-

@@ -64,4 +64,3 @@ normalizedInput = sicegar::normalizeData(dataInput,dataInputName="batch_01_21_20
 isThis_nosignal = sicegar::pre_categorize(normalizedInput = normalizedInput)
 
 }
-

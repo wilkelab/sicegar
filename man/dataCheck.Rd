@@ -40,4 +40,3 @@ dataInput2=dataOutput
 # Apply dataCheck function
 dataOutputVariable2 = dataCheck(dataInput2)
 }
-

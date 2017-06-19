@@ -27,4 +27,3 @@ dataInput = data.frame(time,intensity)
 dataOutput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
 
 }
-

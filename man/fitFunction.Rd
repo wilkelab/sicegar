@@ -106,4 +106,3 @@ dataInput=data.frame(intensity=intensity,time=time)
 fitObj<-sicegar::fitFunction(dataInput = dataInput)
 
 }
-

@@ -1,6 +1,6 @@
 ---
 title: Introduction
-author: "Umut Caglar"
+author: "Umut Caglar, Claus O. Wilke"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -12,8 +12,6 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-  
-# Fit function
 
 This is the main function that puts everything in the package together; the aim of the package is to decide if a given time intensity data can be modelled with a sigmoidal curve or a double sigmoidal curve. The double sigmoidal curve is composed of 2 sigmoidal curves. First one increases from 0 to maximum intensity and second one decreases from maximum intensity to final asymptote intensity. After calculating the best candidate curves for both of the models the algorithm decides which of the two candidates (if any) is a better fit to the given data. After making the decision between the models, function gives parameters that quantify the time - intensity data with respect to the decided model. 
 
@@ -45,7 +43,7 @@ the input of main fit function is raw time - intensity data; after multiple step
 In order to demonstrate how the function work; one needs to generate some synthetic time intensity data;
 
 
-## Generate Synthetic Time - Intensity Data
+##  Simulated example input data
 ```{r install packages, echo=FALSE, warning=FALSE, results='hide',message=FALSE}
 
 ###*****************************
@@ -72,40 +70,46 @@ We will generate data from both sigmoidal and double sigmoidal models with some 
 
 Generate data based on sigmoidal model
 ```{r generate data for sigmoidal}
-time=seq(3,24,0.5)
+time <- seq(3, 24, 0.5)
 
 #simulate intensity data and add noise
-noise_parameter=0.1
-intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
-intensity=sicegar::sigmoidalFitFormula(time, maximum=4, slopeParam=1, midPoint=8)
-intensity=intensity+intensity_noise
+noise_parameter <- 0.1
+intensity_noise <- stats::runif(n = length(time), min = 0, max = 1)*noise_parameter
+intensity <- sicegar::sigmoidalFitFormula(time, maximum = 4, slopeParam = 1, midPoint = 8)
+intensity <- intensity + intensity_noise
 
-dataInputSigmoidal=data.frame(intensity=intensity,time=time)
+dataInputSigmoidal <- data.frame(intensity, time)
 ```
 
 
-Generate data based on double - sigmoidal model
+Generate data based on double-sigmoidal model
 ```{r generate data for double - sigmoidal}
-noise_parameter=0.2
-intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
-intensity = sicegar::doublesigmoidalFitFormula(time,
-                                    finalAsymptoteIntensityRatio=.3,
-                                    maximum=4,
-                                    slope1Param=1,
-                                    midPoint1Param=7,
-                                    slope2Param=1,
-                                    midPointDistanceParam=8)
-intensity=intensity+intensity_noise
-dataInputDoubleSigmoidal=data.frame(intensity=intensity,time=time)
+noise_parameter <- 0.2
+intensity_noise <- runif(n = length(time), min = 0, max = 1)*noise_parameter
+intensity <- sicegar::doublesigmoidalFitFormula(time,
+                                    finalAsymptoteIntensityRatio = .3,
+                                    maximum = 4,
+                                    slope1Param = 1,
+                                    midPoint1Param = 7,
+                                    slope2Param = 1,
+                                    midPointDistanceParam = 8)
+intensity <- intensity+intensity_noise
+dataInputDoubleSigmoidal <- data.frame(intensity, time)
 ```
 
 
 ## Apply the main function to obtain fit results
 
 ```{r apply fitFunction for sigmoidal & double_sigmoidal datasets}
+# Here is how the input data looks like
+head(dataInputSigmoidal)
+head(dataInputDoubleSigmoidal)
+
 fitObj_sm <- sicegar::fitFunction(dataInput = dataInputSigmoidal)
 fitObj_dsm <- sicegar::fitFunction(dataInput = dataInputDoubleSigmoidal)
 ```
+
+Although we use the defaults here; there are three thresholds one needs to determine before using the package; `threshold_minimum_for_intensity_maximum`, `threshold_intensity_range`,  and `threshold_t0_max_int`. Those parameters depend on the data source and measurement device, and details can be found in categorize_vignette. 
 
 ## Results
 
@@ -147,12 +151,13 @@ The figures of two synthetic datasets and corresponding model fits are generated
 
 
 ```{r cowplor figure, echo=TRUE, message=FALSE, warning=FALSE, comment=FALSE, fig.height=4, fig.width=8}
-fig_a=sicegar::figureModelCurves(dataInput=fitObj_sm$normalizedInput,
+# Sigmoidal fit with parameter related lines
+fig_a <- sicegar::figureModelCurves(dataInput=fitObj_sm$normalizedInput,
                                   sigmoidalFitVector=fitObj_sm$sigmoidalModel,
                                   showParameterRelatedLines=TRUE)
 
-# Double Sigmoidal Fit with parameter related lines
-fig_b=sicegar::figureModelCurves(dataInput=fitObj_dsm$normalizedInput,
+# Double-sigmoidal fit with parameter related lines
+fig_b <- sicegar::figureModelCurves(dataInput=fitObj_dsm$normalizedInput,
                                   doubleSigmoidalFitVector=fitObj_dsm$doubleSigmoidalModel,
                                   showParameterRelatedLines=TRUE)
 

@@ -1,0 +1,181 @@
+---
+title: The linear fit function
+author: "Umut Caglar, Claus O Wilke"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{The linear fit function}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this vignette we describe the linear model that can be fitted with the function `sicegar::lineFitFunction()`.
+
+```{r install packages, echo=FALSE, warning=FALSE, results='hide',message=FALSE}
+
+###*****************************
+# INITIAL COMMANDS TO RESET THE SYSTEM
+rm(list = ls())
+if (is.integer(dev.list())){dev.off()}
+cat("\014")
+seedNo=14159
+set.seed(seedNo)
+###*****************************
+
+###*****************************
+require("sicegar")
+require("dplyr")
+require("ggplot2")
+###*****************************
+```
+
+## Simulated example input data
+The input data for `sicegar::lineFitFunction()` must be in the form of a data fram with at least two columns, `time` and `intensity`. We generate a simulated linear dataset by using the function `sicegar::lineFitFormula()` and adding some noise:
+```{r generate data}
+time = seq(3, 24, 0.5)
+
+#intensity with Noise
+noise_parameter <- 7
+intensity_noise <- stats::runif(n = length(time), min = 0, max = 1) * noise_parameter
+intensity <- sicegar::lineFitFormula(time, slope=4, intersection=-2)
+intensity <- intensity + intensity_noise
+
+dataInput <- data.frame(intensity = intensity, time = time)
+```
+
+## Data normalization 
+
+All **sicegar** fit functions work on normalized data, where time and intensity are normalized to the interval from 0 to 1. Sicegar provides a convenient normalization function [`sicegar::normalizeData()`] that normalizes data appropriately while storing the required information to transform fitted parameters back into non-normalized coordinates:
+
+```{r normalize_data}
+normalizedInput <- sicegar::normalizeData(dataInput = dataInput,
+                                         dataInputName = "Sample001")
+
+head(normalizedInput$timeIntensityData) # the normalized time and intensity data
+```
+
+The data scaling paratmers and the data input name are stored as well:
+```{r normalized_data_output}
+normalizedInput$dataScalingParameters
+normalizedInput$dataInputName
+```
+
+Note that `sicegar::normalizeData()` normalizes time with respect to the maximum value the time parameter takes:
+```{r time normalization, eval=FALSE}
+timeRange <- max(timeData)
+timeNormalized <- timeData/timeRange # normalized time values
+```
+whereas intensity is normalized with respect to intensity interval:
+```{r intensity normalization, eval=FALSE}
+intensityMin <- min(dataInput$intensity)
+intensityMax <- max(dataInput$intensity)
+intensityRange <- intensityMax - intensityMin
+
+intensityNormalized <- (dataInput$intensity-intensityMin)/intensityRange # normalized intensity values
+```
+
+The following figure shows the raw and normalized input data for our example.
+
+```{r plot raw and normal data, echo=FALSE, fig.height=4, fig.width=8}
+dataInput %>% dplyr::mutate(process="raw") -> dataInput2
+normalizedInput$timeIntensityData %>%
+  dplyr::mutate(process="normalized") -> timeIntensityData2
+dplyr::bind_rows(dataInput2, timeIntensityData2) -> combined
+combined$process <- factor(combined$process, levels = c("raw", "normalized"))
+
+ggplot2::ggplot(combined, aes(x=time, y=intensity)) +
+  ggplot2::facet_wrap(~process, scales = "free") +
+  ggplot2::geom_point()
+```
+
+## Line fit
+
+We can now calculate parameter estimates for the linear fit using the function `sicegar::lineFitFunction()`:
+
+```{r linefit_data}
+parameterVector <- sicegar::lineFitFunction(dataInput = normalizedInput, tryCounter = 2)
+```
+
+Here, `tryCounter` sets the number of times the linear function is fit via maximum likelihood, using different random starting parameter values. The starting parameter values can be controled using the parameters `lowerBounds` and `upperBounds` (see the documentation of `sicegar::lineFitFunction()` for details). Note the different behavior if `tryCounter = 1`. In this case, ... 
+
+**Umut: It is not described anywhere how the start point for `tryCounter=1` is set. At a minimum, this needs to be explained in the documentation for `lineFitFunction` (and similarly for the other fit functions).**
+
+
+The resulting vector contains the resulting parameter estimates as well as numerous other quantities of interest: 
+```{r}
+t(parameterVector)
+```
+
+These quantities can be grouped into several different groups of parameter:
+
+
+1\. Meta information
+
+* `model`: String indicating the type of the model, `"linear"` for the linear model **Umut: Note the typo in your code, the output above says "linaer"**
+* `isThisaFit`: Boolean equals to `TRUE` if at least one fit was successful, and `FALSE` otherwise
+
+
+2\. Estimates of the fitted parameters
+
+These estimates have been converted from the normalized data to the original raw data, and are the main quantities of interest to the user.
+
+* `intersection_Estimate`: Intersection estimate for the raw data
+* `slope_Estimate`: Slope estimate for the raw data
+
+3\. Quantities measuring the overall quality of fit
+
+* `residual_Sum_of_Squares`: Residual sum of squares, smaller values indicate a better fit
+* `log_likelihood`: Negative log likelihood, larger values indicate a better fit
+* `AIC_value`: Akaike Information Criterion, smaller values indicate a better fit
+* `BIC_value`: Bayesian Information Criterion, smaller values indicate a better fit
+
+
+4\. Start point of the gradient descent algorithm
+
+The likelihood maximization algorithm starts from a random initiation point (as long as `tryCounter > 1`) and finds the final parameter estimates by gradient descent.
+
+* `startVector.slope`: Slope value of the initiation point
+* `startVector.intersection`: Intersection value of the initiation point
+
+5\. Parameters related to the normalization step
+
+* `dataScalingParameters.timeRange`: Maximum of raw time data       
+* `dataScalingParameters.intensityMin`: Minimum of raw intensity data
+* `dataScalingParameters.intensityMax`: Maximum of raw intensity data
+* `dataScalingParameters.intensityRange`: Maximum - Minimum of intensity data
+
+6\. Error estimates for fitted parameters
+
+For each estimated parameter listed under point 2, the algorithm provides additional statistical parameters, such as the estimate in the normalized scale, the standard error (also in normalized scale), the t value, and the P value. For example, for the slope estimate, these are:
+
+* `slope_N_Estimate`: Estimate in normalized scale
+* `slope_Std_Error`: Standard error, in normalized scale
+* `slope_t_value`: t value
+* `slope_Pr_t`: P value
+
+And similarly for the intercept estimate:
+
+* `intercept_N_Estimate`: Estimate in normalized scale
+* `intercept_Std_Error`: Standard error, in normalized scale
+* `intercept_t_value`: t value
+* `intercept_Pr_t`: P value
+
+## Comparison of the fitted line to the original input data
+
+By using the parameters `intersection_Estimate` and `slope_Estimate` parameters from the line fit and the time sequence from the original input data we can calculate the fitted intensity values via the function `sicegar::lineFitFormula()`. We then compare the fitted values to the original input data by plotting them on top of each other.
+
+```{r plot raw data and fit, fig.height=4, fig.width=8}
+intensityTheoretical <- sicegar::lineFitFormula(time,
+                                             slope = parameterVector$slope_Estimate,
+                                             intersection = parameterVector$intersection_Estimate)
+comparisonData=cbind(dataInput, intensityTheoretical)
+
+ggplot2::ggplot(comparisonData) +
+  ggplot2::geom_point(aes(x = time, y = intensity)) +
+  ggplot2::geom_line(aes(x = time, y = intensityTheoretical)) +
+  ggplot2::expand_limits(x = 0, y = 0)
+```

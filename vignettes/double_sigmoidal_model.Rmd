@@ -1,10 +1,10 @@
 ---
-title: (3/3) Double Sigmoidal model
-author: "Umut Caglar"
+title: The double-sigmoidal fit function
+author: "Umut Caglar, Claus O. Wilke"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{(3/3) Double Sigmoidal model}
+  %\VignetteIndexEntry{The double-sigmoidal fit function}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -12,6 +12,9 @@ vignette: >
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+**This document needs to be revised along the lines of the linear model document, once the linear model document is final.**
+  
 
 # The Double Sigmoidal Fit Function
 This is a document invetigates details of double sigmoidal model 

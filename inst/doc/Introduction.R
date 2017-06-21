@@ -48,10 +48,8 @@ dataInputDoubleSigmoidal=data.frame(intensity=intensity,time=time)
 head(dataInputSigmoidal)
 head(dataInputDoubleSigmoidal)
 
-fitObj_sm <- sicegar::fitFunction(threshold_minimum_for_intensity_maximum=0.3,
-                                  dataInput = dataInputSigmoidal)
-fitObj_dsm <- sicegar::fitFunction(threshold_minimum_for_intensity_maximum=0.3,
-                                   dataInput = dataInputDoubleSigmoidal)
+fitObj_sm <- sicegar::fitFunction(dataInput = dataInputSigmoidal)
+fitObj_dsm <- sicegar::fitFunction(dataInput = dataInputDoubleSigmoidal)
 
 ## ----The results of the sigmoidal fit------------------------------------
 

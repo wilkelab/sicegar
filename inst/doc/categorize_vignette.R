@@ -34,21 +34,21 @@ dataInputSigmoidal=data.frame(intensity=intensity,time=time)
 noise_parameter=0.2
 intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity = sicegar::doublesigmoidalFitFormula(time,
-                                    finalAsymptoteIntensityRatio=.3,
-                                    maximum=4,
-                                    slope1Param=1,
-                                    midPoint1Param=7,
-                                    slope2Param=1,
-                                    midPointDistanceParam=8)
+                                               finalAsymptoteIntensityRatio=.3,
+                                               maximum=4,
+                                               slope1Param=1,
+                                               midPoint1Param=7,
+                                               slope2Param=1,
+                                               midPointDistanceParam=8)
 intensity=intensity+intensity_noise
 dataInputDoubleSigmoidal=data.frame(intensity=intensity,time=time)
 
 ## ----normalize_data------------------------------------------------------
 normalizedSigmoidalInput = sicegar::normalizeData(dataInput = dataInputSigmoidal, 
-                                         dataInputName = "sigmoidalSample")
+                                                  dataInputName = "sigmoidalSample")
 
 normalizedDoubleSigmoidalInput = sicegar::normalizeData(dataInput = dataInputDoubleSigmoidal, 
-                                         dataInputName = "doubleSigmoidalSample")
+                                                        dataInputName = "doubleSigmoidalSample")
 
 ## ----pre categorize data-------------------------------------------------
 preDecision_sd = sicegar::pre_categorize(normalizedInput = normalizedSigmoidalInput)
@@ -126,12 +126,18 @@ fig03 <- cowplot::plot_grid(fig03a, fig03b, ncol = 2)
 print(fig03)
 
 ## ----decide wheather the data is sigmoidal or double sigmoidal-----------
-outputCluster_sd=sicegar::categorize(parameterVectorSigmoidal=sigmoidalModel_sd,
+outputCluster_sd=sicegar::categorize(threshold_minimum_for_intensity_maximum = 0.3,
+                                     threshold_intensity_range = 0.1,
+                                     threshold_t0_max_int = 0.05,
+                                     parameterVectorSigmoidal=sigmoidalModel_sd,
                                      parameterVectorDoubleSigmoidal=doubleSigmoidalModel_sd)
 
 utils::str(outputCluster_sd) # This should give sigmoidal
 
-outputCluster_dsd=sicegar::categorize(parameterVectorSigmoidal=sigmoidalModel_dsd,
+outputCluster_dsd=sicegar::categorize(threshold_minimum_for_intensity_maximum = 0.3,
+                                      threshold_intensity_range = 0.1,
+                                      threshold_t0_max_int = 0.05,
+                                      parameterVectorSigmoidal=sigmoidalModel_dsd,
                                       parameterVectorDoubleSigmoidal=doubleSigmoidalModel_dsd)
 
 utils::str(outputCluster_dsd) # This should give double-sigmoidal

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Umut Caglar" />
 
-<meta name="date" content="2017-06-17" />
+<meta name="date" content="2017-06-21" />
 
 <title>Introduction</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Introduction</h1>
 <h4 class="author"><em>Umut Caglar</em></h4>
-<h4 class="date"><em>2017-06-17</em></h4>
+<h4 class="date"><em>2017-06-21</em></h4>
 
 
 
@@ -148,11 +148,9 @@ dataInputDoubleSigmoidal=<span class="kw">data.frame</span>(<span class="dt">int
 ## 4 0.4446567  4.5
 ## 5 0.6256414  5.0
 ## 6 0.8262948  5.5</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fitObj_sm &lt;-<span class="st"> </span>sicegar::<span class="kw">fitFunction</span>(<span class="dt">threshold_minimum_for_intensity_maximum=</span><span class="fl">0.3</span>,
-                                  <span class="dt">dataInput =</span> dataInputSigmoidal)
-fitObj_dsm &lt;-<span class="st"> </span>sicegar::<span class="kw">fitFunction</span>(<span class="dt">threshold_minimum_for_intensity_maximum=</span><span class="fl">0.3</span>,
-                                   <span class="dt">dataInput =</span> dataInputDoubleSigmoidal)</code></pre></div>
-<p>Here the <code>threshold_minimum_for_intensity_maximum</code> parameter is used to label the data with <code>no_signal</code>; if maximum value can not pass the threshold. This value should be determined with respect to the device used.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fitObj_sm &lt;-<span class="st"> </span>sicegar::<span class="kw">fitFunction</span>(<span class="dt">dataInput =</span> dataInputSigmoidal)
+fitObj_dsm &lt;-<span class="st"> </span>sicegar::<span class="kw">fitFunction</span>(<span class="dt">dataInput =</span> dataInputDoubleSigmoidal)</code></pre></div>
+<p>Although we use the defaults here; there are three thresholds one needs to determine before using the package; <code>threshold_minimum_for_intensity_maximum</code>, <code>threshold_intensity_range</code>, and <code>threshold_t0_max_int</code>. Those parameters depend on the data source and measurement device, and details can be found in categorize_vignette.</p>
 </div>
 <div id="results" class="section level2">
 <h2>Results</h2>

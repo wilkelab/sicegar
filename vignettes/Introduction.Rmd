@@ -107,13 +107,11 @@ dataInputDoubleSigmoidal=data.frame(intensity=intensity,time=time)
 head(dataInputSigmoidal)
 head(dataInputDoubleSigmoidal)
 
-fitObj_sm <- sicegar::fitFunction(threshold_minimum_for_intensity_maximum=0.3,
-                                  dataInput = dataInputSigmoidal)
-fitObj_dsm <- sicegar::fitFunction(threshold_minimum_for_intensity_maximum=0.3,
-                                   dataInput = dataInputDoubleSigmoidal)
+fitObj_sm <- sicegar::fitFunction(dataInput = dataInputSigmoidal)
+fitObj_dsm <- sicegar::fitFunction(dataInput = dataInputDoubleSigmoidal)
 ```
 
-Here the `threshold_minimum_for_intensity_maximum` parameter is used to label the data with `no_signal`; if maximum value can not pass the threshold. This value should be determined with respect to the device used.
+Although we use the defaults here; there are three thresholds one needs to determine before using the package; `threshold_minimum_for_intensity_maximum`, `threshold_intensity_range`,  and `threshold_t0_max_int`. Those parameters depend on the data source and measurement device, and details can be found in categorize_vignette. 
 
 ## Results
 

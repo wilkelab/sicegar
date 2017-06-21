@@ -7,16 +7,16 @@ vignette: >
   %\VignetteIndexEntry{The categorize function}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
----
+  ---
   
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+  ```{r setup, include=FALSE}
+  knitr::opts_chunk$set(echo = TRUE)
 ```
-  
+
 # The categorize function
 This is a document provide examples related with categorize function. It will investigate 2 examples one is related with sigmoidal and other is related with double sigmoidal
-  
-  
+
+
 ```{r install packages, echo=FALSE, warning=FALSE, results='hide',message=FALSE}
 
 ###*****************************
@@ -37,7 +37,7 @@ require("cowplot")
 ```
 
 ## Data generation
-To generate the figures, we will go backwards and firstly generate some data to analize. To add some randomness to the input data I will use some noise. The input of all package must be in the form of a data frame with at least 2 columns time and intensity. 
+To make the figures, we will go backward and firstly generate some data to analyze. To add some randomness to the input data, I will use some noise. The input of all package must be in the form of a data frame with at least two columns time and intensity.
 
 We will generate data for both sigmoidal and double sigmoidal 
 
@@ -60,32 +60,32 @@ dataInputSigmoidal=data.frame(intensity=intensity,time=time)
 noise_parameter=0.2
 intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
 intensity = sicegar::doublesigmoidalFitFormula(time,
-                                    finalAsymptoteIntensityRatio=.3,
-                                    maximum=4,
-                                    slope1Param=1,
-                                    midPoint1Param=7,
-                                    slope2Param=1,
-                                    midPointDistanceParam=8)
+                                               finalAsymptoteIntensityRatio=.3,
+                                               maximum=4,
+                                               slope1Param=1,
+                                               midPoint1Param=7,
+                                               slope2Param=1,
+                                               midPointDistanceParam=8)
 intensity=intensity+intensity_noise
 dataInputDoubleSigmoidal=data.frame(intensity=intensity,time=time)
 ```
 
 ## Data normalization 
 
-This is the first step. Data should be normalized before any fit. I.e time and intensity should be in between 0-1 interval. 
+This is the first step. Data should be normalized before any fit, i.e time and intensity should be in between 0-1 interval. 
 
-The normalization code is 
+The normalization code is;
 
 ```{r normalize_data}
 normalizedSigmoidalInput = sicegar::normalizeData(dataInput = dataInputSigmoidal, 
-                                         dataInputName = "sigmoidalSample")
+                                                  dataInputName = "sigmoidalSample")
 
 normalizedDoubleSigmoidalInput = sicegar::normalizeData(dataInput = dataInputDoubleSigmoidal, 
-                                         dataInputName = "doubleSigmoidalSample")
+                                                        dataInputName = "doubleSigmoidalSample")
 ```
 
 ## Pre Categorize
-Checks if signal is present in the data. Often a high percentage of high through-put data does not contain a signal. Checking if data does not contain signal before doing a sigmoidal or double sigmoidal fit can make analysis of data from high through-put experiments much faster.
+Checks if the signal is present in the data. Often a high percentage of high through-put data does not contain a signal. Checking if data does not contain signal before doing a sigmoidal or double sigmoidal fit can make the analysis of data from high-throughput experiments much faster.
 
 ```{r pre categorize data}
 preDecision_sd = sicegar::pre_categorize(normalizedInput = normalizedSigmoidalInput)
@@ -152,7 +152,7 @@ doubleSigmoidalModel_dsd=sicegar::multipleFitFunction(dataInput=normalizedDouble
 ```
 
 
-Now we will apply `sicegar::parameterCalculation` function to all sigmoidal and double sigmoidal models in order to generate additional variables.
+Now we will apply `sicegar::parameterCalculation` function to all sigmoidal and double sigmoidal models to generate additional variables.
 
 ```{r generate additional parameters for sigmoidalModel and doubleSigmoidalModel}
 # Generate additional parameters for sigmoidal Data. For both sigmoidal model with sigmoidal data distribution and double sigmoidal model with sigmoidal data distribution
@@ -168,7 +168,7 @@ doubleSigmoidalModel_dsd = sicegar::parameterCalculation(doubleSigmoidalModel_ds
 
 ## Generate figures
 
-Here are the two datasets that we want to categorize
+Here are the two datasets that we want to categorize:
 ```{r cowplor figure, echo=TRUE, message=FALSE, warning=FALSE, comment=FALSE, fig.height=4, fig.width=8}
 fig03a=sicegar::figureModelCurves(dataInput=normalizedSigmoidalInput,
                                   sigmoidalFitVector=sigmoidalModel_sd,
@@ -187,15 +187,21 @@ print(fig03)
 
 ## Model decision
 
-Now we have attempts of fits for linear, sigmoidal and double sigmoidal models on our datasets. By using the results of those atempts one can make decisions about the category of the input data; wheather it is sigmoidal or double sigmoidal.
+Now we have attempts of fits for sigmoidal and double sigmoidal models on our datasets. By using the results of those attempts, one can make decisions about the category of the input data; whether it is sigmoidal or double sigmoidal. Here we mention three thresholds explicitly since their values strictly depend on the data source and measurement device properties.
 
 ```{r decide wheather the data is sigmoidal or double sigmoidal}
-outputCluster_sd=sicegar::categorize(parameterVectorSigmoidal=sigmoidalModel_sd,
+outputCluster_sd=sicegar::categorize(threshold_minimum_for_intensity_maximum = 0.3,
+                                     threshold_intensity_range = 0.1,
+                                     threshold_t0_max_int = 0.05,
+                                     parameterVectorSigmoidal=sigmoidalModel_sd,
                                      parameterVectorDoubleSigmoidal=doubleSigmoidalModel_sd)
 
 utils::str(outputCluster_sd) # This should give sigmoidal
 
-outputCluster_dsd=sicegar::categorize(parameterVectorSigmoidal=sigmoidalModel_dsd,
+outputCluster_dsd=sicegar::categorize(threshold_minimum_for_intensity_maximum = 0.3,
+                                      threshold_intensity_range = 0.1,
+                                      threshold_t0_max_int = 0.05,
+                                      parameterVectorSigmoidal=sigmoidalModel_dsd,
                                       parameterVectorDoubleSigmoidal=doubleSigmoidalModel_dsd)
 
 utils::str(outputCluster_dsd) # This should give double-sigmoidal
@@ -204,51 +210,51 @@ utils::str(outputCluster_dsd) # This should give double-sigmoidal
 
 ## The Decision Process
 
-The decision process composes mainly two parts parts. The first one is pre-test process that controls if everything provided is useful and fits to each_other. If one calls the main function and the main function calls the `sicegar::categorize()` then the precheck steps do not matter. The steps of pretest are;
+The decision process composes mainly two parts. The first one is pre-test process that controls if everything provided is useful and fits to each_other. If one calls the main function and the main function calls the `sicegar::categorize()`, then the pre_check steps do not matter, because the data processed through the pipeline provided by the main function indeed pass the pre_test. The steps of pre_test are;
 
-* Pre-test0: If it was provided sigmoidal and double_sigmoidal models
-* Pre-test1: If the provided sigmoidal and double sigmoidal models come from same source and have the same data name
-* Pre-test2a: Does the provided sigmoidal model is really generated by `sicegar::sigmoidalFitFunctions`
-* Pre-test2b: Does the provided double_sigmoidal model is really generateed by `sicegar::doublesigmoidalFitFunctions`
-* Pre-test3: Do both models have same data normalization related scaling parameters
-* Pre-test4a: Do the additional parameters for sigmoidal fit calculated by `sicegar::parameterCalculation()`
-* Pre-test4b: Do the additional parameters for double-sigmoidal fit calculated by `sicegar::parameterCalculation()` 
+* Pre-test0: The pre_test algorithm checks, If the function was provided sigmoidal and double_sigmoidal models.
+* Pre-test1: The pre_test algorithm checks, If the provided sigmoidal and double sigmoidal models come from the same source and have the same data name.
+* Pre-test2a: The pre_test algorithm checks, If the provided sigmoidal model is generated by `sicegar::sigmoidalFitFunctions`.
+* Pre-test2b: The pre_test algorithm checks, If the provided double_sigmoidal model is generated by `sicegar::doublesigmoidalFitFunctions`.
+* Pre-test3: The pre_test algorithm checks, If both models have same scaling parameters related with data normalization process.
+* Pre-test4a: The pre_test algorithm checks, If the additional parameters for sigmoidal fit are calculated by `sicegar::parameterCalculation()`.
+* Pre-test4b: The pre_test algorithm checks, If the additional parameters for double-sigmoidal fit are calculated by `sicegar::parameterCalculation()`.
 
-Then the decision process starts with generating the choices vector
+After the pre_test step, the primary decision process starts with generating the choices vector. 
 `choices = c("no_signal", "sigmoidal", "double_sigmoidal", "ambiguous")`
 
-The following procedure deletes the not possible choices from the vector untill only one choice left.
+The following procedure deletes the "not possible options" from the vector until only one option left.
 
-Firstly algorithm checks if the provided data includes a signal or not
+Firstly in step one, the algorithm checks if the provided data includes a signal or not.
 
-* Test 1a: Observed intensity maximum must be bigger than `threshold_minimum_for_intensity_maximum`, otherwise the data is labelled with "no_signal"
-* Test 1b: 1b. `intensity_max`, `intensity_min` difference, i.e intensity range must be greater than `threshold_intensity_range`, otherwise the data is labelled with "no_signal"
-* Test 1c: If at this point the data is not labelled with `"no_signal"`; than the data can not labelled with `"no signal"`.
+* Test 1a: Observed intensity maximum must be bigger than `threshold_minimum_for_intensity_maximum`; otherwise, the data is labeled with "no_signal".
+* Test 1b: The absolute difference between two parameters `intensity_max`, and `intensity_min`, i.e., the intensity range must be greater than `threshold_intensity_range`; otherwise, the data is labeled with "no_signal".
+* Test 1c: If at this point the data is not labeled with `"no_signal"`; then the data can not be labeled with `"no signal"` anymore.
 
-Then the algorithm checks if the sigmoidal and double sigmoidal models make sense.
+Then the algorithm checks if the sigmoidal and double sigmoidal models make sense in steps two to seven.
 
-* Test 2a: Provided sigmoidal fit must be a successful fit, otherwise the data can not labelled with `"sigmoidal"`.
-* Test 2b: Provided double sigmoidal fit must be a successful fit, otherwise the data can not labelled with `"double_sigmoidal"`.
-* Test 3a: Sigmoidal fit must have an AIC score smaller than `threshold_AIC`, otherwise the data can not labelled with `"sigmoidal"`.
-* Test 3b: Double sigmoidal fit must have an AIC score smaller than `threshold_AIC`, otherwise the data can not labelled with `"double_sigmoidal"`.
-* Test 4a: Sigmoidal models `startPoint_x` must be a positive number, otherwise the data can not labelled with `"sigmoidal"`.
-* Test 4b: Double-sigmoidal models `startPoint_x` must be a positive number, otherwise the data can not labelled with `"double_sigmoidal"`.
-* Test 5a: Sigmoidal models `start_intensity`, i.e. the intensity at t=0, must be smaller than `threshold_t0_max_int`, otherwise the data can not labelled with `"sigmoidal"`.
-* Test 5b: Double sigmoidal models `start_intensity`, i.e. the intensity at t=0, must be smaller than `threshold_t0_max_int`, otherwise the data can not labelled with `"double_sigmoidal"`.
-* Test 6: For the double sigmoidal model; the ratio of _/models intensity prediction at last observation time/_ to _/the models maximum intesity prediction/_ must be smaller than `threshold_dsm_tmax_IntensityRatio`, otherwise the data can not labelled with `"double_sigmoidal"`.
-* Test7: For the sigmoidal model; the ratio of _/models intensity prediction at last observation time/_ to _/the models maximum intesity prediction/_ must be smaller than `threshold_sm_tmax_IntensityRatio`, otherwise the data can not labelled with `"sigmoidal"`.
+* Test 2a: Provided sigmoidal fit must be a successful fit; otherwise, the data can not be labeled with `"sigmoidal"`.
+* Test 2b: Provided double sigmoidal fit must be a successful fit; otherwise, the data can not labelled with `"double_sigmoidal"`.
+* Test 3a: The sigmoidal fit must have an AIC score smaller than `threshold_AIC`; otherwise, the data can not be labeled with `"sigmoidal"`.
+* Test 3b: Double sigmoidal fit must have an AIC score smaller than `threshold_AIC`; otherwise, the data can not be labeled with `"double_sigmoidal"`.
+* Test 4a: Sigmoidal models `startPoint_x` must be a positive number; otherwise, the data can not be labeled with `"sigmoidal"`.
+* Test 4b: Double-sigmoidal models `startPoint_x` must be a positive number; otherwise, the data can not be labeled with `"double_sigmoidal"`.
+* Test 5a: Sigmoidal models `start_intensity`, i.e. the intensity at t=0, must be smaller than `threshold_t0_max_int`; otherwise, the data can not be labeled with `"sigmoidal"`.
+* Test 5b: Double sigmoidal models `start_intensity`, i.e. the intensity at t=0, must be smaller than `threshold_t0_max_int`; otherwise, the data can not be labeled with `"double_sigmoidal"`.
+* Test 6: For the double sigmoidal model; the ratio of _/models intensity prediction at last observation time/_ to _/the models maximum intesity prediction/_ must be smaller than `threshold_dsm_tmax_IntensityRatio`; otherwise, the data can not be labeled with `"double_sigmoidal"`.
+* Test7: For the sigmoidal model; the ratio of _/models intensity prediction at last observation time/_ to _/the models maximum intesity prediction/_ must be smaller than `threshold_sm_tmax_IntensityRatio`; otherwise, the data can not be labeled with `"sigmoidal"`.
 
-In the third part, the algorithm checks wheather the data should be labelled as `"ambiguous"` or not.
+In the step eight, the algorithm checks wheather the data should be labelled as `"ambiguous"` or not.
 
-* Test 8: If at this point we still have at least one of `"sigmoidal"` or `"double_sigmoidal"` options, than the data can not labelled with `"ambiguous"`
+* Test 8: If at this point we still have at least one of `"sigmoidal"` or `"double_sigmoidal"` options, then the data can not be labeled with `"ambiguous"`.
 
-In he last part, the algorithm checks wheather the data should be labelled as `"sigmoidal"` or `"double_sigmoidal"`.
+In the last part; the algorithm checks whether the data should be labeled as `"sigmoidal"` or `"double_sigmoidal"`.
 
-* Test 9: Now if at this point we still have both "sigmoidal" and "double_sigmoidal" options, then the choice will be made based on AIC scores of those models and `threshold_bonus_sigmoidal_AIC`. Smaller side of the equation is the decision;
-    * if `sigmoidalAIC + threshold_bonus_sigmoidal_AIC  <  doublesigmoidalAIC`, than the data can not labelled with `"double_sigmoidal"`
-    * if `sigmoidalAIC + threshold_bonus_sigmoidal_AIC  >  doublesigmoidalAIC`, than the data can not labelled with `"sigmoidal"`
+* Test 9: Now if at this point we still have both "sigmoidal" and "double_sigmoidal" options, then the choice will be made based on AIC scores of those models and `threshold_bonus_sigmoidal_AIC`. 
 
-Te only option that is left on this point is the label of the data.
+The smaller side of the equation will be chosen as the decision. If `sigmoidalAIC + threshold_bonus_sigmoidal_AIC  <  doublesigmoidalAIC`, then the data can not be labeled with `"double_sigmoidal"` and if `sigmoidalAIC + threshold_bonus_sigmoidal_AIC  >  doublesigmoidalAIC`, then the data can not be labeled with `"sigmoidal"`.
+
+The only option that is left at this point will be the label of the data.
 
 
 

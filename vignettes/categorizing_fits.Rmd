@@ -1,0 +1,191 @@
+---
+title: Identifying the best-fitting model category 
+author: "Umut Caglar, Claus O. Wilke"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Identifying the best-fitting model category}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+  
+```{r setup, include=FALSE}
+  knitr::opts_chunk$set(echo = TRUE)
+```
+
+In high-throughput scenarios, we often don't know a priori whether a given dataset represents a sigmoidal curve, a double-sigmoidal curve, or neither. In these cases, we need to fit multiple different models to the data and then determine which model fits the best. This process is normally done automatically by the function `sicegar::fitFunction()`. In this vignette, we describe how this process works and how it can be done manually.
+
+```{r install packages, echo=FALSE, warning=FALSE, results='hide', message=FALSE}
+
+###*****************************
+# INITIAL COMMANDS TO RESET THE SYSTEM
+rm(list = ls())
+if (is.integer(dev.list())){dev.off()}
+cat("\014")
+seedNo=14159
+set.seed(seedNo)
+###*****************************
+
+###*****************************
+require(sicegar)
+require(dplyr)
+require(cowplot)
+###*****************************
+```
+
+We will demonstrate this process for an artificial dataset representing a double-sigmoidal function. We first generate the data:
+
+```{r generate data for double - sigmoidal}
+time <- seq(3, 24, 0.5)
+noise_parameter <- 0.2
+intensity_noise <- runif(n = length(time), min = 0, max = 1) * noise_parameter
+intensity <- doublesigmoidalFitFormula(time,
+                                       finalAsymptoteIntensityRatio = .3,
+                                       maximum = 4,
+                                       slope1Param = 1,
+                                       midPoint1Param = 7,
+                                       slope2Param = 1,
+                                       midPointDistanceParam = 8)
+intensity <- intensity + intensity_noise
+dataInputDoubleSigmoidal <- data.frame(intensity, time)
+```
+
+We need to fit the different models (**linear?**, sigmoidal, double-sigmoidal) to this dataset, using `multipleFitFunction()`. This requires first normalizing the data:
+```{r}
+normalizedDoubleSigmoidalInput <- normalizeData(dataInput = dataInputDoubleSigmoidal, 
+                                                dataInputName = "doubleSigmoidalSample")
+```
+
+
+## Pre Categorize
+
+**Umut, this part is not actually explained. What does this function do? Does it take additional parameters? What do we do with the result values we have stored in `preDecision_sd` and `preDecision_dsd`? Also, the function name breaks the naming convention of the rest of the code. It should be `preCategorize` not `pre_categorize`.**
+
+Checks if the signal is present in the data. Often a high percentage of high through-put data does not contain a signal. Checking if data does not contain signal before doing a sigmoidal or double sigmoidal fit can make the analysis of data from high-throughput experiments much faster.
+
+```{r pre categorize data}
+preDecision_dsd <- pre_categorize(normalizedInput = normalizedDoubleSigmoidalInput)
+```
+
+
+
+## Fitting the models to the normalized data
+
+Now we need to fit all **three?** models to the data. We also perform the additional parameter calculations, as these are required by the `categorize()` function we use below.
+
+**Umut, why do we fit the linear model when then it's never used? Note that this is also the case in the documentation for the `categorize` function; a linear model is fitted but then not used.**
+
+
+```{r linear sigmoidal amd double-sigmoidal fits to double-sigmoidal data}
+# Fit linear model
+#linearModel_dsd <- multipleFitFunction(dataInput = normalizedDoubleSigmoidalInput,
+#                                       model = "linear",
+#                                       n_runs_min = 20,
+#                                       n_runs_max = 500,
+#                                       showDetails = FALSE)
+
+# Fit sigmoidal model
+sigmoidalModel <- multipleFitFunction(dataInput = normalizedDoubleSigmoidalInput,
+                                          model = "sigmoidal",
+                                          n_runs_min = 20,
+                                          n_runs_max = 500,
+                                          showDetails = FALSE)
+# Calculate additional parameters
+sigmoidalModel <- parameterCalculation(sigmoidalModel)
+
+
+# Fit double-sigmoidal model
+doubleSigmoidalModel <- multipleFitFunction(dataInput = normalizedDoubleSigmoidalInput,
+                                                model = "doublesigmoidal",
+                                                n_runs_min = 20,
+                                                n_runs_max = 500,
+                                                showDetails = FALSE)
+# Calculate additional parameters
+doubleSigmoidalModel <- parameterCalculation(doubleSigmoidalModel)
+```
+
+This is what the two fits look like:
+```{r echo=FALSE, warning=FALSE, message=FALSE, fig.width=7}
+f1 <- figureModelCurves(dataInput = normalizedDoubleSigmoidalInput,
+                        sigmoidalFitVector = sigmoidalModel,
+                        showParameterRelatedLines = TRUE)
+
+f2 <- figureModelCurves(dataInput = normalizedDoubleSigmoidalInput,
+                        doubleSigmoidalFitVector = doubleSigmoidalModel,
+                        showParameterRelatedLines = TRUE)
+
+plot_grid(f1, f2)
+```
+
+Clearly the sigmoidal fit is not appropriate but the double-sigmoidal one is. Next we demonstrate how to arrive at this conclusion computationally.
+
+
+## Model decision
+
+Now we have attempts of fits for sigmoidal and double sigmoidal models on our datasets. By using the results of those attempts, one can make decisions about the category of the input data; whether it is sigmoidal or double sigmoidal. Here we mention three thresholds explicitly since their values strictly depend on the data source and measurement device properties.
+
+
+```{r}
+# now we can categorize the fits
+outputCluster <- categorize(threshold_minimum_for_intensity_maximum = 0.3,
+                                      threshold_intensity_range = 0.1,
+                                      threshold_t0_max_int = 0.05,
+                                      parameterVectorSigmoidal = sigmoidalModel,
+                                      parameterVectorDoubleSigmoidal = doubleSigmoidalModel)
+
+# print out the final decision from the categorization process
+print(outputCluster$decision)
+```
+
+
+
+## The Decision Process
+
+The decision process consists of two parts. The first one is pre-test process that controls if everything provided is useful and fits to each_other. If one calls the main function and the main function calls the `sicegar::categorize()`, then the pre_check steps do not matter, because the data processed through the pipeline provided by the main function indeed pass the pre_test. The steps of pre_test are;
+
+* Pre-test0: The pre_test algorithm checks, If the function was provided sigmoidal and double_sigmoidal models.
+* Pre-test1: The pre_test algorithm checks, If the provided sigmoidal and double sigmoidal models come from the same source and have the same data name.
+* Pre-test2a: The pre_test algorithm checks, If the provided sigmoidal model is generated by `sicegar::sigmoidalFitFunctions`.
+* Pre-test2b: The pre_test algorithm checks, If the provided double_sigmoidal model is generated by `sicegar::doublesigmoidalFitFunctions`.
+* Pre-test3: The pre_test algorithm checks, If both models have same scaling parameters related with data normalization process.
+* Pre-test4a: The pre_test algorithm checks, If the additional parameters for sigmoidal fit are calculated by `sicegar::parameterCalculation()`.
+* Pre-test4b: The pre_test algorithm checks, If the additional parameters for double-sigmoidal fit are calculated by `sicegar::parameterCalculation()`.
+
+After the pre_test step, the primary decision process starts with generating the choices vector. 
+`choices = c("no_signal", "sigmoidal", "double_sigmoidal", "ambiguous")`
+
+The following procedure deletes the "not possible options" from the vector until only one option left.
+
+Firstly in step one, the algorithm checks if the provided data includes a signal or not.
+
+* Test 1a: Observed intensity maximum must be bigger than `threshold_minimum_for_intensity_maximum`; otherwise, the data is labeled with "no_signal".
+* Test 1b: The absolute difference between two parameters `intensity_max`, and `intensity_min`, i.e., the intensity range must be greater than `threshold_intensity_range`; otherwise, the data is labeled with `"no_signal"`.
+* Test 1c: If at this point the data is not labeled with `"no_signal"`; then the data can not be labeled with `"no signal"` anymore.
+
+Then the algorithm checks if the sigmoidal and double sigmoidal models make sense in steps two to seven.
+
+* Test 2a: Provided sigmoidal fit must be a successful fit; otherwise, the data can not be labeled with `"sigmoidal"`.
+* Test 2b: Provided double sigmoidal fit must be a successful fit; otherwise, the data can not labelled with `"double_sigmoidal"`.
+* Test 3a: The sigmoidal fit must have an AIC score smaller than `threshold_AIC`; otherwise, the data can not be labeled with `"sigmoidal"`.
+* Test 3b: Double sigmoidal fit must have an AIC score smaller than `threshold_AIC`; otherwise, the data can not be labeled with `"double_sigmoidal"`.
+* Test 4a: Sigmoidal models `startPoint_x` must be a positive number; otherwise, the data can not be labeled with `"sigmoidal"`.
+* Test 4b: Double-sigmoidal models `startPoint_x` must be a positive number; otherwise, the data can not be labeled with `"double_sigmoidal"`.
+* Test 5a: Sigmoidal models `start_intensity`, i.e. the intensity at t=0, must be smaller than `threshold_t0_max_int`; otherwise, the data can not be labeled with `"sigmoidal"`.
+* Test 5b: Double sigmoidal models `start_intensity`, i.e. the intensity at t=0, must be smaller than `threshold_t0_max_int`; otherwise, the data can not be labeled with `"double_sigmoidal"`.
+* Test 6: For the double sigmoidal model; the ratio of _/models intensity prediction at last observation time/_ to _/the models maximum intesity prediction/_ must be smaller than `threshold_dsm_tmax_IntensityRatio`; otherwise, the data can not be labeled with `"double_sigmoidal"`.
+* Test7: For the sigmoidal model; the ratio of _/models intensity prediction at last observation time/_ to _/the models maximum intesity prediction/_ must be smaller than `threshold_sm_tmax_IntensityRatio`; otherwise, the data can not be labeled with `"sigmoidal"`.
+
+In the step eight, the algorithm checks wheather the data should be labelled as `"ambiguous"` or not.
+
+* Test 8: If at this point we still have at least one of `"sigmoidal"` or `"double_sigmoidal"` options, then the data can not be labeled with `"ambiguous"`.
+
+In the last part; the algorithm checks whether the data should be labeled as `"sigmoidal"` or `"double_sigmoidal"`.
+
+* Test 9: Now if at this point we still have both "sigmoidal" and "double_sigmoidal" options, then the choice will be made based on AIC scores of those models and `threshold_bonus_sigmoidal_AIC`. 
+
+The smaller side of the equation will be chosen as the decision. If `sigmoidalAIC + threshold_bonus_sigmoidal_AIC  <  doublesigmoidalAIC`, then the data can not be labeled with `"double_sigmoidal"` and if `sigmoidalAIC + threshold_bonus_sigmoidal_AIC  >  doublesigmoidalAIC`, then the data can not be labeled with `"sigmoidal"`.
+
+The only option that is left at this point will be the label of the data.
+
+
+

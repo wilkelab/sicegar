@@ -43,7 +43,7 @@ dataInputDoubleSigmoidal <- data.frame(intensity = intensity, time = time)
 fitObj_sm <- fitAndCategorize(dataInput = dataInputSigmoidal)
 fitObj_dsm <- fitAndCategorize(dataInput = dataInputDoubleSigmoidal)
 
-## ----plot raw data, echo=TRUE, fig.height=4, fig.width=8-----------------
+## ----plot raw data, echo=TRUE, fig.height=4, fig.width=6-----------------
 # sigmoidal raw data only
 figureModelCurves(dataInput = fitObj_sm$normalizedInput)
 

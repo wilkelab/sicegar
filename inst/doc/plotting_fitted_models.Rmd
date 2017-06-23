@@ -64,7 +64,7 @@ fitObj_dsm <- fitAndCategorize(dataInput = dataInputDoubleSigmoidal)
 Now we can plot the results using the function `figureModelCurves()`. This function returns a **ggplot2** plot that can be saved or displayed directly. The function has several different options.
 
 First, we can plot only the raw input data.
-```{r plot raw data, echo=TRUE, fig.height=4, fig.width=8}
+```{r plot raw data, echo=TRUE, fig.height=4, fig.width=6}
 # sigmoidal raw data only
 figureModelCurves(dataInput = fitObj_sm$normalizedInput)
 

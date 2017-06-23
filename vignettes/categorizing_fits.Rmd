@@ -93,7 +93,7 @@ f2 <- figureModelCurves(dataInput = normalizedInput,
 plot_grid(f1, f2)
 ```
 
-Clearly the sigmoidal fit is not appropriate but the double-sigmoidal one is. Next we demonstrate how to arrive at this conclusion computationally, using the function `categorize()`. It takes as input the two fitted models as well as a number of parameters that are used in the decision process (explained below under "The Decision Process").
+Clearly the sigmoidal fit is not appropriate but the double-sigmoidal one is. Next we demonstrate how to arrive at this conclusion computationally, using the function `categorize()`. It takes as input the two fitted models as well as a number of parameters that are used in the decision process (explained below under "The decision process").
 
 
 ```{r}
@@ -111,7 +111,7 @@ print(outputCluster$decision)
 ```
 (The possible values here are "no_signal", "sigmoidal", "double_sigmoidal", and "ambiguous".)
 
-## The Decision Process
+## The decision process
 
 The decision process consists of two parts. First, the `categorize()` function checks whether all provided input data are valid. The steps of this verification are as follows:
 

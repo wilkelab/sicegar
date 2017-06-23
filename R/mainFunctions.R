@@ -1,4 +1,4 @@
-#' @title fit function.
+#' @title Fit and categorize.
 #'
 #' @param dataInput normalized input data that will be fitted transferred into related functions
 #' @param n_runs_max_sm number of maximum number of times the fitting is attempted for sigmoidal model.
@@ -25,9 +25,9 @@
 #' @param stepSize step size used by the calculate parameters algorithm.
 #' @param showDetails if TRUE prints details of intermediate steps of individual fits (Default is FALSE).
 #' @param dataInputName name of data set (Default is 'NA').
-#' @param ... all other arguments that model functions ("lineFitFunction", "sigmoidalFitFunction", "doublesigmoidalFitFunction") may need
+#' @param ... all other arguments that model functions ('sigmoidalFitFunction' and 'doublesigmoidalFitFunction') may need
 #'
-#' @description Calls the fitting algorithms to fit the data starting from random initial parameters. Multiple attempts at fitting the data are necessary to avoid local minima.
+#' @description Fits the sigmoidal and double-sigmoidal models to the data and then categorizes the data according to which model fits best.
 #' @return Returns the parameters related with the curve fitted to the input data.
 #' @export
 #'
@@ -49,9 +49,9 @@
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
 #'
-#'fitObj<-sicegar::fitFunction(dataInput = dataInput)
+#'fitObj<-sicegar::fitAndCategorize(dataInput = dataInput)
 #'
-fitFunction <-
+fitAndCategorize <-
   function(dataInput,
            dataInputName = NA,
            n_runs_min_sm=20,

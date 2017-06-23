@@ -13,7 +13,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
   
-After we have successfully fitted either a sigmoidal or double-sigmoidal model to input data, we may want to extract additional information of interest about the fitted curves, such as the midpoint of the curve and the slope at the midpoint. This information can be calculated with the function `sicegar:parameterCalculation()`. It is called automatically by the top-level interface `sicegar:fitAndCategorize()`, but it needs to be called manually if we fit curves with `sicegar::multipleFitFunction()`.
+After we have successfully fitted either a sigmoidal or double-sigmoidal model to input data, we may want to extract additional information of interest about the fitted curves, such as the midpoint of the curve and the slope at the midpoint. This information can be calculated with the function `parameterCalculation()`. It is called automatically by the top-level interface `fitAndCategorize()`, but it needs to be called manually if we fit curves with `multipleFitFunction()`.
   
 
 ```{r install packages, echo=FALSE, warning=FALSE, results='hide', message=FALSE}
@@ -76,22 +76,22 @@ normalizedDoubleSigmoidalInput = sicegar::normalizeData(dataInput = dataInputDou
 Assume we have fitted a sigmoidal or double-sigmoidal model using `sicegar::multipleFitFunction()`:
 
 ```{r sigmoidal and double sigmoidal fit to datasets}
-sigmoidalModel <- sicegar::multipleFitFunction(dataInput=normalizedSigmoidalInput,
+sigmoidalModel <- multipleFitFunction(dataInput=normalizedSigmoidalInput,
                                    model="sigmoidal")
 ```
 
 ```{r echo=FALSE, warning=FALSE, results='hide', message=FALSE}
-doubleSigmoidalModel <- sicegar::multipleFitFunction(dataInput=normalizedDoubleSigmoidalInput,
+doubleSigmoidalModel <- multipleFitFunction(dataInput=normalizedDoubleSigmoidalInput,
                                          model="doublesigmoidal")
 ```
 
 We can then apply `sicegar::parameterCalculation()` to the generated model objects:
 ```{r generate additional parameters for sigmoidalModel and doubleSigmoidalModel}
-sigmoidalModelAugmented <- sicegar::parameterCalculation(sigmoidalModel)
+sigmoidalModelAugmented <- parameterCalculation(sigmoidalModel)
 ```
 
 ```{r echo=FALSE, warning=FALSE, results='hide', message=FALSE}
-doubleSigmoidalModelAugmented <- sicegar::parameterCalculation(doubleSigmoidalModel)
+doubleSigmoidalModelAugmented <- parameterCalculation(doubleSigmoidalModel)
 ```
 
 Compare the contents of the fitted model before and after parameter calculation:
@@ -107,7 +107,7 @@ We see that the variable `additionalParameters` has switched from `FALSE` to `TR
 
 ## Additional parameters for the sigmoidal model
 
-The following parameters are calculated by `sicegar:parameterCalculation()` for the sigmoidal model.
+The following parameters are calculated by `parameterCalculation()` for the sigmoidal model.
 
 1\. Maximum of the fitted curve.
 

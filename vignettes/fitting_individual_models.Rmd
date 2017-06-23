@@ -66,19 +66,13 @@ We will now recalculate the parameters for linear sigmoidal and double sigmoidal
 `n_runs_max` parameter should be greater than or equal to `n_runs_min` parameter.
 
 ```{r}
-# Do linear fit
-linearModel <- sicegar::multipleFitFunction(dataInput=normalizedDoubleSigmoidalInput,
-                                 model="linear",
-                                 n_runs_min=5,
-                                 n_runs_max=15)
-
 # Do the sigmoidal fit
-sigmoidalModel <- sicegar::multipleFitFunction(dataInput=normalizedDoubleSigmoidalInput,
+sigmoidalModel <- multipleFitFunction(dataInput=normalizedDoubleSigmoidalInput,
                                    model="sigmoidal")
 
 
 # Do the double sigmoidal fit
-doubleSigmoidalModel <- sicegar::multipleFitFunction(dataInput=normalizedDoubleSigmoidalInput,
+doubleSigmoidalModel <- multipleFitFunction(dataInput=normalizedDoubleSigmoidalInput,
                                          model="doublesigmoidal")
 ```
 
@@ -91,10 +85,9 @@ The algorithm generated 3 parameters in addition to the parameters of the fit fu
 
 ## Model objects
 
-Here are the parameter vectors that `sicegar::multipleFitFunction` generates
+Here are the parameter vectors that `multipleFitFunction()` generates
 
 ```{r parameter vectors}
-t(linearModel)
 t(sigmoidalModel)
 t(doubleSigmoidalModel)
 ```

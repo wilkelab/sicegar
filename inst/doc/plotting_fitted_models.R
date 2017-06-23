@@ -1,21 +1,7 @@
----
-title: Plotting the fitted models
-author: "Umut Caglar, Claus O. Wilke"
-date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Plotting the fitted models}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
-  
-```{r setup, include=FALSE}
+## ----setup, include=FALSE------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
-```
-  
-The **sicegar** package provides a helpful function that can generate plots of the fitted models. This function is built on top of the **ggplot2** plot library.
-  
-```{r install packages, echo=FALSE, warning=FALSE, results='hide',message=FALSE}
+
+## ----install packages, echo=FALSE, warning=FALSE, results='hide',message=FALSE----
 
 ###*****************************
 # INITIAL COMMANDS TO RESET THE SYSTEM
@@ -29,11 +15,8 @@ require("dplyr")
 require("ggplot2")
 require("cowplot")
 ###*****************************
-```
 
-To demonstrate figure generation, we first generate simulated sigmoidal and double-sigmoidal data and fit the respective models to these datasets.
-
-```{r}
+## ------------------------------------------------------------------------
 # simulate sigmoidal data
 time <- seq(3, 24, 0.5)
 
@@ -59,21 +42,15 @@ dataInputDoubleSigmoidal <- data.frame(intensity = intensity, time = time)
 # fit models to both datasets
 fitObj_sm <- fitAndCategorize(dataInput = dataInputSigmoidal)
 fitObj_dsm <- fitAndCategorize(dataInput = dataInputDoubleSigmoidal)
-```
 
-Now we can plot the results using the function `figureModelCurves()`. This function returns a **ggplot2** plot that can be saved or displayed directly. The function has several different options.
-
-First, we can plot only the raw input data.
-```{r plot raw data, echo=TRUE, fig.height=4, fig.width=8}
+## ----plot raw data, echo=TRUE, fig.height=4, fig.width=8-----------------
 # sigmoidal raw data only
 figureModelCurves(dataInput = fitObj_sm$normalizedInput)
 
 # double-sigmoidal raw data only
 figureModelCurves(dataInput = fitObj_dsm$normalizedInput)
-```
 
-Second, we can plot the input data with the fitted lines.
-```{r plot raw data and fit, echo=TRUE, message=FALSE, warning=FALSE, comment=FALSE, fig.height=4, fig.width=6}
+## ----plot raw data and fit, echo=TRUE, message=FALSE, warning=FALSE, comment=FALSE, fig.height=4, fig.width=6----
 # sigmoidal fit
 figureModelCurves(dataInput = fitObj_sm$normalizedInput,
                   sigmoidalFitVector = fitObj_sm$sigmoidalModel)
@@ -81,10 +58,8 @@ figureModelCurves(dataInput = fitObj_sm$normalizedInput,
 # double-sigmoidal fit
 figureModelCurves(dataInput = fitObj_dsm$normalizedInput,
                   doubleSigmoidalFitVector = fitObj_dsm$doubleSigmoidalModel)
-```
 
-Third, we can additionally visualize the parameter estimates, by setting `showParameterRelatedLines = TRUE`.
-```{r plot raw data and fit with parameter related lines, echo=TRUE, message=FALSE, warning=FALSE, comment=FALSE, fig.height=4, fig.width=6}
+## ----plot raw data and fit with parameter related lines, echo=TRUE, message=FALSE, warning=FALSE, comment=FALSE, fig.height=4, fig.width=6----
 # sigmoidal fit with parameter related lines
 figureModelCurves(dataInput = fitObj_sm$normalizedInput,
                   sigmoidalFitVector = fitObj_sm$sigmoidalModel,
@@ -94,7 +69,4 @@ figureModelCurves(dataInput = fitObj_sm$normalizedInput,
 figureModelCurves(dataInput = fitObj_dsm$normalizedInput,
                   doubleSigmoidalFitVector = fitObj_dsm$doubleSigmoidalModel,
                   showParameterRelatedLines = TRUE)
-```
 
-
-Note that the last example only works for models that had additional parameters calculated using `parameterCalculation()`. This is done automatically when fitting with `fitFunction()`, but needs to be done manually when fitting with `multipleFitFunction()`.

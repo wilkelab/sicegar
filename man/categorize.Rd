@@ -13,31 +13,31 @@ categorize(parameterVectorSigmoidal, parameterVectorDoubleSigmoidal,
   threshold_t0_max_int = 0.05, showDetails = FALSE)
 }
 \arguments{
-\item{parameterVectorSigmoidal}{output from sigmoidalFitFunction.}
+\item{parameterVectorSigmoidal}{output of the sigmoidalFitFunction.}
 
-\item{parameterVectorDoubleSigmoidal}{output from doublesigmoidalFitFunction.}
+\item{parameterVectorDoubleSigmoidal}{output of the doublesigmoidalFitFunction.}
 
-\item{threshold_intensity_range}{minimum for intensity range (Default is 0.1).}
+\item{threshold_intensity_range}{minimum for intensity range, i.e. it is the lower limit for the allowed difference between the maximum and minimum of the intensities (Default is 0.1, and the values are based on actual, not the rescaled data.).}
 
-\item{threshold_minimum_for_intensity_maximum}{minimum allowed value for intensity maximum}
+\item{threshold_minimum_for_intensity_maximum}{minimum allowed value for intensity maximum. (Default is 0.3, and the values are based on actual, not the rescaled data.).}
 
-\item{threshold_bonus_sigmoidal_AIC}{bonus AIC points for sigmoidal fit. Negative values help sigmoidal model to win. Only helps in competittion between sigmoidal and double sigmoidal fit at decision step "9". (Default is 0)}
+\item{threshold_bonus_sigmoidal_AIC}{bonus AIC points for sigmoidal fit. Negative values help the sigmoidal model to win. Only helps in competition between sigmoidal and double sigmoidal fit at decision step "9", i.e. if none of the models fail in any of the tests and stay as a candidate until the last step (Default is 0).}
 
-\item{threshold_sm_tmax_IntensityRatio}{sigmoidal model must reach that percent of intensity at last observed point; otherwise it is not sigmoidal.}
+\item{threshold_sm_tmax_IntensityRatio}{the threshold for the minimum intensity ratio between the last observed time points intensity and theoretical maximum intensity of the sigmoidal curve. If the value is below the threshold, then the data can not be represented with the sigmoidal model. (Default is 0.85)}
 
-\item{threshold_dsm_tmax_IntensityRatio}{minimum allowed amount of decrease for double sigmoidal model from intensity_tmax / maximum_y (Default is 0.75). If intensity decrease less than that ratio than it is NOT double-sigmoidal model}
+\item{threshold_dsm_tmax_IntensityRatio}{the threshold for the minimum intensity ratio between the last observed time points intensity and maximum intensity of the double sigmoidal curve.  If the value is above the threshold, then the data can not be represented with the double sigmoidal model. (Default is 0.75)}
 
 \item{threshold_AIC}{maximum AIC values in order to have a meaningful fit (Default is -10).}
 
-\item{threshold_t0_max_int}{maximum allowed intensity at t=0}
+\item{threshold_t0_max_int}{maximum allowed intensity of the fitted curve at time is equal to zero (t=0). (Default is 0.05, and the values are based on actual, not the rescaled data.).}
 
 \item{showDetails}{Logical to chose if we want to see details or not. Default is "FALSE"}
 }
 \value{
-Function returns one of the three text outputs, "no_signal", "infection", or "infection&lysis".
+The returned object contains extensive information about the decision process, but the key component is the decision variable. The decision variable can be one of the following four; "no_signal", "infection","infection&lysis" or "ambugious".
 }
 \description{
-Catagorizes dat using the results of all three fitted models (linear, sigmoidal, and double sigmoidal).
+Catagorizes the input data using the results of two model fitsand chosen thresholds.
 }
 \examples{
 # Example 1 with double sigmoidal data

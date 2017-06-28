@@ -1,19 +1,19 @@
 #' @title Categorize input data by comparing the AIC values of the three fitted models.
 #'
-#' @param parameterVectorSigmoidal output from sigmoidalFitFunction.
-#' @param parameterVectorDoubleSigmoidal output from doublesigmoidalFitFunction.
-#' @param threshold_intensity_range minimum for intensity range (Default is 0.1).
-#' @param threshold_minimum_for_intensity_maximum minimum allowed value for intensity maximum
-#' @param threshold_bonus_sigmoidal_AIC bonus AIC points for sigmoidal fit. Negative values help sigmoidal model to win. Only helps in competittion between sigmoidal and double sigmoidal fit at decision step "9". (Default is 0)
-#' @param threshold_sm_tmax_IntensityRatio sigmoidal model must reach that percent of intensity at last observed point; otherwise it is not sigmoidal.
-#' @param threshold_dsm_tmax_IntensityRatio minimum allowed amount of decrease for double sigmoidal model from intensity_tmax / maximum_y (Default is 0.75). If intensity decrease less than that ratio than it is NOT double-sigmoidal model
+#' @param parameterVectorSigmoidal output of the sigmoidalFitFunction.
+#' @param parameterVectorDoubleSigmoidal output of the doublesigmoidalFitFunction.
+#' @param threshold_intensity_range minimum for intensity range, i.e. it is the lower limit for the allowed difference between the maximum and minimum of the intensities (Default is 0.1, and the values are based on actual, not the rescaled data.).
+#' @param threshold_minimum_for_intensity_maximum minimum allowed value for intensity maximum. (Default is 0.3, and the values are based on actual, not the rescaled data.).
+#' @param threshold_t0_max_int maximum allowed intensity of the fitted curve at time is equal to zero (t=0). (Default is 0.05, and the values are based on actual, not the rescaled data.).
+#' @param threshold_bonus_sigmoidal_AIC bonus AIC points for sigmoidal fit. Negative values help the sigmoidal model to win. Only helps in competition between sigmoidal and double sigmoidal fit at decision step "9", i.e. if none of the models fail in any of the tests and stay as a candidate until the last step (Default is 0).
+#' @param threshold_sm_tmax_IntensityRatio the threshold for the minimum intensity ratio between the last observed time points intensity and theoretical maximum intensity of the sigmoidal curve. If the value is below the threshold, then the data can not be represented with the sigmoidal model. (Default is 0.85)
+#' @param threshold_dsm_tmax_IntensityRatio the threshold for the minimum intensity ratio between the last observed time points intensity and maximum intensity of the double sigmoidal curve.  If the value is above the threshold, then the data can not be represented with the double sigmoidal model. (Default is 0.75)
 #' @param threshold_AIC maximum AIC values in order to have a meaningful fit (Default is -10).
-#' @param threshold_t0_max_int maximum allowed intensity at t=0
 #' @param showDetails Logical to chose if we want to see details or not. Default is "FALSE"
 #'
 #'
-#' @return Function returns one of the three text outputs, "no_signal", "infection", or "infection&lysis".
-#' @description Catagorizes dat using the results of all three fitted models (linear, sigmoidal, and double sigmoidal).
+#' @return The returned object contains extensive information about the decision process, but the key component is the decision variable. The decision variable can be one of the following four; "no_signal", "infection","infection&lysis" or "ambugious".
+#' @description Catagorizes the input data using the results of two model fitsand chosen thresholds.
 #' @export
 #'
 #' @examples

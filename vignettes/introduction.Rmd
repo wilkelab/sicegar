@@ -94,7 +94,7 @@ plot_grid(fig_a, fig_b, ncol = 2) # function from the cowplot package
 
 Clearly the regular sigmoidal curve does not provide a good fit but the double-sigmoidal curve does. This information is available from the returned fit object:
 ```{r}
-fitObj$outputCluster$decision # final decision
+fitObj$decisionProcess$decision # final decision
 ```
 
 ## The fit object
@@ -110,7 +110,7 @@ Each component holds numerous parameters of interest:
 * `.$normalizedInput`: The normalized dataset with normalization parameters, so that the raw dataset can be recovered from the normalized one. For more information, see the vignette on fitting individual models.
 * `.$sigmoidalModel`: The parameters for the sigmoidal fit. For more information, see the vignettes on fitting individual models and on additional parameters.
 * `.$doubleSigmoidalModel`: The parameters for the double-sigmoidal fit. For more information, see the vignettes on fitting individual models and on additional parameters.
-* `.$outputCluster`: The results from the decision process of which of the two models fit the data better. For more information, see the vignette on categorizing fits.
+* `.$decisionProcess`: The results from the decision process of which of the two models fit the data better. For more information, see the vignette on categorizing fits.
 * `.$summaryVector`: Key parameters of the winning model. These are the most important parameters extracted from either `.$sigmoidalModel` or `.$doubleSigmoidalModel`.
 
 Here, the contents of the summary vector is as follows:

@@ -1,10 +1,10 @@
 #' @title useful paramter calculation with help of fits
 #'
-#' @param parameterVector output of fitFunction or data frame that gives the variables related with double sigmoidal fit.
-#' @param stepSize step size used by the fitting algorithm.
+#' @param parameterVector Output of multiple fit function sicegar::multipleFitFunction() that gives the variables related with sigmoidal or double sigmoidal fit.
+#' @param stepSize Step size used by the fitting algorithm. Smaller numbers gave more accurate results than larger numbers, and larger numbers gave the results faster than small numbers. The default value is 0.00001.
 #'
 #' @description Generates useful values for external use, with the help of parameterVector's of the fits.
-#' @return Returns the expanded paramter vectors; that includes externally meaningful values as well as internal parameters generated from fit algorithms.
+#' @return Returns the expanded parameter vector. This vector includes useful derived values such as time and intensity of the start point, in addition to the standard values that the fit algorithms produce that are necessary to define the curves.
 #' @export
 #'
 #' @examples

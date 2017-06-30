@@ -9,7 +9,7 @@ sigmoidalFitFormula(x, maximum, slopeParam, midPoint)
 \arguments{
 \item{x}{the "time" (time) column of the dataframe.}
 
-\item{maximum}{the maximum value that the sigmoidal function can reach.}
+\item{maximum}{the maximum intensity that the sigmoidal function can reach while time approaches infinity.}
 
 \item{slopeParam}{the slope parameter of the sigmoidal function at the steppest point.}
 

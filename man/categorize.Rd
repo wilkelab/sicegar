@@ -13,23 +13,23 @@ categorize(parameterVectorSigmoidal, parameterVectorDoubleSigmoidal,
   threshold_t0_max_int = 0.05, showDetails = FALSE)
 }
 \arguments{
-\item{parameterVectorSigmoidal}{output of the sigmoidalFitFunction.}
+\item{parameterVectorSigmoidal}{Output of the sigmoidalFitFunction.}
 
-\item{parameterVectorDoubleSigmoidal}{output of the doublesigmoidalFitFunction.}
+\item{parameterVectorDoubleSigmoidal}{Output of the doublesigmoidalFitFunction.}
 
-\item{threshold_intensity_range}{minimum for intensity range, i.e. it is the lower limit for the allowed difference between the maximum and minimum of the intensities (Default is 0.1, and the values are based on actual, not the rescaled data.).}
+\item{threshold_intensity_range}{Minimum for intensity range, i.e. it is the lower limit for the allowed difference between the maximum and minimum of the intensities (Default is 0.1, and the values are based on actual, not the rescaled data.).}
 
-\item{threshold_minimum_for_intensity_maximum}{minimum allowed value for intensity maximum. (Default is 0.3, and the values are based on actual, not the rescaled data.).}
+\item{threshold_minimum_for_intensity_maximum}{Minimum allowed value for intensity maximum. (Default is 0.3, and the values are based on actual, not the rescaled data.).}
 
-\item{threshold_bonus_sigmoidal_AIC}{bonus AIC points for sigmoidal fit. Negative values help the sigmoidal model to win. Only helps in competition between sigmoidal and double sigmoidal fit at decision step "9", i.e. if none of the models fail in any of the tests and stay as a candidate until the last step (Default is 0).}
+\item{threshold_bonus_sigmoidal_AIC}{Bonus AIC points for sigmoidal fit. Negative values help the sigmoidal model to win. Only helps in competition between sigmoidal and double sigmoidal fit at decision step "9", i.e. if none of the models fail in any of the tests and stay as a candidate until the last step (Default is 0).}
 
-\item{threshold_sm_tmax_IntensityRatio}{the threshold for the minimum intensity ratio between the last observed time points intensity and theoretical maximum intensity of the sigmoidal curve. If the value is below the threshold, then the data can not be represented with the sigmoidal model. (Default is 0.85)}
+\item{threshold_sm_tmax_IntensityRatio}{The threshold for the minimum intensity ratio between the last observed time points intensity and theoretical maximum intensity of the sigmoidal curve. If the value is below the threshold, then the data can not be represented with the sigmoidal model. (Default is 0.85)}
 
-\item{threshold_dsm_tmax_IntensityRatio}{the threshold for the minimum intensity ratio between the last observed time points intensity and maximum intensity of the double sigmoidal curve.  If the value is above the threshold, then the data can not be represented with the double sigmoidal model. (Default is 0.75)}
+\item{threshold_dsm_tmax_IntensityRatio}{The threshold for the minimum intensity ratio between the last observed time points intensity and maximum intensity of the double sigmoidal curve.  If the value is above the threshold, then the data can not be represented with the double sigmoidal model. (Default is 0.75)}
 
-\item{threshold_AIC}{maximum AIC values in order to have a meaningful fit (Default is -10).}
+\item{threshold_AIC}{Maximum AIC values in order to have a meaningful fit (Default is -10).}
 
-\item{threshold_t0_max_int}{maximum allowed intensity of the fitted curve at time is equal to zero (t=0). (Default is 0.05, and the values are based on actual, not the rescaled data.).}
+\item{threshold_t0_max_int}{Maximum allowed intensity of the fitted curve at time is equal to zero (t=0). (Default is 0.05, and the values are based on actual, not the rescaled data.).}
 
 \item{showDetails}{Logical to chose if we want to see details or not. Default is "FALSE"}
 }
@@ -58,13 +58,6 @@ intensity=intensity+intensity_noise
 dataInput=data.frame(intensity=intensity,time=time)
 normalizedInput = sicegar::normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
 
-
-# Fit linear model
-linearModel=sicegar::multipleFitFunction(dataInput=normalizedInput,
-                                 model="linear",
-                                 n_runs_min=20,
-                                 n_runs_max=500,
-                                 showDetails=FALSE)
 
 # Fit sigmoidal model
 sigmoidalModel=sicegar::multipleFitFunction(dataInput=normalizedInput,

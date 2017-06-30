@@ -1,14 +1,14 @@
 #' @title Categorize input data by comparing the AIC values of the three fitted models.
 #'
-#' @param parameterVectorSigmoidal output of the sigmoidalFitFunction.
-#' @param parameterVectorDoubleSigmoidal output of the doublesigmoidalFitFunction.
-#' @param threshold_intensity_range minimum for intensity range, i.e. it is the lower limit for the allowed difference between the maximum and minimum of the intensities (Default is 0.1, and the values are based on actual, not the rescaled data.).
-#' @param threshold_minimum_for_intensity_maximum minimum allowed value for intensity maximum. (Default is 0.3, and the values are based on actual, not the rescaled data.).
-#' @param threshold_t0_max_int maximum allowed intensity of the fitted curve at time is equal to zero (t=0). (Default is 0.05, and the values are based on actual, not the rescaled data.).
-#' @param threshold_bonus_sigmoidal_AIC bonus AIC points for sigmoidal fit. Negative values help the sigmoidal model to win. Only helps in competition between sigmoidal and double sigmoidal fit at decision step "9", i.e. if none of the models fail in any of the tests and stay as a candidate until the last step (Default is 0).
-#' @param threshold_sm_tmax_IntensityRatio the threshold for the minimum intensity ratio between the last observed time points intensity and theoretical maximum intensity of the sigmoidal curve. If the value is below the threshold, then the data can not be represented with the sigmoidal model. (Default is 0.85)
-#' @param threshold_dsm_tmax_IntensityRatio the threshold for the minimum intensity ratio between the last observed time points intensity and maximum intensity of the double sigmoidal curve.  If the value is above the threshold, then the data can not be represented with the double sigmoidal model. (Default is 0.75)
-#' @param threshold_AIC maximum AIC values in order to have a meaningful fit (Default is -10).
+#' @param parameterVectorSigmoidal Output of the sigmoidalFitFunction.
+#' @param parameterVectorDoubleSigmoidal Output of the doublesigmoidalFitFunction.
+#' @param threshold_intensity_range Minimum for intensity range, i.e. it is the lower limit for the allowed difference between the maximum and minimum of the intensities (Default is 0.1, and the values are based on actual, not the rescaled data.).
+#' @param threshold_minimum_for_intensity_maximum Minimum allowed value for intensity maximum. (Default is 0.3, and the values are based on actual, not the rescaled data.).
+#' @param threshold_t0_max_int Maximum allowed intensity of the fitted curve at time is equal to zero (t=0). (Default is 0.05, and the values are based on actual, not the rescaled data.).
+#' @param threshold_bonus_sigmoidal_AIC Bonus AIC points for sigmoidal fit. Negative values help the sigmoidal model to win. Only helps in competition between sigmoidal and double sigmoidal fit at decision step "9", i.e. if none of the models fail in any of the tests and stay as a candidate until the last step (Default is 0).
+#' @param threshold_sm_tmax_IntensityRatio The threshold for the minimum intensity ratio between the last observed time points intensity and theoretical maximum intensity of the sigmoidal curve. If the value is below the threshold, then the data can not be represented with the sigmoidal model. (Default is 0.85)
+#' @param threshold_dsm_tmax_IntensityRatio The threshold for the minimum intensity ratio between the last observed time points intensity and maximum intensity of the double sigmoidal curve.  If the value is above the threshold, then the data can not be represented with the double sigmoidal model. (Default is 0.75)
+#' @param threshold_AIC Maximum AIC values in order to have a meaningful fit (Default is -10).
 #' @param showDetails Logical to chose if we want to see details or not. Default is "FALSE"
 #'
 #'
@@ -35,13 +35,6 @@
 #'dataInput=data.frame(intensity=intensity,time=time)
 #'normalizedInput = sicegar::normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
 #'
-#'
-#'# Fit linear model
-#'linearModel=sicegar::multipleFitFunction(dataInput=normalizedInput,
-#'                                  model="linear",
-#'                                  n_runs_min=20,
-#'                                  n_runs_max=500,
-#'                                  showDetails=FALSE)
 #'
 #'# Fit sigmoidal model
 #'sigmoidalModel=sicegar::multipleFitFunction(dataInput=normalizedInput,
@@ -221,6 +214,7 @@ categorize<-
     {stop("additional parameters for double_sigmoidal fit must be calculated")}
 
     choices=c("no_signal", "sigmoidal", "double_sigmoidal", "ambiguous")
+    #choices=c("sigmoidal", "double_sigmoidal", "ambiguous")
     decisonSteps=c();
     # Tests that narrows choices
 
@@ -361,13 +355,13 @@ categorize<-
 
 #' @title Checks for signal in the data.
 #'
-#' @param normalizedInput is the output of sicegar::normalizeData function.
-#' @param threshold_intensity_range minimum for intensity range (Default is 0.1).
-#' @param threshold_minimum_for_intensity_maximum minimum allowed value for intensity maximum
+#' @param normalizedInput is the output of the sicegar::normalizeData() function.
+#' @param threshold_intensity_range  minimum for intensity range, i.e. it is the lower limit for the allowed difference between the maximum and minimum of the intensities (Default is 0.1, and the values are based on actual, not the rescaled data.).
+#' @param threshold_minimum_for_intensity_maximum minimum allowed value for intensity maximum. (Default is 0.3, and the values are based on actual, not the rescaled data.).
 #'
 #'
-#' @return Function returns decision vector that at the end says "no signal" or not "no signal".
-#' @description Checks if signal is present in the data. Often a high percentage of high through-put data does not contain a signal. Checking if data does not contain signal before doing a sigmoidal or double sigmoidal fit can make analysis of data from high through-put experiments much faster.
+#' @return Function returns a brief decision list that includes information about the decision process. Post important part of this information is decisionList$decisionwhich might be either "no_signal" or "not_no_signal".
+#' @description Checks if the signal is present in the data. Often a high percentage of high through-put data does not contain a signal. Checking if data does not contain signal before doing a sigmoidal or double sigmoidal fit can make the analysis of data from high-throughput experiments much faster.
 #' @export
 #'
 #' @examples
@@ -389,7 +383,7 @@ categorize<-
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
 #'normalizedInput = sicegar::normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
-#'isThis_nosignal = sicegar::pre_categorize(normalizedInput = normalizedInput)
+#'isThis_nosignal = sicegar::preCategorize(normalizedInput = normalizedInput)
 #'
 #'
 #'
@@ -411,11 +405,11 @@ categorize<-
 #'
 #'dataInput=data.frame(intensity=intensity,time=time)
 #'normalizedInput = sicegar::normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
-#'isThis_nosignal = sicegar::pre_categorize(normalizedInput = normalizedInput)
+#'isThis_nosignal = sicegar::preCategorize(normalizedInput = normalizedInput)
 #'
 
 
-pre_categorize<-
+preCategorize<-
   function(normalizedInput,
            threshold_intensity_range=0.1,
            threshold_minimum_for_intensity_maximum=0.3)
@@ -434,6 +428,33 @@ pre_categorize<-
     decisionList$intensityRange <- normalizedInput$dataScalingParameters[["intensityRange"]]
     decisionList$threshold_intensity_range <- threshold_intensity_range
     decisionList$test.intensity_range <- threshold_intensity_range < decisionList$intensityRange
+
+
+    # Overal Decision Process
+    choices=c("no_signal", "sigmoidal", "double_sigmoidal", "ambiguous")
+    decisonSteps=c();
+
+    # no signal tests
+    # 1a. Observed intensity maximum must be bigger than "threshold_minimum_for_intensity_maximum", otherwise "no_signal"
+    if(!decisionList$test.minimum_for_intensity_maximum)
+    {
+      decisonSteps=c(decisonSteps,"1a");
+    }
+
+    # 1b. "intensity_max, intensity_min difference" must be greater than "threshold_intensity_range", otherwise "no_signal"
+    if(!decisionList$test.minimum_for_intensity_maximum)
+    {
+      decisonSteps=c(decisonSteps,"1b");
+    }
+
+    # 1c. If at this point it is not "no_signal" that it can not be "no signal"
+    if(!setequal(choices, c("no_signal")))
+    {
+      decisonSteps=c(decisonSteps,"1c");
+    }
+
+    # Write the decision steps
+    decisionList$decisonSteps=paste0(decisonSteps, collapse = "_")
 
     # Overal Decision
     decisionList$decision= ifelse(decisionList$test.minimum_for_intensity_maximum & decisionList$test.intensity_range,

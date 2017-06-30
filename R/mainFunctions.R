@@ -1,31 +1,31 @@
 #' @title Fit and categorize.
 #'
-#' @param dataInput normalized input data that will be fitted transferred into related functions
-#' @param n_runs_max_sm number of maximum number of times the fitting is attempted for sigmoidal model.
-#' @param n_runs_min_sm number of minimum successfull runs returned by the fitting algorithm for sigmoidal model.
-#' @param n_runs_max_dsm number of maximum number of times the fitting is attempted for double sigmoidal model.
-#' @param n_runs_min_dsm number of minimum successfull runs returned by the fitting algorithm for double sigmoidal model.
-#' @param startList_sm the initial set of parameters that algorithm tries to fit. The parameters are 'maximumValue' that represents the maximum value that the function can take,  'slope parameter' that represents the slope parameter in normalized y axis, and 'midPointValue' that represents the midpoint for sigmoidal model.
-#' @param lowerBounds_sm the lower bounds for the randomly generated start parameters for sigmoidal model.
-#' @param upperBounds_sm the upper bounds for the randomly generated start parameters for sigmoidal model.
-#' @param min_Factor_sm the minimum step size in the iterations used by the fitting algorithm for sigmoidal model.
-#' @param n_iterations_sm the maximum number of iterations used by the fitting algorithm for sigmoidal model.
-#' @param startList_dsm the initial set of parameters that algorithm tries for the fit. Where the parameters are the 'maximumValue' that represents the maximum value that the function that can take, 'slope1Param' represents the maximum slope related parameter on the normalized y axis at the exponential phase, 'midPoint1Param' represents the x axis value for the maximum slope (before numerical correction) related parameter in exponential phase, 'slope2Param' represents the maximum slope related parameter in the normalized y axis during lysis, 'midPointDistanceParam' represents the x axis distance between the maximum slope in first sigmoidal and the maximum slope in second sigmoidal, 'finalAsymptoteIntensityRatio' represents the intensity value at infinite time as the ratio with respect to maximum value reached, its is bounded between 0 and 1 for double sigmoidal model.
-#' @param lowerBounds_dsm the lower bounds for the randomly generated start parameters for double sigmoidal model.
-#' @param upperBounds_dsm the upper bounds for the randomly generated start parameters for double sigmoidal model.
-#' @param min_Factor_dsm defines the minimum step size used by the fitting algorithm for double sigmoidal model.
-#' @param n_iterations_dsm define maximum number of iterations used by the fitting algorithm for double sigmoidal model.
-#' @param threshold_intensity_range minimum for intensity range (Default is 0.1).
-#' @param threshold_minimum_for_intensity_maximum minimum allowed value for intensity maximum
-#' @param threshold_bonus_sigmoidal_AIC bonus AIC points for sigmoidal fit. Negative values help sigmoidal model to win. Only helps in competittion between sigmoidal and double sigmoidal fit at decision step "9". (Default is 0)
-#' @param threshold_sm_tmax_IntensityRatio sigmoidal model must reach that percent of intensity at last observed point; otherwise it is not sigmoidal.
-#' @param threshold_dsm_tmax_IntensityRatio minimum allowed amount of decrease for double sigmoidal model from intensity_tmax / maximum_y (Default is 0.75). If intensity decrease less than that ratio than it is NOT double-sigmoidal model
-#' @param threshold_AIC maximum AIC values in order to have a meaningful fit (Default is -10).
-#' @param threshold_t0_max_int maximum allowed intensity at t=0
-#' @param stepSize step size used by the calculate parameters algorithm.
-#' @param showDetails if TRUE prints details of intermediate steps of individual fits (Default is FALSE).
-#' @param dataInputName name of data set (Default is 'NA').
-#' @param ... all other arguments that model functions ('sigmoidalFitFunction' and 'doublesigmoidalFitFunction') may need
+#' @param dataInput Un_normalized input data that will be fitted transferred into related functions
+#' @param n_runs_max_sm This number indicates the upper limit of the fitting attempts for sigmoidal model.
+#' @param n_runs_min_sm This number indicates the lower limit of the successful fitting attempts for sigmoidal model. It should be smaller than the upper limit of the fitting attempts (n_runs_max_sm).
+#' @param n_runs_max_dsm This number indicates the upper limit of the fitting attempts for sigmoidal model for double sigmoidal model.
+#' @param n_runs_min_dsm This number indicates the lower limit of the successful fitting attempts for double sigmoidal model. It should be smaller than the upper limit of the fitting attempts (n_runs_max_dsm).
+#' @param startList_sm The initial set of parameters vector that sigmoidal fit algorithm tries for the first fit attempt for the relevant parameters. The vector composes of three elements; 'maximum', 'slopeParam' and, 'midPoint'.  Detailed explanations of those parameters can be found in vignettes. Defaults are maximum = 1, slopeParam = 1 and, midPoint = 0.33. The numbers are in normalized time intensity scale.
+#' @param lowerBounds_sm The lower bounds for the randomly generated start parameters for the sigmoidal fit. The vector composes of three elements; 'maximum', 'slopeParam' and, 'midPoint'. Detailed explanations of those parameters can be found in vignettes. Defaults are maximum = 0.3, slopeParam = 0.01, and midPoint = -0.52. The numbers are in normalized time intensity scale.
+#' @param upperBounds_sm The upper bounds for the randomly generated start parameters for the sigmoidal fit. The vector composes of three elements; 'maximum', 'slopeParam' and, 'midPoint'. Detailed explanations of those parameters can be found in vignettes. Defaults are maximum = 1.5, slopeParam = 180,  midPoint = 1.15. The numbers are in normalized time intensity scale.
+#' @param min_Factor_sm Defines Defines the minimum step size used by the sigmoidal fit algorithm. Default is 1/2^20.
+#' @param n_iterations_sm Defines maximum number of iterations used by the sigmoidal fit algorithm. Default is 1000
+#' @param startList_dsm The initial set of parameters vector that double sigmoidal fit algorithm tries for the first fit attempt for the relevant parameters. The vector composes of six elements; 'finalAsymptoteIntensityRatio', 'maximum', 'slope1Param', 'midPoint1Param' , 'slope2Param', and 'midPointDistanceParam'. Detailed explanations of those parameters can be found in vignettes. Defaults are  finalAsymptoteIntensityRatio = 0, maximum = 1, slope1Param = 1, midPoint1Param = 0.33, slope2Param = 1, and midPointDistanceParam=0.29. The numbers are in normalized time intensity scale.
+#' @param lowerBounds_dsm The lower bounds for the randomly generated start parameters for double sigmoidal fit.  The vector composes of six elements; 'finalAsymptoteIntensityRatio', 'maximum', 'slope1Param', 'midPoint1Param' , 'slope2Param', and 'midPointDistanceParam'. Detailed explanations of those parameters can be found in vignettes. Defaults are finalAsymptoteIntensityRatio = 0, maximum = 0.3, slope1Param = .01, midPoint1Param = -0.52, slope2Param = .01, and midPointDistanceParam = 0.04. The numbers are in normalized time intensity scale.
+#' @param upperBounds_dsm The upper bounds for the randomly generated start parameters for double sigmoidal fit.  The vector composes of six elements; 'finalAsymptoteIntensityRatio', 'maximum', 'slope1Param', 'midPoint1Param' , 'slope2Param', and 'midPointDistanceParam'. Detailed explanations of those parameters can be found in vignettes. Defaults are finalAsymptoteIntensityRatio = 1, maximum = 1.5, slope1Param = 180, midPoint1Param = 1.15, slope2Param = 180, and midPointDistanceParam = 0.63. The numbers are in normalized time intensity scale.
+#' @param min_Factor_dsm Defines the minimum step size used by the double sigmoidal fit algorithm. Default is 1/2^20.
+#' @param n_iterations_dsm Define maximum number of iterations used by the double sigmoidal fit algorithm. Default is 1000
+#' @param threshold_intensity_range Minimum for intensity range, i.e. it is the lower limit for the allowed difference between the maximum and minimum of the intensities (Default is 0.1, and the values are based on actual, not the rescaled data.).
+#' @param threshold_minimum_for_intensity_maximum Minimum allowed value for intensity maximum. (Default is 0.3, and the values are based on actual, not the rescaled data.).
+#' @param threshold_bonus_sigmoidal_AIC Bonus AIC points for sigmoidal fit. Negative values help the sigmoidal model to win. Only helps in competition between sigmoidal and double sigmoidal fit at decision step "9", i.e. if none of the models fail in any of the tests and stay as a candidate until the last step (Default is 0).
+#' @param threshold_sm_tmax_IntensityRatio The threshold for the minimum intensity ratio between the last observed time points intensity and theoretical maximum intensity of the sigmoidal curve. If the value is below the threshold, then the data can not be represented with the sigmoidal model. (Default is 0.85)
+#' @param threshold_dsm_tmax_IntensityRatio The threshold for the minimum intensity ratio between the last observed time points intensity and maximum intensity of the double sigmoidal curve.  If the value is above the threshold, then the data can not be represented with the double sigmoidal model. (Default is 0.75)
+#' @param threshold_AIC Maximum AIC values in order to have a meaningful fit (Default is -10).
+#' @param threshold_t0_max_int Maximum allowed intensity of the fitted curve at time is equal to zero (t=0). (Default is 0.05, and the values are based on actual, not the rescaled data.).
+#' @param stepSize Step size used by the fitting algorithm. Smaller numbers gave more accurate results than larger numbers, and larger numbers gave the results faster than small numbers. The default value is 0.00001.
+#' @param showDetails Logical if TRUE prints details of intermediate steps of individual fits (Default is FALSE).
+#' @param dataInputName Name of data set (Default is 'NA').
+#' @param ... All other arguments that model functions ("sigmoidalFitFunction" and, "doublesigmoidalFitFunction") may need.
 #'
 #' @description Fits the sigmoidal and double-sigmoidal models to the data and then categorizes the data according to which model fits best.
 #' @return Returns the parameters related with the curve fitted to the input data.
@@ -58,29 +58,30 @@ fitAndCategorize <-
            n_runs_max_sm=500,
            n_runs_min_dsm=20,
            n_runs_max_dsm=500,
-           startList_sm=list(maximum = 1, slopeParam = 36, midPoint = 0.3333333),
-           lowerBounds_sm=c(maximum=0.3, slopeParam=0.00001,  midPoint=0.3125-0.8333333),
-           upperBounds_sm=c(maximum=1.5, slopeParam=180,  midPoint=0.3125+0.8333333),
+           showDetails=FALSE,
+           startList_sm=list(maximum = 1, slopeParam = 1, midPoint = 0.33),
+           lowerBounds_sm=c(maximum=0.3, slopeParam=0.01,  midPoint=-0.52),
+           upperBounds_sm=c(maximum=1.5, slopeParam=180,  midPoint=1.15),
            min_Factor_sm=1/2^20,
            n_iterations_sm=1000,
            startList_dsm=list(finalAsymptoteIntensityRatio = 0,
                               maximum = 1,
                               slope1Param = 1,
-                              midPoint1Param = 0.3333333,
+                              midPoint1Param = 0.33,
                               slope2Param=1,
-                              midPointDistanceParam=0.2916667),
+                              midPointDistanceParam=0.29),
            lowerBounds_dsm=c(finalAsymptoteIntensityRatio = 0,
                              maximum = 0.3,
                              slope1Param = .01,
-                             midPoint1Param = -0.5208333,
+                             midPoint1Param = -0.52,
                              slope2Param=.01,
-                             midPointDistanceParam=0.04166667),
+                             midPointDistanceParam=0.04),
            upperBounds_dsm=c(finalAsymptoteIntensityRatio = 1,
                              maximum = 1.5,
                              slope1Param = 180,
-                             midPoint1Param = 1.145833,
+                             midPoint1Param = 1.15,
                              slope2Param=180,
-                             midPointDistanceParam=0.625),
+                             midPointDistanceParam=0.63),
            min_Factor_dsm=1/2^20,
            n_iterations_dsm=1000,
            threshold_intensity_range=0.1,
@@ -90,19 +91,18 @@ fitAndCategorize <-
            threshold_dsm_tmax_IntensityRatio=0.75,
            threshold_AIC=-10,
            threshold_t0_max_int = 0.05,
-           stepSize=0.00001,
-           showDetails=FALSE,...)
+           stepSize=0.00001,...)
   {
     normalizedInput = sicegar::normalizeData(dataInput = dataInput, dataInputName = dataInputName)
-    preDecision = sicegar::pre_categorize(normalizedInput = normalizedInput,
-                                          threshold_intensity_range = threshold_intensity_range,
-                                          threshold_minimum_for_intensity_maximum = threshold_minimum_for_intensity_maximum)
+    preDecisionProcess = sicegar::preCategorize(normalizedInput = normalizedInput,
+                                                threshold_intensity_range = threshold_intensity_range,
+                                                threshold_minimum_for_intensity_maximum = threshold_minimum_for_intensity_maximum)
 
 
 
-    if(showDetails){utils::str(preDecision)}
+    if(showDetails){utils::str(preDecisionProcess)}
 
-    if(preDecision$decision=="no_signal")
+    if(preDecisionProcess$decision=="no_signal")
     {
       summaryVector=c()
 
@@ -116,11 +116,11 @@ fitAndCategorize <-
       return(list(normalizedInput = normalizedInput,
                   sigmoidalModel = NA,
                   doubleSigmoidalModel = NA,
-                  outputCluster = preDecision,
+                  DecisionProcess = preDecisionProcess,
                   summaryVector=summaryVector))
     }
 
-    if(preDecision$decision=="not_no_signal")
+    if(preDecisionProcess$decision=="not_no_signal")
     {
       # Fit sigmoidal model
       sigmoidalModel=sicegar::multipleFitFunction(dataInput=normalizedInput,
@@ -152,22 +152,22 @@ fitAndCategorize <-
       doubleSigmoidalModel = sicegar::parameterCalculation(parameterVector = doubleSigmoidalModel,
                                                            stepSize = stepSize)
       # Categorization
-      outputCluster=sicegar::categorize(parameterVectorSigmoidal=sigmoidalModel,
-                                        parameterVectorDoubleSigmoidal=doubleSigmoidalModel,
-                                        threshold_intensity_range = threshold_intensity_range,
-                                        threshold_minimum_for_intensity_maximum = threshold_minimum_for_intensity_maximum,
-                                        threshold_bonus_sigmoidal_AIC = threshold_bonus_sigmoidal_AIC,
-                                        threshold_sm_tmax_IntensityRatio = threshold_sm_tmax_IntensityRatio,
-                                        threshold_dsm_tmax_IntensityRatio = threshold_dsm_tmax_IntensityRatio,
-                                        threshold_AIC = threshold_AIC,
-                                        threshold_t0_max_int = threshold_t0_max_int,
-                                        showDetails = showDetails)
+      decisionProcess=sicegar::categorize(parameterVectorSigmoidal=sigmoidalModel,
+                                          parameterVectorDoubleSigmoidal=doubleSigmoidalModel,
+                                          threshold_intensity_range = threshold_intensity_range,
+                                          threshold_minimum_for_intensity_maximum = threshold_minimum_for_intensity_maximum,
+                                          threshold_bonus_sigmoidal_AIC = threshold_bonus_sigmoidal_AIC,
+                                          threshold_sm_tmax_IntensityRatio = threshold_sm_tmax_IntensityRatio,
+                                          threshold_dsm_tmax_IntensityRatio = threshold_dsm_tmax_IntensityRatio,
+                                          threshold_AIC = threshold_AIC,
+                                          threshold_t0_max_int = threshold_t0_max_int,
+                                          showDetails = showDetails)
 
       # Summary
       summaryVector=c()
-      if(outputCluster$decision=="sigmoidal")
+      if(decisionProcess$decision=="sigmoidal")
       {
-        summaryVector$dataInputName = outputCluster$dataInputName
+        summaryVector$dataInputName = decisionProcess$dataInputName
         summaryVector$decision = "sigmoidal"
         summaryVector$maximum_x = sigmoidalModel$maximum_x
         summaryVector$maximum_y = sigmoidalModel$maximum_y
@@ -181,9 +181,9 @@ fitAndCategorize <-
         summaryVector$reachMaximum_y = sigmoidalModel$reachMaximum_y
       }
 
-      if(outputCluster$decision=="double_sigmoidal")
+      if(decisionProcess$decision=="double_sigmoidal")
       {
-        summaryVector$dataInputName = outputCluster$dataInputName
+        summaryVector$dataInputName = decisionProcess$dataInputName
         summaryVector$decision = "double_sigmoidal"
         summaryVector$maximum_x = doubleSigmoidalModel$maximum_x
         summaryVector$maximum_y = doubleSigmoidalModel$maximum_y
@@ -206,23 +206,23 @@ fitAndCategorize <-
         summaryVector$endDeclinePoint_y = doubleSigmoidalModel$endDeclinePoint_y
       }
 
-      if(outputCluster$decision=="no_signal")
+      if(decisionProcess$decision=="no_signal")
       {
-        summaryVector$dataInputName = outputCluster$dataInputName
+        summaryVector$dataInputName = decisionProcess$dataInputName
         summaryVector$decision = "no_signal"
       }
 
-      if(outputCluster$decision=="ambiguous")
+      if(decisionProcess$decision=="ambiguous")
       {
-        summaryVector$dataInputName = outputCluster$dataInputName
+        summaryVector$dataInputName = decisionProcess$dataInputName
         summaryVector$decision = "ambiguous"
       }
 
-      if(showDetails){utils::str(outputCluster)}
+      if(showDetails){utils::str(decisionProcess)}
       return(list(normalizedInput = normalizedInput,
                   sigmoidalModel = sigmoidalModel,
                   doubleSigmoidalModel = doubleSigmoidalModel,
-                  outputCluster = outputCluster,
+                  decisionProcess = decisionProcess,
                   summaryVector=summaryVector))
 
     }

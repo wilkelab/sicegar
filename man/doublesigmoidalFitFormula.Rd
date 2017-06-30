@@ -10,11 +10,11 @@ doublesigmoidalFitFormula(x, finalAsymptoteIntensityRatio, maximum, slope1Param,
 \arguments{
 \item{x}{the "time" (time) column of the dataframe}
 
-\item{finalAsymptoteIntensityRatio}{represents the intensity value at infinite time.}
+\item{finalAsymptoteIntensityRatio}{This is the ratio between asymptote intensity and maximum intensity of the fitted curve.}
 
-\item{maximum}{the maximum value that the sigmoidal function can reach.}
+\item{maximum}{the maximum intensity that the double sigmoidal function reach.}
 
-\item{slope1Param}{the slope parameter of the sigmoidal function at the steppest point in the exponential phase of the viral production. i.e when the intensity is increasing.}
+\item{slope1Param}{the slope parameter of the sigmoidal function at the steppest point in the exponential phase of the viral production.}
 
 \item{midPoint1Param}{the x axis value of the steppest point in the function.}
 

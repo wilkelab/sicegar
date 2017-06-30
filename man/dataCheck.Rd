@@ -7,12 +7,12 @@
 dataCheck(data, showDetails = TRUE)
 }
 \arguments{
-\item{data}{the input data. It can be either a list that contains a data frame in .$timeIntensityData or a data frame by itself.}
+\item{data}{the input data. It can be either a list that contains a data frame in .$timeIntensityData or can be a data frame by itself.}
 
-\item{showDetails}{if TRUE the function will provide the printout "check done" if everything is OK. Default is FALSE}
+\item{showDetails}{logical, if TRUE the function will provide an output "check done" if everything is OK. Default is FALSE}
 }
 \description{
-Checks if the input data is appropirate and converts it into an appropirate form. The input data frame should contain two columns named time and intensity for timeData and intensityData. If the data frame is in a list its name in the list should be $timeIntensityData.
+Checks if the input data is appropriate and if it is not, the function converts it into a suitable form. The input data frame should contain two columns named time and intensity related to time variable and intensity variable respectively. If the data frame is in a list its name in the list should be $timeIntensityData.
 }
 \examples{
 

@@ -7,12 +7,12 @@
 parameterCalculation(parameterVector, stepSize = 1e-05)
 }
 \arguments{
-\item{parameterVector}{output of fitFunction or data frame that gives the variables related with double sigmoidal fit.}
+\item{parameterVector}{Output of multiple fit function sicegar::multipleFitFunction() that gives the variables related with sigmoidal or double sigmoidal fit.}
 
-\item{stepSize}{step size used by the fitting algorithm.}
+\item{stepSize}{Step size used by the fitting algorithm. Smaller numbers gave more accurate results than larger numbers, and larger numbers gave the results faster than small numbers. The default value is 0.00001.}
 }
 \value{
-Returns the expanded paramter vectors; that includes externally meaningful values as well as internal parameters generated from fit algorithms.
+Returns the expanded parameter vector. This vector includes useful derived values such as time and intensity of the start point, in addition to the standard values that the fit algorithms produce that are necessary to define the curves.
 }
 \description{
 Generates useful values for external use, with the help of parameterVector's of the fits.

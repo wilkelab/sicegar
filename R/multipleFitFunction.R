@@ -1,52 +1,19 @@
 #' @title multiple fit function.
 #'
-#' @param dataInput normalized input data that will be fitted transferred into related functions
-#' @param model type of fit function that will be used. Can be "linear", "sigmoidal", or "double_sigmoidal".
-#' @param n_runs_max number of maximum number of times the fitting is attempted.
-#' @param n_runs_min number of minimum successfull runs returned by the fitting algorithm.
-#' @param showDetails if TRUE prints details of intermediate steps of individual fits (Default is FALSE).
-#' @param dataInputName name of data set (Default is 'NA').
-#' @param ... all other arguments that model functions ("lineFitFunction", "sigmoidalFitFunction", "doublesigmoidalFitFunction") may need
+#' @param dataInput A data frame or a list contatining the dataframe. The data frame should be composed of at least two columns. One represents time, and the other represents intensity. The data should be normalized with the normalize data function sicegar::normalizeData() before imported into this function.
+#' @param model Type of fit model that will be used. Can be "sigmoidal", or "double_sigmoidal".
+#' @param n_runs_max This number indicates the upper limit of the fitting attempts. Default is 500.
+#' @param n_runs_min This number indicates the lower limit of the successful fitting attempts. It should be smaller than the upper limit of the fitting attempts (n_runs_max). Default is 20.
+#' @param showDetails Logical if TRUE prints details of intermediate steps of individual fits (Default is FALSE).
+#' @param dataInputName Name of data set (Default is 'NA').
+#' @param ... All other arguments that model functions ("sigmoidalFitFunction" and, "doublesigmoidalFitFunction") may need.
 #'
-#' @description Calls the fitting algorithms to fit the data starting from different randomly generated initial parameters. Multiple attempts at fitting the data are necessary to avoid local minima.
+#' @description Calls the fitting algorithms to fit the data multiple times with starting from different randomly generated initial parameters in each run. Multiple attempts at fitting the data are necessary to avoid local minima.
 #' @return Returns the parameters related with the model fitted for the input data.
 #' @export
 #'
 #' @examples
-#'# Example 1 (linear function with normalization)
-#'time=seq(3,24,0.5)
-#'
-#'#simulate intensity data with noise
-#'noise_parameter=20
-#'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
-#'intensity=lineFitFormula(time, slope=4, intersection=-2)
-#'intensity=intensity+intensity_noise
-#'
-#'dataInput=data.frame(intensity=intensity,time=time)
-#'normalizedInput = normalizeData(dataInput)
-#'parameterVector=multipleFitFunction(dataInput=normalizedInput,
-#'                            model="linear",
-#'                            n_runs_min=5,
-#'                            n_runs_max=15)
-#'
-#'#Check the results
-#'if(parameterVector$isThisaFit){
-#'  intensityTheoretical=lineFitFormula(time,
-#'                                      slope=parameterVector$slope_Estimate,
-#'                                      intersection=parameterVector$intersection_Estimate)
-#'
-#'  comparisonData=cbind(dataInput,intensityTheoretical)
-#'
-#'  print(parameterVector$residual_Sum_of_Squares)
-#'  require(ggplot2)
-#'  ggplot(comparisonData)+
-#'    geom_point(aes(x=time, y=intensity))+
-#'    geom_line(aes(x=time,y=intensityTheoretical))+
-#'    expand_limits(x = 0, y = 0)}
-#'
-#'if(!parameterVector$isThisaFit){print(parameterVector)}
-#'
-#'# Example 2 (sigmoidal function with normalization)
+#'# Example 1 (sigmoidal function with normalization)
 
 #'time=seq(3,24,0.5)
 #'
@@ -85,7 +52,7 @@
 #'if(!parameterVector$isThisaFit){print(parameterVector)}
 #'
 
-#'# Example 3 (doublesigmoidal function with normalization)
+#'# Example 2 (doublesigmoidal function with normalization)
 #'time=seq(3,24,0.1)
 #'
 #'#simulate intensity data with noise
@@ -131,6 +98,8 @@
 #'    expand_limits(x = 0, y = 0)}
 #'
 #'if(!parameterVector$isThisaFit){print(parameterVector)}
+#'
+#'
 multipleFitFunction <-
   function(dataInput,
            dataInputName=NA,
@@ -141,8 +110,8 @@ multipleFitFunction <-
   {
     dataInputCheck=dataCheck(dataInput)
 
-    if(!(model %in% c("linear", "sigmoidal", "doublesigmoidal")) )
-    {stop("model should be one of linear, sigmoidal, doublesigmoidal")}
+    if(!(model %in% c("sigmoidal", "doublesigmoidal")) )
+    {stop("model should be one of sigmoidal, doublesigmoidal")}
 
     counterBetterFit=0
     counterCorrectFit=0
@@ -154,7 +123,6 @@ multipleFitFunction <-
     while(counterCorrectFit<n_runs_min & counterTotalFit<n_runs_max)
     {
       counterTotalFit=counterTotalFit+1
-      if(model == "linear"){modelOutput=lineFitFunction(dataInput=dataInput,tryCounter=counterTotalFit,...)}
       if(model == "sigmoidal"){modelOutput=sigmoidalFitFunction(dataInput=dataInput,tryCounter=counterTotalFit,...)}
       if(model == "doublesigmoidal"){modelOutput=doublesigmoidalFitFunction(dataInput=dataInput,tryCounter=counterTotalFit,...)}
 

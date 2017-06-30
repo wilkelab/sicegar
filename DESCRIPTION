@@ -24,7 +24,6 @@ BugReports: https://github.com/wilkelab/sicegar/issues
 Collate:
     'categorize.R'
     'mainFunctions.R'
-    'lineFitFunctions.R'
     'multipleFitFunction.R'
     'sigmoidalFitFunctions.R'
     'doublesigmoidalFitFunctions.R'

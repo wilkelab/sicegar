@@ -8,61 +8,28 @@ multipleFitFunction(dataInput, dataInputName = NA, model, n_runs_min = 20,
   n_runs_max = 500, showDetails = FALSE, ...)
 }
 \arguments{
-\item{dataInput}{normalized input data that will be fitted transferred into related functions}
+\item{dataInput}{A data frame or a list contatining the dataframe. The data frame should be composed of at least two columns. One represents time, and the other represents intensity. The data should be normalized with the normalize data function sicegar::normalizeData() before imported into this function.}
 
-\item{dataInputName}{name of data set (Default is 'NA').}
+\item{dataInputName}{Name of data set (Default is 'NA').}
 
-\item{model}{type of fit function that will be used. Can be "linear", "sigmoidal", or "double_sigmoidal".}
+\item{model}{Type of fit model that will be used. Can be "sigmoidal", or "double_sigmoidal".}
 
-\item{n_runs_min}{number of minimum successfull runs returned by the fitting algorithm.}
+\item{n_runs_min}{This number indicates the lower limit of the successful fitting attempts. It should be smaller than the upper limit of the fitting attempts (n_runs_max). Default is 20.}
 
-\item{n_runs_max}{number of maximum number of times the fitting is attempted.}
+\item{n_runs_max}{This number indicates the upper limit of the fitting attempts. Default is 500.}
 
-\item{showDetails}{if TRUE prints details of intermediate steps of individual fits (Default is FALSE).}
+\item{showDetails}{Logical if TRUE prints details of intermediate steps of individual fits (Default is FALSE).}
 
-\item{...}{all other arguments that model functions ("lineFitFunction", "sigmoidalFitFunction", "doublesigmoidalFitFunction") may need}
+\item{...}{All other arguments that model functions ("sigmoidalFitFunction" and, "doublesigmoidalFitFunction") may need.}
 }
 \value{
 Returns the parameters related with the model fitted for the input data.
 }
 \description{
-Calls the fitting algorithms to fit the data starting from different randomly generated initial parameters. Multiple attempts at fitting the data are necessary to avoid local minima.
+Calls the fitting algorithms to fit the data multiple times with starting from different randomly generated initial parameters in each run. Multiple attempts at fitting the data are necessary to avoid local minima.
 }
 \examples{
-# Example 1 (linear function with normalization)
-time=seq(3,24,0.5)
-
-#simulate intensity data with noise
-noise_parameter=20
-intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
-intensity=lineFitFormula(time, slope=4, intersection=-2)
-intensity=intensity+intensity_noise
-
-dataInput=data.frame(intensity=intensity,time=time)
-normalizedInput = normalizeData(dataInput)
-parameterVector=multipleFitFunction(dataInput=normalizedInput,
-                           model="linear",
-                           n_runs_min=5,
-                           n_runs_max=15)
-
-#Check the results
-if(parameterVector$isThisaFit){
- intensityTheoretical=lineFitFormula(time,
-                                     slope=parameterVector$slope_Estimate,
-                                     intersection=parameterVector$intersection_Estimate)
-
- comparisonData=cbind(dataInput,intensityTheoretical)
-
- print(parameterVector$residual_Sum_of_Squares)
- require(ggplot2)
- ggplot(comparisonData)+
-   geom_point(aes(x=time, y=intensity))+
-   geom_line(aes(x=time,y=intensityTheoretical))+
-   expand_limits(x = 0, y = 0)}
-
-if(!parameterVector$isThisaFit){print(parameterVector)}
-
-# Example 2 (sigmoidal function with normalization)
+# Example 1 (sigmoidal function with normalization)
 time=seq(3,24,0.5)
 
 #simulate intensity data and add noise
@@ -99,7 +66,7 @@ if(parameterVector$isThisaFit){
 
 if(!parameterVector$isThisaFit){print(parameterVector)}
 
-# Example 3 (doublesigmoidal function with normalization)
+# Example 2 (doublesigmoidal function with normalization)
 time=seq(3,24,0.1)
 
 #simulate intensity data with noise
@@ -145,4 +112,6 @@ if(parameterVector$isThisaFit){
    expand_limits(x = 0, y = 0)}
 
 if(!parameterVector$isThisaFit){print(parameterVector)}
+
+
 }

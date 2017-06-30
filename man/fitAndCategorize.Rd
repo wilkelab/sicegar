@@ -6,78 +6,77 @@
 \usage{
 fitAndCategorize(dataInput, dataInputName = NA, n_runs_min_sm = 20,
   n_runs_max_sm = 500, n_runs_min_dsm = 20, n_runs_max_dsm = 500,
-  startList_sm = list(maximum = 1, slopeParam = 36, midPoint = 0.3333333),
-  lowerBounds_sm = c(maximum = 0.3, slopeParam = 1e-05, midPoint = 0.3125 -
-  0.8333333), upperBounds_sm = c(maximum = 1.5, slopeParam = 180, midPoint =
-  0.3125 + 0.8333333), min_Factor_sm = 1/2^20, n_iterations_sm = 1000,
+  showDetails = FALSE, startList_sm = list(maximum = 1, slopeParam = 1,
+  midPoint = 0.33), lowerBounds_sm = c(maximum = 0.3, slopeParam = 0.01,
+  midPoint = -0.52), upperBounds_sm = c(maximum = 1.5, slopeParam = 180,
+  midPoint = 1.15), min_Factor_sm = 1/2^20, n_iterations_sm = 1000,
   startList_dsm = list(finalAsymptoteIntensityRatio = 0, maximum = 1,
-  slope1Param = 1, midPoint1Param = 0.3333333, slope2Param = 1,
-  midPointDistanceParam = 0.2916667),
-  lowerBounds_dsm = c(finalAsymptoteIntensityRatio = 0, maximum = 0.3,
-  slope1Param = 0.01, midPoint1Param = -0.5208333, slope2Param = 0.01,
-  midPointDistanceParam = 0.04166667),
+  slope1Param = 1, midPoint1Param = 0.33, slope2Param = 1, midPointDistanceParam
+  = 0.29), lowerBounds_dsm = c(finalAsymptoteIntensityRatio = 0, maximum =
+  0.3, slope1Param = 0.01, midPoint1Param = -0.52, slope2Param = 0.01,
+  midPointDistanceParam = 0.04),
   upperBounds_dsm = c(finalAsymptoteIntensityRatio = 1, maximum = 1.5,
-  slope1Param = 180, midPoint1Param = 1.145833, slope2Param = 180,
-  midPointDistanceParam = 0.625), min_Factor_dsm = 1/2^20,
+  slope1Param = 180, midPoint1Param = 1.15, slope2Param = 180,
+  midPointDistanceParam = 0.63), min_Factor_dsm = 1/2^20,
   n_iterations_dsm = 1000, threshold_intensity_range = 0.1,
   threshold_minimum_for_intensity_maximum = 0.3,
   threshold_bonus_sigmoidal_AIC = 0,
   threshold_sm_tmax_IntensityRatio = 0.85,
   threshold_dsm_tmax_IntensityRatio = 0.75, threshold_AIC = -10,
-  threshold_t0_max_int = 0.05, stepSize = 1e-05, showDetails = FALSE, ...)
+  threshold_t0_max_int = 0.05, stepSize = 1e-05, ...)
 }
 \arguments{
-\item{dataInput}{normalized input data that will be fitted transferred into related functions}
+\item{dataInput}{Un_normalized input data that will be fitted transferred into related functions}
 
-\item{dataInputName}{name of data set (Default is 'NA').}
+\item{dataInputName}{Name of data set (Default is 'NA').}
 
-\item{n_runs_min_sm}{number of minimum successfull runs returned by the fitting algorithm for sigmoidal model.}
+\item{n_runs_min_sm}{This number indicates the lower limit of the successful fitting attempts for sigmoidal model. It should be smaller than the upper limit of the fitting attempts (n_runs_max_sm).}
 
-\item{n_runs_max_sm}{number of maximum number of times the fitting is attempted for sigmoidal model.}
+\item{n_runs_max_sm}{This number indicates the upper limit of the fitting attempts for sigmoidal model.}
 
-\item{n_runs_min_dsm}{number of minimum successfull runs returned by the fitting algorithm for double sigmoidal model.}
+\item{n_runs_min_dsm}{This number indicates the lower limit of the successful fitting attempts for double sigmoidal model. It should be smaller than the upper limit of the fitting attempts (n_runs_max_dsm).}
 
-\item{n_runs_max_dsm}{number of maximum number of times the fitting is attempted for double sigmoidal model.}
+\item{n_runs_max_dsm}{This number indicates the upper limit of the fitting attempts for sigmoidal model for double sigmoidal model.}
 
-\item{startList_sm}{the initial set of parameters that algorithm tries to fit. The parameters are 'maximumValue' that represents the maximum value that the function can take,  'slope parameter' that represents the slope parameter in normalized y axis, and 'midPointValue' that represents the midpoint for sigmoidal model.}
+\item{showDetails}{Logical if TRUE prints details of intermediate steps of individual fits (Default is FALSE).}
 
-\item{lowerBounds_sm}{the lower bounds for the randomly generated start parameters for sigmoidal model.}
+\item{startList_sm}{The initial set of parameters vector that sigmoidal fit algorithm tries for the first fit attempt for the relevant parameters. The vector composes of three elements; 'maximum', 'slopeParam' and, 'midPoint'.  Detailed explanations of those parameters can be found in vignettes. Defaults are maximum = 1, slopeParam = 1 and, midPoint = 0.33. The numbers are in normalized time intensity scale.}
 
-\item{upperBounds_sm}{the upper bounds for the randomly generated start parameters for sigmoidal model.}
+\item{lowerBounds_sm}{The lower bounds for the randomly generated start parameters for the sigmoidal fit. The vector composes of three elements; 'maximum', 'slopeParam' and, 'midPoint'. Detailed explanations of those parameters can be found in vignettes. Defaults are maximum = 0.3, slopeParam = 0.01, and midPoint = -0.52. The numbers are in normalized time intensity scale.}
 
-\item{min_Factor_sm}{the minimum step size in the iterations used by the fitting algorithm for sigmoidal model.}
+\item{upperBounds_sm}{The upper bounds for the randomly generated start parameters for the sigmoidal fit. The vector composes of three elements; 'maximum', 'slopeParam' and, 'midPoint'. Detailed explanations of those parameters can be found in vignettes. Defaults are maximum = 1.5, slopeParam = 180,  midPoint = 1.15. The numbers are in normalized time intensity scale.}
 
-\item{n_iterations_sm}{the maximum number of iterations used by the fitting algorithm for sigmoidal model.}
+\item{min_Factor_sm}{Defines Defines the minimum step size used by the sigmoidal fit algorithm. Default is 1/2^20.}
 
-\item{startList_dsm}{the initial set of parameters that algorithm tries for the fit. Where the parameters are the 'maximumValue' that represents the maximum value that the function that can take, 'slope1Param' represents the maximum slope related parameter on the normalized y axis at the exponential phase, 'midPoint1Param' represents the x axis value for the maximum slope (before numerical correction) related parameter in exponential phase, 'slope2Param' represents the maximum slope related parameter in the normalized y axis during lysis, 'midPointDistanceParam' represents the x axis distance between the maximum slope in first sigmoidal and the maximum slope in second sigmoidal, 'finalAsymptoteIntensityRatio' represents the intensity value at infinite time as the ratio with respect to maximum value reached, its is bounded between 0 and 1 for double sigmoidal model.}
+\item{n_iterations_sm}{Defines maximum number of iterations used by the sigmoidal fit algorithm. Default is 1000}
 
-\item{lowerBounds_dsm}{the lower bounds for the randomly generated start parameters for double sigmoidal model.}
+\item{startList_dsm}{The initial set of parameters vector that double sigmoidal fit algorithm tries for the first fit attempt for the relevant parameters. The vector composes of six elements; 'finalAsymptoteIntensityRatio', 'maximum', 'slope1Param', 'midPoint1Param' , 'slope2Param', and 'midPointDistanceParam'. Detailed explanations of those parameters can be found in vignettes. Defaults are  finalAsymptoteIntensityRatio = 0, maximum = 1, slope1Param = 1, midPoint1Param = 0.33, slope2Param = 1, and midPointDistanceParam=0.29. The numbers are in normalized time intensity scale.}
 
-\item{upperBounds_dsm}{the upper bounds for the randomly generated start parameters for double sigmoidal model.}
+\item{lowerBounds_dsm}{The lower bounds for the randomly generated start parameters for double sigmoidal fit.  The vector composes of six elements; 'finalAsymptoteIntensityRatio', 'maximum', 'slope1Param', 'midPoint1Param' , 'slope2Param', and 'midPointDistanceParam'. Detailed explanations of those parameters can be found in vignettes. Defaults are finalAsymptoteIntensityRatio = 0, maximum = 0.3, slope1Param = .01, midPoint1Param = -0.52, slope2Param = .01, and midPointDistanceParam = 0.04. The numbers are in normalized time intensity scale.}
 
-\item{min_Factor_dsm}{defines the minimum step size used by the fitting algorithm for double sigmoidal model.}
+\item{upperBounds_dsm}{The upper bounds for the randomly generated start parameters for double sigmoidal fit.  The vector composes of six elements; 'finalAsymptoteIntensityRatio', 'maximum', 'slope1Param', 'midPoint1Param' , 'slope2Param', and 'midPointDistanceParam'. Detailed explanations of those parameters can be found in vignettes. Defaults are finalAsymptoteIntensityRatio = 1, maximum = 1.5, slope1Param = 180, midPoint1Param = 1.15, slope2Param = 180, and midPointDistanceParam = 0.63. The numbers are in normalized time intensity scale.}
 
-\item{n_iterations_dsm}{define maximum number of iterations used by the fitting algorithm for double sigmoidal model.}
+\item{min_Factor_dsm}{Defines the minimum step size used by the double sigmoidal fit algorithm. Default is 1/2^20.}
 
-\item{threshold_intensity_range}{minimum for intensity range (Default is 0.1).}
+\item{n_iterations_dsm}{Define maximum number of iterations used by the double sigmoidal fit algorithm. Default is 1000}
 
-\item{threshold_minimum_for_intensity_maximum}{minimum allowed value for intensity maximum}
+\item{threshold_intensity_range}{Minimum for intensity range, i.e. it is the lower limit for the allowed difference between the maximum and minimum of the intensities (Default is 0.1, and the values are based on actual, not the rescaled data.).}
 
-\item{threshold_bonus_sigmoidal_AIC}{bonus AIC points for sigmoidal fit. Negative values help sigmoidal model to win. Only helps in competittion between sigmoidal and double sigmoidal fit at decision step "9". (Default is 0)}
+\item{threshold_minimum_for_intensity_maximum}{Minimum allowed value for intensity maximum. (Default is 0.3, and the values are based on actual, not the rescaled data.).}
 
-\item{threshold_sm_tmax_IntensityRatio}{sigmoidal model must reach that percent of intensity at last observed point; otherwise it is not sigmoidal.}
+\item{threshold_bonus_sigmoidal_AIC}{Bonus AIC points for sigmoidal fit. Negative values help the sigmoidal model to win. Only helps in competition between sigmoidal and double sigmoidal fit at decision step "9", i.e. if none of the models fail in any of the tests and stay as a candidate until the last step (Default is 0).}
 
-\item{threshold_dsm_tmax_IntensityRatio}{minimum allowed amount of decrease for double sigmoidal model from intensity_tmax / maximum_y (Default is 0.75). If intensity decrease less than that ratio than it is NOT double-sigmoidal model}
+\item{threshold_sm_tmax_IntensityRatio}{The threshold for the minimum intensity ratio between the last observed time points intensity and theoretical maximum intensity of the sigmoidal curve. If the value is below the threshold, then the data can not be represented with the sigmoidal model. (Default is 0.85)}
 
-\item{threshold_AIC}{maximum AIC values in order to have a meaningful fit (Default is -10).}
+\item{threshold_dsm_tmax_IntensityRatio}{The threshold for the minimum intensity ratio between the last observed time points intensity and maximum intensity of the double sigmoidal curve.  If the value is above the threshold, then the data can not be represented with the double sigmoidal model. (Default is 0.75)}
 
-\item{threshold_t0_max_int}{maximum allowed intensity at t=0}
+\item{threshold_AIC}{Maximum AIC values in order to have a meaningful fit (Default is -10).}
 
-\item{stepSize}{step size used by the calculate parameters algorithm.}
+\item{threshold_t0_max_int}{Maximum allowed intensity of the fitted curve at time is equal to zero (t=0). (Default is 0.05, and the values are based on actual, not the rescaled data.).}
 
-\item{showDetails}{if TRUE prints details of intermediate steps of individual fits (Default is FALSE).}
+\item{stepSize}{Step size used by the fitting algorithm. Smaller numbers gave more accurate results than larger numbers, and larger numbers gave the results faster than small numbers. The default value is 0.00001.}
 
-\item{...}{all other arguments that model functions ('sigmoidalFitFunction' and 'doublesigmoidalFitFunction') may need}
+\item{...}{All other arguments that model functions ("sigmoidalFitFunction" and, "doublesigmoidalFitFunction") may need.}
 }
 \value{
 Returns the parameters related with the curve fitted to the input data.

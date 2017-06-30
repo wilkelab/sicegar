@@ -15,7 +15,7 @@ Second part is the scaling parameters of the data which is a vector that has thr
 Returns a data frame, scaling factors and scaling constants for time and intensity. The other data frame includes 2 columns one is for normalized time and the other is for noralized intensity. The whole time is distributed between 0 and 1 and similarly the whole intensity is distributed between 0 and 1. The time and intensity constants and scaling factors are the parameters to transform data from given set to scaled set.
 }
 \description{
-Maps the given time-intensity data into a recaled frame where time is between [0,1] and similarly intensity is between [0,1].
+Maps the given time-intensity data into a rescaled frame where time is between [0,1] and similarly intensity is between [0,1].
 }
 \examples{
 # generateRandomData

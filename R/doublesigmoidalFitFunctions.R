@@ -1,14 +1,14 @@
 #' @title Double sigmoidal fit function.
 #'
-#' @param dataInput a data frame composed of two columns. One is for time other is for intensity. The data should be normalized with the normalizeData function first.
-#' @param tryCounter the number of times the data is fit via maximum likelihood.
-#' @param startList the initial set of parameters that algorithm tries for the fit. Where the parameters are the 'maximumValue' that represents the maximum value that the function that can take, 'slope1Param' represents the maximum slope related parameter on the normalized y axis at the exponential phase, 'midPoint1Param' represents the x axis value for the maximum slope (before numerical correction) related parameter in exponential phase, 'slope2Param' represents the maximum slope related parameter in the normalized y axis during lysis, 'midPointDistanceParam' represents the x axis distance between the maximum slope in first sigmoidal and the maximum slope in second sigmoidal, 'finalAsymptoteIntensityRatio' represents the intensity value at infinite time as the ratio with respect to maximum value reached, its is bounded between 0 and 1.
-#' @param lowerBounds the lower bounds for the randomly generated start parameters.
-#' @param upperBounds the upper bounds for the randomly generated start parameters.
-#' @param min_Factor defines the minimum step size used by the fitting algorithm.
-#' @param n_iterations define maximum number of iterations used by the fitting algorithm.
+#' @param dataInput A data frame or a list contatining the dataframe. The data frame should be composed of at least two columns. One represents time, and the other represents intensity. The data should be normalized with the normalize data function sicegar::normalizeData() before imported into this function.
+#' @param tryCounter A counter that shows the number of times the data was fit via maximum likelihood function.
+#' @param startList The initial set of parameters vector that algorithm tries for the first fit attempt for the relevant parameters. The vector composes of six elements; 'finalAsymptoteIntensityRatio', 'maximum', 'slope1Param', 'midPoint1Param' , 'slope2Param', and 'midPointDistanceParam'. Detailed explanations of those parameters can be found in vignettes. Defaults are  finalAsymptoteIntensityRatio = 0, maximum = 1, slope1Param = 1, midPoint1Param = 0.33, slope2Param = 1, and midPointDistanceParam=0.29. The numbers are in normalized time intensity scale.
+#' @param lowerBounds The lower bounds for the randomly generated start parameters.  The vector composes of six elements; 'finalAsymptoteIntensityRatio', 'maximum', 'slope1Param', 'midPoint1Param' , 'slope2Param', and 'midPointDistanceParam'. Detailed explanations of those parameters can be found in vignettes. Defaults are finalAsymptoteIntensityRatio = 0, maximum = 0.3, slope1Param = .01, midPoint1Param = -0.52, slope2Param = .01, and midPointDistanceParam = 0.04. The numbers are in normalized time intensity scale.
+#' @param upperBounds The upper bounds for the randomly generated start parameters.  The vector composes of six elements; 'finalAsymptoteIntensityRatio', 'maximum', 'slope1Param', 'midPoint1Param' , 'slope2Param', and 'midPointDistanceParam'. Detailed explanations of those parameters can be found in vignettes. Defaults are finalAsymptoteIntensityRatio = 1, maximum = 1.5, slope1Param = 180, midPoint1Param = 1.15, slope2Param = 180, and midPointDistanceParam = 0.63. The numbers are in normalized time intensity scale.
+#' @param min_Factor Defines the minimum step size used by the fitting algorithm. Default is 1/2^20.
+#' @param n_iterations Define maximum number of iterations used by the fitting algorithm. Default is 1000
 #'
-#' @description The function fits a double sigmoidal curve to given data by using likelihood maximization (LM) and gives the parameters (maximum, final asymptote intensity, slope1Param, midpoint1Param, slope2Param, and mid point distance) describing the double-sigmoidal fit as output. It also provides information about goodness of fit such as AIC, BIC, residual sum of squares, and log likelihood.
+#' @description The function fits a double sigmoidal curve to given data by using likelihood maximization (LM) algorithm and provides the parameters (maximum, final asymptote intensity, slope1Param, midpoint1Param, slope2Param, and midpoint distance) describing the double-sigmoidal fit as output. It also contains information about the goodness of fits such as AIC, BIC, residual sum of squares, and log likelihood.
 #' @return Returns the fitted parameters and goodness of fit metrics.
 #' @export
 #' @examples
@@ -58,21 +58,21 @@ doublesigmoidalFitFunction<-function(dataInput,
                                      startList=list(finalAsymptoteIntensityRatio = 0,
                                                     maximum = 1,
                                                     slope1Param = 1,
-                                                    midPoint1Param = 0.3333333,
+                                                    midPoint1Param = 0.33,
                                                     slope2Param=1,
-                                                    midPointDistanceParam=0.2916667),
+                                                    midPointDistanceParam=0.29),
                                      lowerBounds=c(finalAsymptoteIntensityRatio = 0,
                                                    maximum = 0.3,
                                                    slope1Param = .01,
-                                                   midPoint1Param = -0.5208333,
+                                                   midPoint1Param = -0.52,
                                                    slope2Param=.01,
-                                                   midPointDistanceParam=0.04166667),
+                                                   midPointDistanceParam=0.04),
                                      upperBounds=c(finalAsymptoteIntensityRatio = 1,
                                                    maximum = 1.5,
                                                    slope1Param = 180,
-                                                   midPoint1Param = 1.145833,
+                                                   midPoint1Param = 1.15,
                                                    slope2Param=180,
-                                                   midPointDistanceParam=0.625),
+                                                   midPointDistanceParam=0.63),
                                      min_Factor=1/2^20,
                                      n_iterations=1000)
 {
@@ -179,10 +179,9 @@ doublesigmoidalFitFunction<-function(dataInput,
 #' @title Double Sigmoidal Formula
 #'
 #' @param x the "time" (time) column of the dataframe
-#'
-#' @param finalAsymptoteIntensityRatio represents the intensity value at infinite time.
-#' @param maximum the maximum value that the sigmoidal function can reach.
-#' @param slope1Param the slope parameter of the sigmoidal function at the steppest point in the exponential phase of the viral production. i.e when the intensity is increasing.
+#' @param finalAsymptoteIntensityRatio This is the ratio between asymptote intensity and maximum intensity of the fitted curve.
+#' @param maximum the maximum intensity that the double sigmoidal function reach.
+#' @param slope1Param the slope parameter of the sigmoidal function at the steppest point in the exponential phase of the viral production.
 #' @param midPoint1Param the x axis value of the steppest point in the function.
 #' @param slope2Param the slope parameter of the sigmoidal function at the steppest point in the lysis phase. i.e when the intensity is decreasing.
 #' @param midPointDistanceParam the distance between the time of steppest increase and steppest decrease in the intensity data. In other words the distance between the x axis values of arguments of slope1Param and slope2Param.

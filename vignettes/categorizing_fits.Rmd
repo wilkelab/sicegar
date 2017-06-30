@@ -98,7 +98,7 @@ Clearly the sigmoidal fit is not appropriate but the double-sigmoidal one is. Ne
 
 ```{r}
 # now we can categorize the fits
-outputCluster <- categorize(threshold_minimum_for_intensity_maximum = 0.3,
+decisionProcess <- categorize(threshold_minimum_for_intensity_maximum = 0.3,
                                       threshold_intensity_range = 0.1,
                                       threshold_t0_max_int = 0.05,
                                       parameterVectorSigmoidal = sigmoidalModel,
@@ -107,7 +107,7 @@ outputCluster <- categorize(threshold_minimum_for_intensity_maximum = 0.3,
 
 The object returned by `categorize()` contains extensive information about the decision process, but the key component is the `decision` variable. Here, it states that the data fits the double-sigmoidal model:
 ```{r}
-print(outputCluster$decision)
+print(decisionProcess$decision)
 ```
 (The possible values here are "no_signal", "sigmoidal", "double_sigmoidal", and "ambiguous".)
 

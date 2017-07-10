@@ -13,116 +13,137 @@
 #' @export
 #'
 #' @examples
-#'time=seq(3,24,0.5)
+#'time <- seq(3, 24, 0.5)
 #'
 #'#simulate intensity data and add noise
-#'noise_parameter=0.1
-#'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
-#'intensity=sigmoidalFitFormula(time, maximum=4, slopeParam=1, midPoint=8)
-#'intensity=intensity+intensity_noise
+#'noise_parameter <- 0.1
+#'intensity_noise <- stats::runif(n = length(time), min = 0, max = 1) * noise_parameter
+#'intensity <- sigmoidalFitFormula(time, maximum = 4, slopeParam = 1, midPoint = 8)
+#'intensity <- intensity + intensity_noise
 #'
-#'dataInput=data.frame(intensity=intensity,time=time)
-#'normalizedInput = normalizeData(dataInput)
-#'parameterVector<-sigmoidalFitFunction(normalizedInput,tryCounter=2)
+#'dataInput <- data.frame(intensity = intensity, time = time)
+#'normalizedInput <- normalizeData(dataInput)
+#'parameterVector <- sigmoidalFitFunction(normalizedInput, tryCounter = 2)
 #'
 #'#Check the results
 #'if(parameterVector$isThisaFit){
-#'intensityTheoretical=sigmoidalFitFormula(time,
-#'                                         maximum=parameterVector$maximum_Estimate,
-#'                                         slopeParam=parameterVector$slopeParam_Estimate,
-#'                                         midPoint=parameterVector$midPoint_Estimate)
+#'intensityTheoretical <- sigmoidalFitFormula(time,
+#'                                            maximum = parameterVector$maximum_Estimate,
+#'                                            slopeParam = parameterVector$slopeParam_Estimate,
+#'                                            midPoint = parameterVector$midPoint_Estimate)
 #'
-#'comparisonData=cbind(dataInput,intensityTheoretical)
+#'comparisonData <- cbind(dataInput, intensityTheoretical)
 #'
 #'require(ggplot2)
-#'ggplot(comparisonData)+
-#'  geom_point(aes(x=time, y=intensity))+
-#'  geom_line(aes(x=time,y=intensityTheoretical))+
-#'  expand_limits(x = 0, y = 0)}
+#'ggplot(comparisonData) +
+#'  geom_point(aes(x = time, y = intensity)) +
+#'  geom_line(aes(x = time, y = intensityTheoretical)) +
+#'  expand_limits(x = 0, y = 0)
+#'}
 #'
-#'if(!parameterVector$isThisaFit){print(parameterVector)}
+#'if(!parameterVector$isThisaFit){
+#'   print(parameterVector)
+#'}
 #'
-sigmoidalFitFunction<-function(dataInput,
-                               tryCounter,
-                               startList=list(maximum = 1, slopeParam = 1, midPoint = 0.33),
-                               lowerBounds=c(maximum=0.3, slopeParam=0.01,  midPoint=-0.52),
-                               upperBounds=c(maximum=1.5, slopeParam=180,  midPoint=1.15),
-                               min_Factor=1/2^20,
-                               n_iterations=1000)
-{
+sigmoidalFitFunction <- function(dataInput,
+                                 tryCounter,
+                                 startList = list(maximum = 1, slopeParam = 1, midPoint = 0.33),
+                                 lowerBounds = c(maximum = 0.3, slopeParam = 0.01,  midPoint = -0.52),
+                                 upperBounds = c(maximum = 1.5, slopeParam = 180,  midPoint = 1.15),
+                                 min_Factor = 1/2^20,
+                                 n_iterations = 1000){
 
-  isalist=(is.list(dataInput) & !is.data.frame(dataInput))
-  if(isalist){dataFrameInput=dataInput$timeIntensityData}
-  isadataframe=(is.data.frame(dataInput))
-  if(isadataframe){dataFrameInput=dataInput}
+  isalist <- (is.list(dataInput) & !is.data.frame(dataInput))
+  if(isalist){
+    dataFrameInput <- dataInput$timeIntensityData
+  }
 
-  if(tryCounter==1){counterDependentStartList=startList}
-  if(tryCounter!=1){
-    randomVector=stats::runif(length(startList), 0, 1)
-    names(randomVector)<-c("maximum", "slopeParam", "midPoint")
-    counterDependentStartVector=randomVector*(upperBounds-lowerBounds)+lowerBounds
-    counterDependentStartList=as.list(counterDependentStartVector)}
+  isadataframe <- (is.data.frame(dataInput))
+
+  if(isadataframe){
+    dataFrameInput <- dataInput
+  }
+
+  if(tryCounter == 1){
+    counterDependentStartList <- startList
+  }
+
+  if(tryCounter != 1){
+    randomVector <- stats::runif(length(startList), 0, 1)
+    names(randomVector) <- c("maximum", "slopeParam", "midPoint")
+    counterDependentStartVector <- randomVector * (upperBounds - lowerBounds) + lowerBounds
+    counterDependentStartList <- as.list(counterDependentStartVector)
+  }
 
   theFitResult <- try(minpack.lm::nlsLM(intensity ~ sicegar::sigmoidalFitFormula(time, maximum, slopeParam, midPoint),
                                         dataFrameInput,
-                                        start=counterDependentStartList,
+                                        start = counterDependentStartList,
                                         control = list(maxiter = n_iterations, minFactor = min_Factor),
                                         lower = lowerBounds,
                                         upper = upperBounds,
-                                        trace=F),silent = TRUE)
+                                        trace = F), silent = TRUE)
 
-  if(class(theFitResult)!="try-error")
-  {
-    parameterMatrix=summary(theFitResult)$parameters
-    colnames(parameterMatrix)<-c("Estimate","Std_Error","t_value","Pr_t")
+  if(class(theFitResult) != "try-error"){
 
-    parameterVector=c(t(parameterMatrix))
-    names(parameterVector)<- c("maximum_N_Estimate","maximum_Std_Error","maximum_t_value","maximum_Pr_t",
-                               "slopeParam_N_Estimate","slopeParam_Std_Error","slopeParam_t_value","slopeParam_Pr_t",
-                               "midPoint_N_Estimate","midPoint_Std_Error","midPoint_t_value","midPoint_Pr_t")
+    parameterMatrix <- summary(theFitResult)$parameters
+    colnames(parameterMatrix) <- c("Estimate", "Std_Error", "t_value", "Pr_t")
 
-    parameterVector<-c(parameterVector,
-                       residual_Sum_of_Squares=sum((as.vector(stats::resid(theFitResult)))^2)[1],
-                       log_likelihood=as.vector(stats::logLik(theFitResult))[1],
-                       AIC_value=as.vector(stats::AIC(theFitResult))[1],
-                       BIC_value=as.vector(stats::BIC(theFitResult))[1])
+    parameterVector <- c(t(parameterMatrix))
+    names(parameterVector) <- c("maximum_N_Estimate", "maximum_Std_Error", "maximum_t_value", "maximum_Pr_t",
+                                "slopeParam_N_Estimate", "slopeParam_Std_Error", "slopeParam_t_value", "slopeParam_Pr_t",
+                                "midPoint_N_Estimate", "midPoint_Std_Error", "midPoint_t_value", "midPoint_Pr_t")
 
-    parameterList=as.list(parameterVector)
-    parameterList$isThisaFit=TRUE
-    parameterList$startVector=counterDependentStartList
-    if(isalist){parameterList$dataScalingParameters=as.list(dataInput$dataScalingParameters)}
-    parameterList$model=as.character("sigmoidal")
-    parameterList$additionalParameters=FALSE
+    parameterVector <- c(parameterVector,
+                         residual_Sum_of_Squares = sum((as.vector(stats::resid(theFitResult)))^2)[1],
+                         log_likelihood = as.vector(stats::logLik(theFitResult))[1],
+                         AIC_value = as.vector(stats::AIC(theFitResult))[1],
+                         BIC_value = as.vector(stats::BIC(theFitResult))[1])
 
-    parameterDf=as.data.frame(parameterList)
+    parameterList <- as.list(parameterVector)
+    parameterList$isThisaFit <- TRUE
+    parameterList$startVector <- counterDependentStartList
+
+    if(isalist){
+      parameterList$dataScalingParameters <- as.list(dataInput$dataScalingParameters)
+    }
+
+    parameterList$model <- as.character("sigmoidal")
+    parameterList$additionalParameters <- FALSE
+
+    parameterDf <- as.data.frame(parameterList)
+
     #Renormalize Parameters
-    parameterDf=sigmoidalRenormalizeParameters(parameterDf,isalist)
+    parameterDf <- sigmoidalRenormalizeParameters(parameterDf, isalist)
 
   }
 
-  if(class(theFitResult)=="try-error")
-  {
+  if(class(theFitResult) == "try-error"){
+
     parameterVector=rep(NA, 12)
-    names(parameterVector)<- c("maximum_N_Estimate","maximum_Std_Error","maximum_t_value","maximum_Pr_t",
-                               "slopeParam_N_Estimate","slopeParam_Std_Error","slopeParam_t_value","slopeParam_Pr_t",
-                               "midPoint_N_Estimate","midPoint_Std_Error","midPoint_t_value","midPoint_Pr_t")
+    names(parameterVector) <- c("maximum_N_Estimate", "maximum_Std_Error", "maximum_t_value", "maximum_Pr_t",
+                                "slopeParam_N_Estimate", "slopeParam_Std_Error", "slopeParam_t_value", "slopeParam_Pr_t",
+                                "midPoint_N_Estimate", "midPoint_Std_Error", "midPoint_t_value", "midPoint_Pr_t")
 
-    parameterVector<-c(parameterVector,
-                       residual_Sum_of_Squares=Inf,
-                       log_likelihood=NA,
-                       AIC_value=NA,
-                       BIC_value=NA)
+    parameterVector <- c(parameterVector,
+                         residual_Sum_of_Squares = Inf,
+                         log_likelihood = NA,
+                         AIC_value = NA,
+                         BIC_value = NA)
 
-    parameterList=as.list(parameterVector)
-    parameterList$isThisaFit=FALSE
-    parameterList$startVector=counterDependentStartList
-    if(isalist){parameterList$dataScalingParameters=as.list(dataInput$dataScalingParameters)}
-    parameterList$model="sigmoidal"
+    parameterList <- as.list(parameterVector)
+    parameterList$isThisaFit <- FALSE
+    parameterList$startVector <- counterDependentStartList
 
-    parameterDf=as.data.frame(parameterList)
+    if(isalist){
+      parameterList$dataScalingParameters <- as.list(dataInput$dataScalingParameters)
+    }
+
+    parameterList$model <- "sigmoidal"
+
+    parameterDf <- as.data.frame(parameterList)
+
     #Renormalize Parameters
-    parameterDf=sigmoidalRenormalizeParameters(parameterDf,isalist)
-
+    parameterDf <- sigmoidalRenormalizeParameters(parameterDf, isalist)
 
   }
 
@@ -142,41 +163,45 @@ sigmoidalFitFunction<-function(dataInput,
 #'
 #' @examples
 #'
-#'time=seq(3,24,0.5)
+#'time <- seq(3, 24, 0.5)
 #'
 #'#simulate intensity data and add noise
-#'noise_parameter=0.1
-#'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
-#'intensity=sigmoidalFitFormula(time, maximum=4, slopeParam=1, midPoint=8)
-#'intensity=intensity+intensity_noise
+#'noise_parameter <- 0.1
+#'intensity_noise <- stats::runif(n = length(time), min = 0, max = 1) * noise_parameter
+#'intensity <- sigmoidalFitFormula(time, maximum = 4, slopeParam = 1, midPoint = 8)
+#'intensity <- intensity + intensity_noise
 #'
-#'dataInput=data.frame(intensity=intensity,time=time)
-#'normalizedInput = normalizeData(dataInput)
-#'parameterVector<-sigmoidalFitFunction(normalizedInput,tryCounter=2)
+#'dataInput <- data.frame(intensity = intensity, time = time)
+#'normalizedInput <- normalizeData(dataInput)
+#'parameterVector <- sigmoidalFitFunction(normalizedInput, tryCounter = 2)
 #'
 #'#Check the results
 #'if(parameterVector$isThisaFit){
-#'intensityTheoretical=sigmoidalFitFormula(time,
-#'                                         maximum=parameterVector$maximum_Estimate,
-#'                                         slopeParam=parameterVector$slopeParam_Estimate,
-#'                                         midPoint=parameterVector$midPoint_Estimate)
+#'  intensityTheoretical <- sigmoidalFitFormula(time,
+#'                                              maximum = parameterVector$maximum_Estimate,
+#'                                              slopeParam = parameterVector$slopeParam_Estimate,
+#'                                              midPoint = parameterVector$midPoint_Estimate)
 #'
-#'comparisonData=cbind(dataInput,intensityTheoretical)
+#'  comparisonData <- cbind(dataInput, intensityTheoretical)
 #'
-#'require(ggplot2)
-#'ggplot(comparisonData)+
-#'  geom_point(aes(x=time, y=intensity))+
-#'  geom_line(aes(x=time,y=intensityTheoretical))+
-#'  expand_limits(x = 0, y = 0)}
+#'  require(ggplot2)
+#'  ggplot(comparisonData) +
+#'    geom_point(aes(x = time, y = intensity)) +
+#'    geom_line(aes(x = time, y = intensityTheoretical)) +
+#'    expand_limits(x = 0, y = 0)
+#'}
 #'
-#'if(!parameterVector$isThisaFit){print(parameterVector)}
+#'if(!parameterVector$isThisaFit){
+#'   print(parameterVector)
+#'}
 #'
 #'
 #'
 #' @export
-sigmoidalFitFormula<-function(x, maximum, slopeParam, midPoint){
-  y=(0 + (maximum - 0)/(1 + exp((-slopeParam)*(x - midPoint))));
-  return(y)}
+sigmoidalFitFormula <- function(x, maximum, slopeParam, midPoint){
+  y=(0 + (maximum - 0)/(1 + exp((-slopeParam) * (x - midPoint))));
+  return(y)
+}
 #**************************************
 
 
@@ -193,18 +218,20 @@ sigmoidalFitFormula<-function(x, maximum, slopeParam, midPoint){
 # @param isalist defines if the input is provided as a list (i.e normalized) or as a data frame (i.e not normalized)
 # @details If the fit was done in normalized data frame then the found fit parameters will belong to normalized data.
 #          This function generates unnormalized counterparts of those parameters.
-sigmoidalRenormalizeParameters<-function(parameterDF,isalist)
-{
+sigmoidalRenormalizeParameters <- function(parameterDF, isalist){
+
   if(isalist){
-    parameterDF$maximum_Estimate=parameterDF$maximum_N_Estimate*parameterDF$dataScalingParameters.intensityRange+parameterDF$dataScalingParameters.intensityMin
-    parameterDF$slopeParam_Estimate=parameterDF$slopeParam_N_Estimate/parameterDF$dataScalingParameters.timeRange
-    parameterDF$midPoint_Estimate=parameterDF$midPoint_N_Estimate*parameterDF$dataScalingParameters.timeRange
+    parameterDF$maximum_Estimate <- (parameterDF$maximum_N_Estimate * parameterDF$dataScalingParameters.intensityRange) + parameterDF$dataScalingParameters.intensityMin
+    parameterDF$slopeParam_Estimate <- parameterDF$slopeParam_N_Estimate / parameterDF$dataScalingParameters.timeRange
+    parameterDF$midPoint_Estimate <- parameterDF$midPoint_N_Estimate * parameterDF$dataScalingParameters.timeRange
   }
+
   if(!isalist){
-    parameterDF$maximum_Estimate=parameterDF$maximum_N_Estimate
-    parameterDF$slopeParam_Estimate=parameterDF$slopeParam_N_Estimate
-    parameterDF$midPoint_Estimate=parameterDF$midPoint_N_Estimate
+    parameterDF$maximum_Estimate <- parameterDF$maximum_N_Estimate
+    parameterDF$slopeParam_Estimate <- parameterDF$slopeParam_N_Estimate
+    parameterDF$midPoint_Estimate <- parameterDF$midPoint_N_Estimate
   }
+
   return(parameterDF)
 }
 #**************************************

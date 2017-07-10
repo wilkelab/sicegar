@@ -9,35 +9,35 @@
 #'
 #' @examples
 #' # generateRandomData
-#' time = seq(3,48,0.5)
-#' intensity=runif(length(time), 3.0, 7.5)
-#' dataInput = data.frame(time,intensity)
+#' time <- seq(3, 48, 0.5)
+#' intensity <- runif(length(time), 3.0, 7.5)
+#' dataInput <- data.frame(time, intensity)
 #'
 #' # Normalize Data
-#' dataOutput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
+#' dataOutput <- normalizeData(dataInput, dataInputName="sample001")
 #'
-normalizeData <-function(dataInput,dataInputName=NA)
+normalizeData <-function(dataInput, dataInputName = NA)
   {
-    dataInputCheckVariable=dataCheck(dataInput)
+    dataInputCheckVariable <- dataCheck(dataInput)
 
-    #timeMin=min(dataInput$time)
-    timeData=dataInput$time
-    timeRange=max(timeData)
-    timeData=timeData/timeRange
+    #timeMin <- min(dataInput$time)
+    timeData <- dataInput$time
+    timeRange <- max(timeData)
+    timeData <- timeData / timeRange
 
-    intensityMin=min(dataInput$intensity)
-    intensityMax=max(dataInput$intensity)
-    intensityData=dataInput$intensity-intensityMin
-    intensityRange=max(intensityData)
-    intensityData=intensityData/intensityRange
+    intensityMin <- min(dataInput$intensity)
+    intensityMax <- max(dataInput$intensity)
+    intensityData <- dataInput$intensity - intensityMin
+    intensityRange <- max(intensityData)
+    intensityData <- intensityData / intensityRange
 
-    dataOutput = data.frame(time=timeData,intensity=intensityData)
-    return(list(timeIntensityData=dataOutput,
-                dataScalingParameters=c(timeRange=timeRange,
-                                        intensityMin=intensityMin,
-                                        intensityMax=intensityMax,
-                                        intensityRange=intensityRange),
-                dataInputName=dataInputName))
+    dataOutput <- data.frame(time = timeData, intensity = intensityData)
+    return(list(timeIntensityData = dataOutput,
+                dataScalingParameters = c(timeRange = timeRange,
+                                          intensityMin = intensityMin,
+                                          intensityMax = intensityMax,
+                                          intensityRange = intensityRange),
+                dataInputName = dataInputName))
   }
 
 
@@ -53,24 +53,24 @@ normalizeData <-function(dataInput,dataInputName=NA)
 #'
 #' @examples
 #' # generateRandomData
-#' time = seq(3,48,0.5)
-#' intensity=runif(length(time), 3.0, 7.5)
-#' dataInput = data.frame(time,intensity)
+#' time <- seq(3, 48, 0.5)
+#' intensity <- runif(length(time), 3.0, 7.5)
+#' dataInput <- data.frame(time, intensity)
 #' # Normalize Data
-#' dataOutput = normalizeData(dataInput)
-#' dataInput2=dataOutput
+#' dataOutput <- normalizeData(dataInput)
+#' dataInput2 <- dataOutput
 #' # Un Normalize it
-#' dataOutput2 = unnormalizeData(dataInput2)
+#' dataOutput2 <- unnormalizeData(dataInput2)
 #'
 unnormalizeData <-
   function(dataInput)
   {
-    dataInputCheckVariable=dataCheck(dataInput)
-    time=dataInput$dataScalingParameters[["timeRange"]]*dataInput$timeIntensityData[["time"]]
-    intensity=dataInput$dataScalingParameters[["intensityMin"]]+
-      dataInput$dataScalingParameters[["intensityRange"]]*dataInput$timeIntensityData[["intensity"]]
+    dataInputCheckVariable <- dataCheck(dataInput)
+    time <- dataInput$dataScalingParameters[["timeRange"]] * dataInput$timeIntensityData[["time"]]
+    intensity <- dataInput$dataScalingParameters[["intensityMin"]] +
+      dataInput$dataScalingParameters[["intensityRange"]] * dataInput$timeIntensityData[["intensity"]]
 
-    dataOutput = list(timeIntensityData=data.frame(time,intensity))
+    dataOutput <- list(timeIntensityData = data.frame(time, intensity))
     return(dataOutput)
   }
 

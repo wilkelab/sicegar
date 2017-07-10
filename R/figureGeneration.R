@@ -14,75 +14,74 @@
 #' @export
 #'
 #' @examples
-#'time=seq(3,24,0.1)
+#'time <- seq(3, 24, 0.1)
 #'
 #'#simulate intensity data and add noise
-#'noise_parameter=0.2
-#'intensity_noise=runif(n = length(time),min = 0,max = 1)*noise_parameter
-#'intensity=sicegar::doublesigmoidalFitFormula(time,
-#'                                             finalAsymptoteIntensityRatio=.3,
-#'                                             maximum=4,
-#'                                             slope1Param=1,
-#'                                             midPoint1Param=7,
-#'                                             slope2Param=1,
-#'                                             midPointDistanceParam=8)
-#'intensity=intensity+intensity_noise
+#'noise_parameter <- 0.2
+#'intensity_noise <- runif(n = length(time), min = 0, max = 1) * noise_parameter
+#'intensity <- sicegar::doublesigmoidalFitFormula(time,
+#'                                                finalAsymptoteIntensityRatio = .3,
+#'                                                maximum = 4,
+#'                                                slope1Param = 1,
+#'                                                midPoint1Param = 7,
+#'                                                slope2Param = 1,
+#'                                                midPointDistanceParam = 8)
+#'intensity <- intensity + intensity_noise
 #'
-#'dataInput=data.frame(intensity=intensity,time=time)
-#'normalizedInput = sicegar::normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
+#'dataInput <- data.frame(intensity = intensity, time = time)
+#'normalizedInput <- sicegar::normalizeData(dataInput, dataInputName = "sample001")
 #'
 #'
 #'# Do the double sigmoidal fit
-#'doubleSigmoidalModel=sicegar::multipleFitFunction(dataInput=normalizedInput,
-#'                                                  model="doublesigmoidal",
-#'                                                  n_runs_min=20,
-#'                                                  n_runs_max=500,
-#'                                                  showDetails=FALSE)
+#'doubleSigmoidalModel <- sicegar::multipleFitFunction(dataInput = normalizedInput,
+#'                                                     model = "doublesigmoidal",
+#'                                                     n_runs_min = 20,
+#'                                                     n_runs_max = 500,
+#'                                                     showDetails = FALSE)
 #'
-#'doubleSigmoidalModel = sicegar::parameterCalculation(doubleSigmoidalModel)
+#'doubleSigmoidalModel <- sicegar::parameterCalculation(doubleSigmoidalModel)
 #'
-#'fig01=sicegar::figureModelCurves(dataInput=normalizedInput,
-#'                                 doubleSigmoidalFitVector=doubleSigmoidalModel,
-#'                                 showParameterRelatedLines=TRUE)
+#'fig01 <- sicegar::figureModelCurves(dataInput = normalizedInput,
+#'                                   doubleSigmoidalFitVector = doubleSigmoidalModel,
+#'                                   showParameterRelatedLines = TRUE)
 #'print(fig01)
 #'
 #'
-figureModelCurves<-function(dataInput,
-                            sigmoidalFitVector=NULL,
-                            doubleSigmoidalFitVector=NULL,
-                            showParameterRelatedLines=FALSE,
-                            xlabelText="time", ylabelText="intensity",
-                            fittedXmin=0, fittedXmax=NA)
-{
+figureModelCurves <- function(dataInput,
+                              sigmoidalFitVector = NULL,
+                              doubleSigmoidalFitVector = NULL,
+                              showParameterRelatedLines = FALSE,
+                              xlabelText = "time", ylabelText = "intensity",
+                              fittedXmin = 0, fittedXmax = NA){
 
   # get data from data input
-  dataOutputVariable = dataCheck(dataInput) # check if the data structure is correct
+  dataOutputVariable <- dataCheck(dataInput) # check if the data structure is correct
   sameSourceDataCheck(dataInput,
                       sigmoidalFitVector,
                       doubleSigmoidalFitVector) # check if all data comes from same source
 
   # get data from data structure
-  isalist=(is.list(dataInput) & !is.data.frame(dataInput))
-  if(isalist){
-    dataInput=unnormalizeData(dataInput)
-    dataFrameInput=dataInput$timeIntensityData
+  isalist <- (is.list(dataInput) & !is.data.frame(dataInput))
+  if (isalist){
+    dataInput <- unnormalizeData(dataInput)
+    dataFrameInput <- dataInput$timeIntensityData
   }
-  isadataframe=(is.data.frame(dataInput))
-  if(isadataframe){
-    dataFrameInput=dataInput
+  isadataframe = (is.data.frame(dataInput))
+  if (isadataframe){
+    dataFrameInput <- dataInput
   }
 
 
 
   # SIGMOIDAL
-  if(!is.null(sigmoidalFitVector))
-  {
-    if(!sigmoidalFitVector$model=="sigmoidal")
-    {stop("provided sigmoidalFitVector is not a sigmoidal fit vector")}
-    if(!sigmoidalFitVector$isThisaFit)
-    {warning("provided sigmoidal fit vector does not include a fit!")}
-    if(sigmoidalFitVector$isThisaFit)
-    {
+  if (!is.null(sigmoidalFitVector)){
+    if (!sigmoidalFitVector$model == "sigmoidal"){
+      stop("provided sigmoidalFitVector is not a sigmoidal fit vector")
+    }
+    if (!sigmoidalFitVector$isThisaFit){
+      warning("provided sigmoidal fit vector does not include a fit!")
+    }
+    if (sigmoidalFitVector$isThisaFit){
       # Extract Parameters from the sigmoidalFitVector
       maximum_x <- sigmoidalFitVector$maximum_x
       maximum_y <- sigmoidalFitVector$maximum_y
@@ -97,39 +96,43 @@ figureModelCurves<-function(dataInput,
       reachMaximum_y <- sigmoidalFitVector$reachMaximum_y
 
       # Generate the Time Series for Fitted Data
-      if(is.na(fittedXmax))
-      {fittedXmax_sigmoidal = sigmoidalFitVector$dataScalingParameters.timeRange}
-      if(!is.na(fittedXmax))
-      {fittedXmax_sigmoidal = fittedXmax}
+      if (is.na(fittedXmax)){
+        fittedXmax_sigmoidal <- sigmoidalFitVector$dataScalingParameters.timeRange
+      }
+      if (!is.na(fittedXmax)){
+        fittedXmax_sigmoidal <- fittedXmax
+      }
+      if (fittedXmin == 0){
+        fittedXmin_sigmoidal <- 0
+      }
+      if (fittedXmin != 0){
+        fittedXmin_sigmoidal <- fittedXmin
+      }
 
-      if(fittedXmin==0)
-      {fittedXmin_sigmoidal=0}
-      if(fittedXmin!=0)
-      {fittedXmin_sigmoidal=fittedXmin}
+      time <- seq(fittedXmin_sigmoidal,
+                  fittedXmax_sigmoidal,
+                  fittedXmax_sigmoidal / 1000)
 
-      time=seq(fittedXmin_sigmoidal,
-               fittedXmax_sigmoidal,
-               fittedXmax_sigmoidal/1000)
-
-      intensityTheoreticalSigmoidal=sicegar::sigmoidalFitFormula(time,
-                                                                 maximum=maximum_y,
-                                                                 slopeParam=slopeParam,
-                                                                 midPoint=midPoint_x)
-      intensityTheoreticalSigmoidalDf=data.frame(time,intensityTheoreticalSigmoidal)
+      intensityTheoreticalSigmoidal <- sicegar::sigmoidalFitFormula(time,
+                                                                    maximum = maximum_y,
+                                                                    slopeParam = slopeParam,
+                                                                    midPoint = midPoint_x)
+      intensityTheoreticalSigmoidalDf <- data.frame(time, intensityTheoreticalSigmoidal)
     }
   }
 
 
 
   # DOUBLE SIGMOIDAL
-  if(!is.null(doubleSigmoidalFitVector))
+  if (!is.null(doubleSigmoidalFitVector))
   {
-    if(!doubleSigmoidalFitVector$model=="doublesigmoidal")
-    {stop("provided doubleSigmoidalFitVector is not a double sigmoidal fit vector")}
-    if(!doubleSigmoidalFitVector$isThisaFit)
-    {warning("provided double sigmoidal fit vector does not include a fit!")}
-    if(doubleSigmoidalFitVector$isThisaFit)
-    {
+    if(!doubleSigmoidalFitVector$model=="doublesigmoidal"){
+      stop("provided doubleSigmoidalFitVector is not a double sigmoidal fit vector")
+    }
+    if(!doubleSigmoidalFitVector$isThisaFit){
+      warning("provided double sigmoidal fit vector does not include a fit!")
+    }
+    if(doubleSigmoidalFitVector$isThisaFit){
       # Extract Parameters from the sigmoidalFitVector
       maximum_x <- doubleSigmoidalFitVector$maximum_x
       maximum_y <- doubleSigmoidalFitVector$maximum_y
@@ -162,132 +165,136 @@ figureModelCurves<-function(dataInput,
       endDeclinePoint_y <- doubleSigmoidalFitVector$endDeclinePoint_y
 
       # Generate the Time Series for Fitted Data
-      if(is.na(fittedXmax))
-      {fittedXmax_doublesigmoidal = doubleSigmoidalFitVector$dataScalingParameters.timeRange}
-      if(!is.na(fittedXmax))
-      {fittedXmax_doublesigmoidal = fittedXmax}
+      if(is.na(fittedXmax)){
+        fittedXmax_doublesigmoidal <- doubleSigmoidalFitVector$dataScalingParameters.timeRange
+      }
+      if(!is.na(fittedXmax)){
+        fittedXmax_doublesigmoidal = fittedXmax
+      }
 
-      if(fittedXmin==0)
-      {fittedXmin_doublesigmoidal=0}
-      if(fittedXmin!=0)
-      {fittedXmin_doublesigmoidal=fittedXmin}
+      if(fittedXmin == 0){
+        fittedXmin_doublesigmoidal <- 0
+      }
+      if(fittedXmin != 0)
+      {fittedXmin_doublesigmoidal <- fittedXmin}
 
-      time=seq(fittedXmin_doublesigmoidal,
-               fittedXmax_doublesigmoidal,
-               fittedXmax_doublesigmoidal/1000)
+      time <- seq(fittedXmin_doublesigmoidal,
+                  fittedXmax_doublesigmoidal,
+                  fittedXmax_doublesigmoidal / 1000)
 
-      intensityTheoreticalDoubleSigmoidal=doublesigmoidalFitFormula(time,
-                                                                    finalAsymptoteIntensityRatio=finalAsymptoteIntensityRatio,
-                                                                    maximum=maximum_y,
-                                                                    slope1Param=slope1Param,
-                                                                    midPoint1Param=midPoint1Param,
-                                                                    slope2Param=slope2Param,
-                                                                    midPointDistanceParam=midPointDistanceParam)
-      intensityTheoreticalDoubleSigmoidalDf=data.frame(time,intensityTheoreticalDoubleSigmoidal)
+      intensityTheoreticalDoubleSigmoidal <- doublesigmoidalFitFormula(time,
+                                                                       finalAsymptoteIntensityRatio = finalAsymptoteIntensityRatio,
+                                                                       maximum = maximum_y,
+                                                                       slope1Param = slope1Param,
+                                                                       midPoint1Param = midPoint1Param,
+                                                                       slope2Param = slope2Param,
+                                                                       midPointDistanceParam = midPointDistanceParam)
+      intensityTheoreticalDoubleSigmoidalDf <- data.frame(time,intensityTheoreticalDoubleSigmoidal)
     }
   }
 
-  output=ggplot2::ggplot(dataFrameInput)+
-    ggplot2::geom_point(ggplot2::aes_(x=~time, y=~intensity))+
-    ggplot2::expand_limits(x = 0, y = 0)+
-    ggplot2::theme_bw()+
-    ggplot2::theme(panel.grid.minor = ggplot2::element_blank())+
-    ggplot2::xlab(xlabelText)+ggplot2::ylab(ylabelText)
+  output <- ggplot2::ggplot(dataFrameInput) +
+    ggplot2::geom_point(ggplot2::aes_(x=~time, y=~intensity)) +
+    ggplot2::expand_limits(x = 0, y = 0) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(panel.grid.minor = ggplot2::element_blank()) +
+    ggplot2::xlab(xlabelText) + ggplot2::ylab(ylabelText)
 
-  if(!is.null(sigmoidalFitVector))
-  {
-    if(sigmoidalFitVector$isThisaFit)
-    {
+  if(!is.null(sigmoidalFitVector)){
 
-      if(showParameterRelatedLines)
-      {
-        if(!sigmoidalFitVector$additionalParameters )
-        {stop("to show parameter related lines one needs to run sicegar::parameterCalculation for sigmoidalModel ")}
-        if(sigmoidalFitVector$additionalParameters)
-        {
+    if(sigmoidalFitVector$isThisaFit){
+
+      if(showParameterRelatedLines){
+
+        if(!sigmoidalFitVector$additionalParameters){
+          stop("to show parameter related lines one needs to run sicegar::parameterCalculation for sigmoidalModel ")
+        }
+        if(sigmoidalFitVector$additionalParameters){
+
           # Lines related with the sigmoidal fit line
-          output=output+
-            ggplot2::geom_hline(yintercept=0,colour="#bdbdbd",size=0.5,linetype="longdash")+
-            ggplot2::geom_hline(yintercept=maximum_y,
-                                colour="#bdbdbd",size=0.5,linetype="longdash")+
+          output <- output +
+            ggplot2::geom_hline(yintercept = 0, colour = "#bdbdbd", size = 0.5, linetype = "longdash") +
+            ggplot2::geom_hline(yintercept = maximum_y,
+                                colour = "#bdbdbd", size = 0.5, linetype = "longdash") +
             ggplot2::geom_segment(x = startPoint_x,
                                   y = startPoint_y,
                                   xend = reachMaximum_x,
                                   yend = reachMaximum_y,
-                                  colour="#bdbdbd",size=0.5,linetype="longdash")
+                                  colour = "#bdbdbd", size = 0.5, linetype = "longdash")
         }
       }
 
-      output=output+
-        ggplot2::geom_point(data=dataFrameInput, ggplot2::aes_(x=~time, y=~intensity))+
-        ggplot2::geom_line(data=intensityTheoreticalSigmoidalDf,
-                           ggplot2::aes_(x=~time,y=~intensityTheoreticalSigmoidal),color="orange",size=1.5)
+      output <- output +
+        ggplot2::geom_point(data = dataFrameInput, ggplot2::aes_(x = ~time, y = ~intensity)) +
+        ggplot2::geom_line(data = intensityTheoreticalSigmoidalDf,
+                           ggplot2::aes_(x = ~time, y = ~intensityTheoreticalSigmoidal), color = "orange", size = 1.5)
 
-      if(showParameterRelatedLines)
-      {
-        if(sigmoidalFitVector$additionalParameters)
-        {
+      if(showParameterRelatedLines){
+
+        if(sigmoidalFitVector$additionalParameters){
+
           # Points related with the sigmoidal fit line
-          output=output+
-            ggplot2::geom_point(x=midPoint_x,
-                                y=midPoint_y,
-                                colour="red",size=6,shape=13)
+          output <- output +
+            ggplot2::geom_point(x = midPoint_x,
+                                y = midPoint_y,
+                                colour = "red", size = 6, shape = 13)
         }
       }
     }
   }
 
-  if(!is.null(doubleSigmoidalFitVector))
-  {
-    if(doubleSigmoidalFitVector$isThisaFit)
-    {
+  if(!is.null(doubleSigmoidalFitVector)){
 
-      if(showParameterRelatedLines)
-      {
-        if(!doubleSigmoidalFitVector$additionalParameters )
-        {stop("to show parameter related lines one needs to run sicegar::parameterCalculation for doubleSigmoidalModel ")}
-        if(doubleSigmoidalFitVector$additionalParameters)
-        {
+    if(doubleSigmoidalFitVector$isThisaFit){
+
+      if(showParameterRelatedLines){
+
+        if(!doubleSigmoidalFitVector$additionalParameters ){
+          stop("to show parameter related lines one needs to run sicegar::parameterCalculation for doubleSigmoidalModel ")
+        }
+
+        if(doubleSigmoidalFitVector$additionalParameters){
+
           # Lines related with the double sigmoidal fit line (with numerical correction)
-          output=output+
-            ggplot2::geom_hline(yintercept=0,colour="#bdbdbd",size=0.5,linetype="longdash")+
-            ggplot2::geom_hline(yintercept=maximum_y,
-                                colour="#bdbdbd",size=0.5,linetype="longdash")+
+          output <- output +
+            ggplot2::geom_hline(yintercept = 0, colour = "#bdbdbd", size = 0.5, linetype = "longdash") +
+            ggplot2::geom_hline(yintercept = maximum_y,
+                                colour = "#bdbdbd", size = 0.5, linetype = "longdash") +
             ggplot2::geom_segment(x = maximum_x,
                                   y = finalAsymptoteIntensity,
                                   xend = Inf,
                                   yend = finalAsymptoteIntensity,
-                                  colour="#bdbdbd",size=0.5,linetype="longdash")+
+                                  colour = "#bdbdbd", size = 0.5, linetype = "longdash") +
             ggplot2::geom_segment(x = startPoint_x,
                                   y = startPoint_y,
                                   xend = reachMaximum_x,
                                   yend = reachMaximum_y,
-                                  colour="#bdbdbd",size=0.5,linetype="longdash")+
+                                  colour = "#bdbdbd", size = 0.5, linetype = "longdash") +
             ggplot2::geom_segment(x = startDeclinePoint_x,
                                   y = startDeclinePoint_y,
                                   xend = endDeclinePoint_x,
                                   yend = endDeclinePoint_y,
-                                  colour="#bdbdbd",size=0.5,linetype="longdash")
+                                  colour = "#bdbdbd", size = 0.5, linetype = "longdash")
         }
       }
 
-      output=output+
-        ggplot2::geom_point(data=dataFrameInput, ggplot2::aes_(x=~time, y=~intensity))+
-        ggplot2::geom_line(data=intensityTheoreticalDoubleSigmoidalDf,
-                           ggplot2::aes_(x=~time,y=~intensityTheoreticalDoubleSigmoidal),color="orange",size=1.5)
+      output <- output +
+        ggplot2::geom_point(data = dataFrameInput, ggplot2::aes_(x = ~time, y = ~intensity)) +
+        ggplot2::geom_line(data = intensityTheoreticalDoubleSigmoidalDf,
+                           ggplot2::aes_(x = ~time, y = ~intensityTheoreticalDoubleSigmoidal), color = "orange", size = 1.5)
 
-      if(showParameterRelatedLines)
-      {
-        if(doubleSigmoidalFitVector$additionalParameters)
-        {
+      if(showParameterRelatedLines){
+
+        if(doubleSigmoidalFitVector$additionalParameters){
+
           # Points related with the double sigmoidal fit line (with numerical correction)
-          output=output+
-            ggplot2::geom_point(x=maximum_x, y=maximum_y,
-                                colour="red",size=6,shape=13)+
-            ggplot2::geom_point(x=midPoint1_x, y=midPoint1_y,
-                                colour="red",size=6,shape=13)+
-            ggplot2::geom_point(x=midPoint2_x, y=midPoint2_y,
-                                colour="red", size=6, shape=13)
+          output <- output +
+            ggplot2::geom_point(x = maximum_x, y = maximum_y,
+                                colour = "red", size = 6, shape = 13) +
+            ggplot2::geom_point(x = midPoint1_x, y = midPoint1_y,
+                                colour = "red", size = 6, shape = 13) +
+            ggplot2::geom_point(x = midPoint2_x, y = midPoint2_y,
+                                colour = "red", size = 6, shape = 13)
 
         }
       }
@@ -310,39 +317,48 @@ figureModelCurves<-function(dataInput,
 #' @return Returns TRUE if models can from same source, FALSE otherwise.
 #' @export
 #'
-sameSourceDataCheck<-function(dataInput,
-                              sigmoidalFitVector,
-                              doubleSigmoidalFitVector)
-{
+sameSourceDataCheck <- function(dataInput,
+                                sigmoidalFitVector,
+                                doubleSigmoidalFitVector){
+
   # do the checks for data input
   # decide if data input is a data frame or a normalized data frame
-  isalist=(is.list(dataInput) & !is.data.frame(dataInput))
-  if(isalist){sameSourceDataCheck.dataInput=dataInput$dataInputName}
-  isadataframe=(is.data.frame(dataInput))
-  if(isadataframe){sameSourceDataCheck.dataInput=NA}
+  isalist <- (is.list(dataInput) & !is.data.frame(dataInput))
+  if(isalist){
+    sameSourceDataCheck.dataInput=dataInput$dataInputName
+  }
+  isadataframe <- (is.data.frame(dataInput))
+  if(isadataframe){
+    sameSourceDataCheck.dataInput <- NA
+  }
 
 
   # do the checks for sigmoidal fit vector
   # decide if sigmoidal fit is provided or not
-  if(is.null(sigmoidalFitVector)){sameSourceDataCheck.sigmoidal=NA}
-  if(!is.null(sigmoidalFitVector))
-  {sameSourceDataCheck.sigmoidal=sigmoidalFitVector$dataInputName}
+  if(is.null(sigmoidalFitVector)){
+    sameSourceDataCheck.sigmoidal <- NA
+  }
+  if(!is.null(sigmoidalFitVector)){
+    sameSourceDataCheck.sigmoidal <- sigmoidalFitVector$dataInputName
+  }
 
   # do the checks for double sigmoidal fit vector
   # decide if double sigmoidal fit is provided or not
-  if(is.null(doubleSigmoidalFitVector)){sameSourceDataCheck.doublesigmoidal=NA}
-  if(!is.null(doubleSigmoidalFitVector))
-  {sameSourceDataCheck.doublesigmoidal=doubleSigmoidalFitVector$dataInputName}
+  if(is.null(doubleSigmoidalFitVector)){
+    sameSourceDataCheck.doublesigmoidal <- NA
+  }
+  if(!is.null(doubleSigmoidalFitVector)){
+    sameSourceDataCheck.doublesigmoidal <- doubleSigmoidalFitVector$dataInputName
+  }
 
   # make decision
-  sameSourceDataCheckVector=c(dataInput=sameSourceDataCheck.dataInput,
-                              sigmoidal=sameSourceDataCheck.sigmoidal,
-                              doublesigmoidal=sameSourceDataCheck.doublesigmoidal)
+  sameSourceDataCheckVector <- c(dataInput = sameSourceDataCheck.dataInput,
+                                 sigmoidal = sameSourceDataCheck.sigmoidal,
+                                 doublesigmoidal = sameSourceDataCheck.doublesigmoidal)
   sameSourceDataCheckVector <- sameSourceDataCheckVector[!is.na(sameSourceDataCheckVector)]
-  if(length(sameSourceDataCheckVector)!=0)
-  {
-    if(!all(sameSourceDataCheckVector[1]==sameSourceDataCheckVector))
-    {
+
+  if(length(sameSourceDataCheckVector) != 0){
+    if(!all(sameSourceDataCheckVector[1] == sameSourceDataCheckVector)){
       print(sameSourceDataCheckVector)
       stop("all data need to come from same source!")
     }

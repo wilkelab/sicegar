@@ -19,11 +19,11 @@ Maps the given time-intensity data into a rescaled data frame where time is scal
 }
 \examples{
 # generateRandomData
-time = seq(3,48,0.5)
-intensity=runif(length(time), 3.0, 7.5)
-dataInput = data.frame(time,intensity)
+time <- seq(3, 48, 0.5)
+intensity <- runif(length(time), 3.0, 7.5)
+dataInput <- data.frame(time, intensity)
 
 # Normalize Data
-dataOutput = normalizeData(dataInput,dataInputName="batch_01_21_2016_samp007623")
+dataOutput <- normalizeData(dataInput, dataInputName="sample001")
 
 }

@@ -11,40 +11,40 @@
 #' # Example 1
 #'
 #' # generate data frame
-#' time = seq(3,48,0.5)
-#' intensity=runif(length(time), 3.0, 7.5)
-#' dataInput = data.frame(time,intensity)
+#' time <- seq(3, 48, 0.5)
+#' intensity <- runif(length(time), 3.0, 7.5)
+#' dataInput <- data.frame(time, intensity)
 #'
 #' # Apply dataCheck function
-#' dataOutputVariable = dataCheck(dataInput)
+#' dataOutputVariable <- dataCheck(dataInput)
 #'
 #' # Example 2
 #'
 #' # generate data frame
-#' time = seq(3,48,0.5)
-#' intensity=runif(length(time), 3.0, 7.5)
-#' dataInput = data.frame(time,intensity)
+#' time <- seq(3, 48, 0.5)
+#' intensity <- runif(length(time), 3.0, 7.5)
+#' dataInput <- data.frame(time, intensity)
 #'
 #' # Normalize Data
-#' dataOutput = normalizeData(dataInput)
-#' dataInput2=dataOutput
+#' dataOutput <- normalizeData(dataInput)
+#' dataInput2 <- dataOutput
 #'
 #' # Apply dataCheck function
-#' dataOutputVariable2 = dataCheck(dataInput2)
+#' dataOutputVariable2 <- dataCheck(dataInput2)
 
-dataCheck <-function(data, showDetails=TRUE){
+dataCheck <- function(data, showDetails=TRUE){
 
-  isalist=(is.list(data) & !is.data.frame(data))
+  isalist <- (is.list(data) & !is.data.frame(data))
 
   if(isalist){
 
-    doesitcontainTID=("timeIntensityData" %in% names(data))
+    doesitcontainTID <- ("timeIntensityData" %in% names(data))
 
     if(doesitcontainTID){
-      issection_dataframe=is.data.frame(data$timeIntensityData)
+      issection_dataframe <- is.data.frame(data$timeIntensityData)
 
       if(issection_dataframe){
-        data_next_check=data$timeIntensityData
+        data_next_check <- data$timeIntensityData
       }
 
       if(!issection_dataframe){
@@ -60,12 +60,12 @@ dataCheck <-function(data, showDetails=TRUE){
   }
 
   if(!isalist){
-    isadataframe=is.data.frame(data)
+    isadataframe <- is.data.frame(data)
 
     if(isadataframe){
-      data_next_check=data
-      data2=data
-      data=list(timeIntensityData=data2)
+      data_next_check <- data
+      data2 <- data
+      data <- list(timeIntensityData=data2)
     }
 
     if(!isadataframe){
@@ -73,24 +73,23 @@ dataCheck <-function(data, showDetails=TRUE){
     }
   }
 
-  num_columns=ncol(data_next_check)
-  if(num_columns==2){
-    doescolnamescorrect=("time" %in% names(data_next_check) & "intensity" %in% names(data_next_check))
+  num_columns <- ncol(data_next_check)
+  if(num_columns == 2){
+    doescolnamescorrect <- ("time" %in% names(data_next_check) & "intensity" %in% names(data_next_check))
 
     if(doescolnamescorrect){
-      arecolumnsnumeric=(is.numeric(data_next_check$time) & is.numeric(data_next_check$intensity))
+      arecolumnsnumeric <- (is.numeric(data_next_check$time) & is.numeric(data_next_check$intensity))
 
       if(arecolumnsnumeric){
-
-        doesIntesityHaveVariation=(max(data_next_check$intensity)-min(data_next_check$intensity)>0)
+        doesIntesityHaveVariation <- (max(data_next_check$intensity) - min(data_next_check$intensity) > 0)
 
         if(!doesIntesityHaveVariation){
           stop("min intensity = max intensity i.e intensity do not have variation")
         }
 
-        if(doesIntesityHaveVariation){
-          if(showDetails==FALSE){print("check done")}
-          return(dataCheckVariable="pass")
+        if(doesIntesityHaveVariation) {
+          if(showDetails == FALSE) {print("check done")}
+          return(dataCheckVariable <- "pass")
         }
 
       }
@@ -107,7 +106,7 @@ dataCheck <-function(data, showDetails=TRUE){
 
   }
 
-  if(!num_columns==2){
+  if(!num_columns == 2){
     stop("The data frame should contain 2 columns")
   }
 

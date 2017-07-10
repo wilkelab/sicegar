@@ -12,87 +12,94 @@
 #' @return Returns the fitted parameters and goodness of fit metrics.
 #' @export
 #' @examples
-#'time=seq(3,24,0.1)
+#'time=seq(3, 24, 0.1)
 #'
 #'#simulate intensity data and add noise
-#'noise_parameter=0.2
-#'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
-#'intensity=doublesigmoidalFitFormula(time,
-#'                                    finalAsymptoteIntensityRatio=.3,
-#'                                    maximum=4,
-#'                                    slope1Param=1,
-#'                                    midPoint1Param=7,
-#'                                    slope2Param=1,
-#'                                    midPointDistanceParam=8)
-#'intensity=intensity+intensity_noise
+#'noise_parameter <- 0.2
+#'intensity_noise <- stats::runif(n = length(time), min = 0, max = 1) * noise_parameter
+#'intensity <- doublesigmoidalFitFormula(time,
+#'                                      finalAsymptoteIntensityRatio = .3,
+#'                                      maximum = 4,
+#'                                      slope1Param = 1,
+#'                                      midPoint1Param = 7,
+#'                                      slope2Param = 1,
+#'                                      midPointDistanceParam = 8)
+#'intensity <- intensity + intensity_noise
 #'
-#'dataInput=data.frame(intensity=intensity,time=time)
-#'normalizedInput = normalizeData(dataInput)
-#'parameterVector<-doublesigmoidalFitFunction(normalizedInput,tryCounter=2)
+#'dataInput <- data.frame(intensity = intensity, time = time)
+#'normalizedInput <- normalizeData(dataInput)
+#'parameterVector <- doublesigmoidalFitFunction(normalizedInput, tryCounter = 2)
 #'
 #'
 #'#Check the results
 #'if(parameterVector$isThisaFit){
-#'     intensityTheoretical=
+#'     intensityTheoretical <-
 #'          doublesigmoidalFitFormula(
 #'              time,
-#'              finalAsymptoteIntensityRatio=parameterVector$finalAsymptoteIntensityRatio_Estimate,
-#'              maximum=parameterVector$maximum_Estimate,
-#'              slope1Param=parameterVector$slope1Param_Estimate,
-#'              midPoint1Param=parameterVector$midPoint1Param_Estimate,
-#'              slope2Param=parameterVector$slope2Param_Estimate,
-#'              midPointDistanceParam=parameterVector$midPointDistanceParam_Estimate)
+#'              finalAsymptoteIntensityRatio = parameterVector$finalAsymptoteIntensityRatio_Estimate,
+#'              maximum = parameterVector$maximum_Estimate,
+#'              slope1Param = parameterVector$slope1Param_Estimate,
+#'              midPoint1Param = parameterVector$midPoint1Param_Estimate,
+#'              slope2Param = parameterVector$slope2Param_Estimate,
+#'              midPointDistanceParam = parameterVector$midPointDistanceParam_Estimate)
 #'
-#'  comparisonData=cbind(dataInput,intensityTheoretical)
+#'  comparisonData <- cbind(dataInput, intensityTheoretical)
 #'
 #'  require(ggplot2)
-#'  ggplot(comparisonData)+
-#'    geom_point(aes(x=time, y=intensity))+
-#'    geom_line(aes(x=time,y=intensityTheoretical))+
+#'  ggplot(comparisonData) +
+#'    geom_point(aes(x = time, y = intensity)) +
+#'    geom_line(aes(x = time, y = intensityTheoretical)) +
 #'    expand_limits(x = 0, y = 0)}
 #'
-#'if(!parameterVector$isThisaFit){print(parameterVector)}
+#'if(!parameterVector$isThisaFit) {print(parameterVector)}
 #'
-doublesigmoidalFitFunction<-function(dataInput,
-                                     tryCounter,
-                                     startList=list(finalAsymptoteIntensityRatio = 0,
-                                                    maximum = 1,
-                                                    slope1Param = 1,
-                                                    midPoint1Param = 0.33,
-                                                    slope2Param=1,
-                                                    midPointDistanceParam=0.29),
-                                     lowerBounds=c(finalAsymptoteIntensityRatio = 0,
-                                                   maximum = 0.3,
-                                                   slope1Param = .01,
-                                                   midPoint1Param = -0.52,
-                                                   slope2Param=.01,
-                                                   midPointDistanceParam=0.04),
-                                     upperBounds=c(finalAsymptoteIntensityRatio = 1,
-                                                   maximum = 1.5,
-                                                   slope1Param = 180,
-                                                   midPoint1Param = 1.15,
-                                                   slope2Param=180,
-                                                   midPointDistanceParam=0.63),
-                                     min_Factor=1/2^20,
-                                     n_iterations=1000)
+doublesigmoidalFitFunction <- function(dataInput,
+                                       tryCounter,
+                                       startList=list(finalAsymptoteIntensityRatio = 0,
+                                                      maximum = 1,
+                                                      slope1Param = 1,
+                                                      midPoint1Param = 0.33,
+                                                      slope2Param = 1,
+                                                      midPointDistanceParam = 0.29),
+                                       lowerBounds=c(finalAsymptoteIntensityRatio = 0,
+                                                     maximum = 0.3,
+                                                     slope1Param = .01,
+                                                     midPoint1Param = -0.52,
+                                                     slope2Param = .01,
+                                                     midPointDistanceParam = 0.04),
+                                       upperBounds=c(finalAsymptoteIntensityRatio = 1,
+                                                     maximum = 1.5,
+                                                     slope1Param = 180,
+                                                     midPoint1Param = 1.15,
+                                                     slope2Param = 180,
+                                                     midPointDistanceParam = 0.63),
+                                       min_Factor = 1/2^20,
+                                       n_iterations = 1000)
 {
 
-  isalist=(is.list(dataInput) & !is.data.frame(dataInput))
-  if(isalist){dataFrameInput=dataInput$timeIntensityData}
-  isadataframe=(is.data.frame(dataInput))
-  if(isadataframe){dataFrameInput=dataInput}
+  isalist = (is.list(dataInput) & !is.data.frame(dataInput))
+  if(isalist){
+    dataFrameInput <- dataInput$timeIntensityData
+    }
+  isadataframe <- (is.data.frame(dataInput))
+  if(isadataframe){
+    dataFrameInput <- dataInput
+    }
 
-  if(tryCounter==1){counterDependentStartList=startList}
+  if(tryCounter==1){
+    counterDependentStartList <- startList
+    }
   if(tryCounter!=1){
-    randomVector=stats::runif(length(startList), 0, 1)
-    names(randomVector)<-c("finalAsymptoteIntensityRatio",
-                           "maximum",
-                           "slope1Param",
-                           "midPoint1Param",
-                           "slope2Param",
-                           "midPointDistanceParam")
-    counterDependentStartVector=randomVector*(upperBounds-lowerBounds)+lowerBounds
-    counterDependentStartList=as.list(counterDependentStartVector)}
+    randomVector <- stats::runif(length(startList), 0, 1)
+    names(randomVector) <- c("finalAsymptoteIntensityRatio",
+                             "maximum",
+                             "slope1Param",
+                             "midPoint1Param",
+                             "slope2Param",
+                             "midPointDistanceParam")
+    counterDependentStartVector <- randomVector * (upperBounds - lowerBounds) + lowerBounds
+    counterDependentStartList <- as.list(counterDependentStartVector)
+    }
 
 
   theFitResult <- try(minpack.lm::nlsLM(intensity ~ sicegar::doublesigmoidalFitFormula(time,
@@ -103,69 +110,73 @@ doublesigmoidalFitFunction<-function(dataInput,
                                                                                        slope2Param,
                                                                                        midPointDistanceParam),
                                         dataFrameInput,
-                                        start=counterDependentStartList,
+                                        start = counterDependentStartList,
                                         control = list(maxiter = n_iterations, minFactor = min_Factor),
                                         lower = lowerBounds,
                                         upper = upperBounds,
-                                        trace=F),silent = TRUE)
+                                        trace=F), silent = TRUE)
 
-  if(class(theFitResult)!="try-error")
+  if(class(theFitResult) != "try-error")
   {
-    parameterMatrix=summary(theFitResult)$parameters
-    colnames(parameterMatrix)<-c("Estimate","Std_Error","t_value","Pr_t")
+    parameterMatrix <- summary(theFitResult)$parameters
+    colnames(parameterMatrix) <- c("Estimate", "Std_Error", "t_value", "Pr_t")
 
-    parameterVector=c(t(parameterMatrix))
-    names(parameterVector)<- c("finalAsymptoteIntensityRatio_N_Estimate","finalAsymptoteIntensityRatio_Std_Error","finalAsymptoteIntensityRatio_t_value","finalAsymptoteIntensityRatio_Pr_t",
-                               "maximum_N_Estimate","maximum_Std_Error","maximum_t_value","maximum_Pr_t",
-                               "slope1Param_N_Estimate","slope1Param_Std_Error","slope1Param_t_value","slope1Param_Pr_t",
-                               "midPoint1Param_N_Estimate","midPoint1Param_Std_Error","midPoint1Param_t_value","midPoint1Param_Pr_t",
-                               "slope2Param_N_Estimate","slope2Param_Std_Error","slope2Param_t_value","slope2Param_Pr_t",
-                               "midPointDistanceParam_N_Estimate","midPointDistanceParam_Std_Error","midPointDistanceParam_t_value","midPointDistanceParam_Pr_t")
+    parameterVector <- c(t(parameterMatrix))
+    names(parameterVector) <- c("finalAsymptoteIntensityRatio_N_Estimate", "finalAsymptoteIntensityRatio_Std_Error", "finalAsymptoteIntensityRatio_t_value", "finalAsymptoteIntensityRatio_Pr_t",
+                                "maximum_N_Estimate", "maximum_Std_Error", "maximum_t_value", "maximum_Pr_t",
+                                "slope1Param_N_Estimate", "slope1Param_Std_Error", "slope1Param_t_value", "slope1Param_Pr_t",
+                                "midPoint1Param_N_Estimate", "midPoint1Param_Std_Error", "midPoint1Param_t_value", "midPoint1Param_Pr_t",
+                                "slope2Param_N_Estimate", "slope2Param_Std_Error", "slope2Param_t_value", "slope2Param_Pr_t",
+                                "midPointDistanceParam_N_Estimate", "midPointDistanceParam_Std_Error", "midPointDistanceParam_t_value", "midPointDistanceParam_Pr_t")
 
-    parameterVector<-c(parameterVector,
-                       residual_Sum_of_Squares=sum((as.vector(stats::resid(theFitResult)))^2)[1],
-                       log_likelihood=as.vector(stats::logLik(theFitResult))[1],
-                       AIC_value=as.vector(stats::AIC(theFitResult))[1],
-                       BIC_value=as.vector(stats::BIC(theFitResult))[1])
+    parameterVector <- c(parameterVector,
+                         residual_Sum_of_Squares = sum((as.vector(stats::resid(theFitResult)))^2)[1],
+                         log_likelihood = as.vector(stats::logLik(theFitResult))[1],
+                         AIC_value = as.vector(stats::AIC(theFitResult))[1],
+                         BIC_value = as.vector(stats::BIC(theFitResult))[1])
 
-    parameterList=as.list(parameterVector)
-    parameterList$isThisaFit=TRUE
-    parameterList$startVector=counterDependentStartList
-    if(isalist){parameterList$dataScalingParameters=as.list(dataInput$dataScalingParameters)}
-    parameterList$model=as.character("doublesigmoidal")
-    parameterList$additionalParameters=FALSE
+    parameterList <- as.list(parameterVector)
+    parameterList$isThisaFit <- TRUE
+    parameterList$startVector <- counterDependentStartList
+    if(isalist){
+      parameterList$dataScalingParameters <- as.list(dataInput$dataScalingParameters)
+      }
+    parameterList$model <- as.character("doublesigmoidal")
+    parameterList$additionalParameters <- FALSE
 
-    parameterDf=as.data.frame(parameterList)
+    parameterDf <- as.data.frame(parameterList)
     #Renormalize Parameters
-    parameterDf=doublesigmoidalRenormalizeParameters(parameterDf,isalist)
+    parameterDf <- doublesigmoidalRenormalizeParameters(parameterDf, isalist)
 
   }
 
-  if(class(theFitResult)=="try-error")
+  if(class(theFitResult) == "try-error")
   {
-    parameterVector=rep(NA, 24)
-    names(parameterVector)<- c("finalAsymptoteIntensityRatio_N_Estimate","finalAsymptoteIntensityRatio_Std_Error","finalAsymptoteIntensityRatio_t_value","finalAsymptoteIntensityRatio_Pr_t",
-                               "maximum_N_Estimate","maximum_Std_Error","maximum_t_value","maximum_Pr_t",
-                               "slope1Param_N_Estimate","slope1Param_Std_Error","slope1Param_t_value","slope1Param_Pr_t",
-                               "midPoint1Param_N_Estimate","midPoint1Param_Std_Error","midPoint1Param_t_value","midPoint1Param_Pr_t",
-                               "slope2Param_N_Estimate","slope2Param_Std_Error","slope2Param_t_value","slope2Param_Pr_t",
-                               "midPointDistanceParam_N_Estimate","midPointDistanceParam_Std_Error","midPointDistanceParam_t_value","midPointDistanceParam_Pr_t")
+    parameterVector <- rep(NA, 24)
+    names(parameterVector) <- c("finalAsymptoteIntensityRatio_N_Estimate", "finalAsymptoteIntensityRatio_Std_Error", "finalAsymptoteIntensityRatio_t_value", "finalAsymptoteIntensityRatio_Pr_t",
+                                "maximum_N_Estimate", "maximum_Std_Error", "maximum_t_value", "maximum_Pr_t",
+                                "slope1Param_N_Estimate", "slope1Param_Std_Error", "slope1Param_t_value", "slope1Param_Pr_t",
+                                "midPoint1Param_N_Estimate", "midPoint1Param_Std_Error", "midPoint1Param_t_value", "midPoint1Param_Pr_t",
+                                "slope2Param_N_Estimate", "slope2Param_Std_Error", "slope2Param_t_value", "slope2Param_Pr_t",
+                                "midPointDistanceParam_N_Estimate", "midPointDistanceParam_Std_Error", "midPointDistanceParam_t_value", "midPointDistanceParam_Pr_t")
 
-    parameterVector<-c(parameterVector,
-                       residual_Sum_of_Squares=Inf,
-                       log_likelihood=NA,
-                       AIC_value=NA,
-                       BIC_value=NA)
+    parameterVector <- c(parameterVector,
+                         residual_Sum_of_Squares = Inf,
+                         log_likelihood = NA,
+                         AIC_value = NA,
+                         BIC_value = NA)
 
-    parameterList=as.list(parameterVector)
-    parameterList$isThisaFit=FALSE
-    parameterList$startVector=counterDependentStartList
-    if(isalist){parameterList$dataScalingParameters=as.list(dataInput$dataScalingParameters)}
-    parameterList$model="doublesigmoidal"
+    parameterList <- as.list(parameterVector)
+    parameterList$isThisaFit <- FALSE
+    parameterList$startVector <- counterDependentStartList
+    if(isalist) {
+      parameterList$dataScalingParameters <- as.list(dataInput$dataScalingParameters)
+      }
+    parameterList$model <- "doublesigmoidal"
 
-    parameterDf=as.data.frame(parameterList)
+    parameterDf <- as.data.frame(parameterList)
     #Renormalize Parameters
-    parameterDf=doublesigmoidalRenormalizeParameters(parameterDf,isalist)
+    parameterDf <- doublesigmoidalRenormalizeParameters(parameterDf, isalist)
 
   }
 
@@ -190,76 +201,90 @@ doublesigmoidalFitFunction<-function(dataInput,
 #' @return Returns the predicted intensities for the given time points with the double-sigmoidal fitted parameters for the double sigmoidal fit.
 #' @export
 #' @examples
-#'time=seq(3,24,0.1)
+#'time <- seq(3, 24, 0.1)
 #'
 #'#simulate intensity data and add noise
-#'noise_parameter=0.2
-#'intensity_noise=stats::runif(n = length(time),min = 0,max = 1)*noise_parameter
-#'intensity=doublesigmoidalFitFormula(time,
-#'                                    finalAsymptoteIntensityRatio=.3,
-#'                                    maximum=4,
-#'                                    slope1Param=1,
-#'                                    midPoint1Param=7,
-#'                                    slope2Param=1,
-#'                                    midPointDistanceParam=8)
-#'intensity=intensity+intensity_noise
+#'noise_parameter <- 0.2
+#'intensity_noise <- stats::runif(n = length(time), min = 0, max = 1) * noise_parameter
+#'intensity <- doublesigmoidalFitFormula(time,
+#'                                       finalAsymptoteIntensityRatio = .3,
+#'                                       maximum = 4,
+#'                                       slope1Param = 1,
+#'                                       midPoint1Param = 7,
+#'                                       slope2Param = 1,
+#'                                       midPointDistanceParam = 8)
+#'intensity <- intensity + intensity_noise
 #'
-#'dataInput=data.frame(intensity=intensity,time=time)
-#'normalizedInput = normalizeData(dataInput)
-#'parameterVector<-doublesigmoidalFitFunction(normalizedInput,tryCounter=2)
+#'dataInput <- data.frame(intensity = intensity, time = time)
+#'normalizedInput <- normalizeData(dataInput)
+#'parameterVector <- doublesigmoidalFitFunction(normalizedInput, tryCounter = 2)
 #'
 #'
 #'#Check the results
 #'if(parameterVector$isThisaFit){
-#'  intensityTheoretical=
+#'  intensityTheoretical <-
 #'        doublesigmoidalFitFormula(
 #'                time,
-#'                finalAsymptoteIntensityRatio=parameterVector$finalAsymptoteIntensityRatio_Estimate,
-#'                maximum=parameterVector$maximum_Estimate,
-#'                slope1Param=parameterVector$slope1Param_Estimate,
-#'                midPoint1Param=parameterVector$midPoint1Param_Estimate,
-#'                slope2Param=parameterVector$slope2Param_Estimate,
-#'                midPointDistanceParam=parameterVector$midPointDistanceParam_Estimate)
+#'                finalAsymptoteIntensityRatio = parameterVector$finalAsymptoteIntensityRatio_Estimate,
+#'                maximum = parameterVector$maximum_Estimate,
+#'                slope1Param = parameterVector$slope1Param_Estimate,
+#'                midPoint1Param = parameterVector$midPoint1Param_Estimate,
+#'                slope2Param = parameterVector$slope2Param_Estimate,
+#'                midPointDistanceParam = parameterVector$midPointDistanceParam_Estimate)
 #'
-#'  comparisonData=cbind(dataInput,intensityTheoretical)
+#'  comparisonData <- cbind(dataInput, intensityTheoretical)
 #'
 #'  require(ggplot2)
-#'  ggplot(comparisonData)+
-#'    geom_point(aes(x=time, y=intensity))+
-#'    geom_line(aes(x=time,y=intensityTheoretical))+
-#'    expand_limits(x = 0, y = 0)}
+#'  ggplot(comparisonData) +
+#'    geom_point(aes(x = time, y = intensity)) +
+#'    geom_line(aes(x = time, y = intensityTheoretical)) +
+#'    expand_limits(x = 0, y = 0)
+#'    }
 #'
-#'if(!parameterVector$isThisaFit){print(parameterVector)}
+#'if(!parameterVector$isThisaFit){
+#'   print(parameterVector)
+#'   }
 #'
 #'
-doublesigmoidalFitFormula<-function(x,
-                                    finalAsymptoteIntensityRatio,
-                                    maximum,
-                                    slope1Param,
-                                    midPoint1Param,
-                                    slope2Param,
-                                    midPointDistanceParam)
+doublesigmoidalFitFormula <- function(x,
+                                      finalAsymptoteIntensityRatio,
+                                      maximum,
+                                      slope1Param,
+                                      midPoint1Param,
+                                      slope2Param,
+                                      midPointDistanceParam)
 {
-  if(slope1Param<0){stop("slope1Param should be a positive number")}
-  if(slope2Param<0){stop("slope2Param should be a positive number. It is the absolute value of the second slopeParam")}
-  if(midPointDistanceParam<0){stop("midPointDistanceParam should be a positive number. It is the distance between two steppest points of exponential phase and lysis")}
-  if(finalAsymptoteIntensityRatio<0 | finalAsymptoteIntensityRatio>1){stop("finalAsymptoteIntensityRatio should be a number between 0 and 1")}
-  if(maximum<0){stop("maximum should be a positive number")}
+  if(slope1Param < 0){
+    stop("slope1Param should be a positive number")
+    }
+  if(slope2Param < 0){
+    stop("slope2Param should be a positive number. It is the absolute value of the second slopeParam")
+    }
+  if(midPointDistanceParam < 0){
+    stop("midPointDistanceParam should be a positive number. It is the distance between two steppest points of exponential phase and lysis")
+    }
+  if(finalAsymptoteIntensityRatio < 0 | finalAsymptoteIntensityRatio > 1){
+    stop("finalAsymptoteIntensityRatio should be a number between 0 and 1")
+    }
+  if(maximum < 0){
+    stop("maximum should be a positive number")
+    }
 
-  optimizeIntervalMin=midPoint1Param-2*midPointDistanceParam
-  optimizeIntervalMax=midPoint1Param+3*midPointDistanceParam
+  optimizeIntervalMin <- midPoint1Param - 2 * midPointDistanceParam
+  optimizeIntervalMax <- midPoint1Param + 3 * midPointDistanceParam
   xmax <- stats::optimize(f1,
-                          c(optimizeIntervalMin,optimizeIntervalMax),
-                          tol=0.0001,
-                          B1=slope1Param, M1=midPoint1Param, B2=slope2Param, L=midPointDistanceParam, maximum = TRUE);
-  argumentt=xmax$maximum;
-  constt=f0(argumentt, slope1Param, midPoint1Param, slope2Param, midPointDistanceParam);
-  y=f2(x,
-       finalAsymptoteIntensityRatio, maximum,
-       slope1Param, midPoint1Param,
-       slope2Param, midPointDistanceParam,
-       constt, argumentt);
-  return(y)}
+                          c(optimizeIntervalMin, optimizeIntervalMax),
+                          tol = 0.0001,
+                          B1 = slope1Param, M1 = midPoint1Param, B2 = slope2Param, L = midPointDistanceParam, maximum = TRUE);
+  argumentt <- xmax$maximum;
+  constt <- f0(argumentt, slope1Param, midPoint1Param, slope2Param, midPointDistanceParam);
+  y <- f2(x,
+          finalAsymptoteIntensityRatio, maximum,
+          slope1Param, midPoint1Param,
+          slope2Param, midPointDistanceParam,
+          constt, argumentt);
+  return(y)
+  }
 #**************************************
 
 
@@ -278,14 +303,18 @@ doublesigmoidalFitFormula<-function(x,
 #     const correspond to the maximum value the function reaches when the input data intensity and
 #           is normalized between 0,1
 f0 <- function (x, B1, M1, B2, L) {
-  (1/( ( 1+exp(-B1*(x-M1)) ) * ( 1+exp(B2*(x-(M1+L))) ) ))}
+  (1/( ( 1+exp(-B1 * (x - M1)) ) * ( 1 + exp(B2 * (x - (M1 + L))) ) ))
+  }
 f1 <- function (x, B1, M1, B2, L) {
-  log((1/( ( 1+exp(-B1*(x-M1)) ) * ( 1+exp(B2*(x-(M1+L))) ) )))}
+  log((1 / ( ( 1 + exp(-B1 * (x - M1)) ) * ( 1 + exp(B2 * (x - (M1 + L))) ) )))
+  }
 f2 <- function (x, A2, Ka, B1, M1, B2, L, const, argument)
-{ fBasics::Heaviside(x-argument)* ( f0(x, B1, M1, B2, L)* ((Ka-A2*Ka)/(const)) + A2*Ka) +
-    (1-fBasics::Heaviside(x-argument))* ( f0(x, B1, M1, B2, L)* ((Ka-0*Ka)/(const)) + 0*Ka)}
+{ fBasics::Heaviside(x - argument) * ( f0(x, B1, M1, B2, L) * ((Ka - A2 * Ka) / (const)) + A2 * Ka) +
+    (1 - fBasics::Heaviside(x-argument)) * ( f0(x, B1, M1, B2, L) * ((Ka - 0 * Ka) / (const)) + 0 * Ka)
+  }
 f0mid <- function (x, B1, M1, B2, L,const) {
-  -const/2+1/( ( 1+exp(-B1*(x-M1)) ) * ( 1+exp(B2*(x-(M1+L))) ) )}
+  -const / 2 + 1 / ( ( 1 + exp(-B1 * (x-M1)) ) * ( 1 + exp(B2*(x-(M1+L))) ) )
+  }
 #**************************************
 
 
@@ -316,41 +345,52 @@ f0mid <- function (x, B1, M1, B2, L,const) {
 #cat("\014")
 #
 ## Generate a parameters DF
-#parameterDf=data.frame(dataScalingParameters.timeRange=24,
-#                       slope1Param_Estimate=1,
-#                       midPoint1Param_Estimate=7,
-#                       slope2Param_Estimate=1,
-#                       midPointDistanceParam_Estimate=8,
-#                       model="doublesigmoidal")
+#parameterDf = data.frame(dataScalingParameters.timeRange = 24,
+#                         slope1Param_Estimate = 1,
+#                         midPoint1Param_Estimate = 7,
+#                         slope2Param_Estimate = 1,
+#                         midPointDistanceParam_Estimate = 8,
+#                         model = "doublesigmoidal")
 #
 # # Find the x value of the maximum for this model
 # # with in the range of [0, dataScalingParameters.timeRange]
-# maximum_x=f_argmax_doublesigmoidal(parameterDf)
+# maximum_x = f_argmax_doublesigmoidal(parameterDf)
 #
 f_argmax_doublesigmoidal <- function(parameterVector){
 
-  slope1Param<-parameterVector$slope1Param_N_Estimate
-  slope2Param<-parameterVector$slope2Param_N_Estimate
-  midPointDistanceParam<-parameterVector$midPointDistanceParam_N_Estimate
-  finalAsymptoteIntensityRatio<-parameterVector$finalAsymptoteIntensityRatio_N_Estimate
-  maximum<-parameterVector$maximum_N_Estimate
-  midPoint1Param<-parameterVector$midPoint1Param_N_Estimate
-  timeRange<-parameterVector$dataScalingParameters.timeRange
+  slope1Param <- parameterVector$slope1Param_N_Estimate
+  slope2Param <- parameterVector$slope2Param_N_Estimate
+  midPointDistanceParam <- parameterVector$midPointDistanceParam_N_Estimate
+  finalAsymptoteIntensityRatio <- parameterVector$finalAsymptoteIntensityRatio_N_Estimate
+  maximum <- parameterVector$maximum_N_Estimate
+  midPoint1Param <- parameterVector$midPoint1Param_N_Estimate
+  timeRange <- parameterVector$dataScalingParameters.timeRange
 
-  if(slope1Param<0){stop("slope1Param should be a positive number")}
-  if(slope2Param<0){stop("slope2Param should be a positive number. It is the absolute value of the slope2Param")}
-  if(midPointDistanceParam<0){stop("midPointDistanceParam should be a positive number. It is the distance between two steppest points of exponential phase and lysis")}
-  if(finalAsymptoteIntensityRatio<0 | finalAsymptoteIntensityRatio>1){stop("finalAsymptoteIntensityRatio should be a number between 0 and 1")}
-  if(maximum<0){stop("maximum should be a positive number")}
+  if(slope1Param <0 ){
+    stop("slope1Param should be a positive number")
+    }
+  if(slope2Param < 0){
+    stop("slope2Param should be a positive number. It is the absolute value of the slope2Param")
+    }
+  if(midPointDistanceParam < 0){
+    stop("midPointDistanceParam should be a positive number. It is the distance between two steppest points of exponential phase and lysis")
+    }
+  if(finalAsymptoteIntensityRatio < 0 | finalAsymptoteIntensityRatio > 1){
+    stop("finalAsymptoteIntensityRatio should be a number between 0 and 1")
+    }
+  if(maximum < 0){
+    stop("maximum should be a positive number")
+    }
 
-  optimizeIntervalMin=midPoint1Param-2*midPointDistanceParam
-  optimizeIntervalMax=midPoint1Param+3*midPointDistanceParam
+  optimizeIntervalMin <- midPoint1Param - 2 * midPointDistanceParam
+  optimizeIntervalMax <- midPoint1Param + 3 * midPointDistanceParam
   xmax <- stats::optimize(f1,
-                          c(optimizeIntervalMin,optimizeIntervalMax),
-                          tol=0.0001,
-                          B1=slope1Param, M1=midPoint1Param, B2=slope2Param, L=midPointDistanceParam, maximum = TRUE);
-  argumentt = xmax$maximum * timeRange;
-  return(argumentt)}
+                          c(optimizeIntervalMin, optimizeIntervalMax),
+                          tol = 0.0001,
+                          B1 = slope1Param, M1 = midPoint1Param, B2 = slope2Param, L = midPointDistanceParam, maximum = TRUE);
+  argumentt <- xmax$maximum * timeRange;
+  return(argumentt)
+  }
 #**************************************
 
 
@@ -383,62 +423,62 @@ f_argmax_doublesigmoidal <- function(parameterVector){
 #cat("\014")
 #
 ## Generate a parameters DF
-#parameterDf=data.frame(dataScalingParameters.timeRange=24,
-#                       slope1Param_Estimate=1,
-#                       midPoint1Param_Estimate=7,
-#                       slope2Param_Estimate=1,
-#                       midPointDistanceParam_Estimate=8,
-#                       model="doublesigmoidal")
+#parameterDf <- data.frame(dataScalingParameters.timeRange = 24,
+#                          slope1Param_Estimate = 1,
+#                          midPoint1Param_Estimate = 7,
+#                          slope2Param_Estimate = 1,
+#                          midPointDistanceParam_Estimate = 8,
+#                          model = "doublesigmoidal")
 #
 # # Find the x value of the maximum for this model
 # # with in the range of [0, dataScalingParameters.timeRange]
-# midPoint1Param_x=f_mid1_doublesigmoidal(parameterDf)
+# midPoint1Param_x <- f_mid1_doublesigmoidal(parameterDf)
 #
 f_mid1_doublesigmoidal <- function(parameterDf){
 
-  max_x = parameterDf$dataScalingParameters.timeRange
+  max_x <- parameterDf$dataScalingParameters.timeRange
   xmax <- stats::optimize(f1,
-                          interval=c(-1.125*max_x,max_x*3),
-                          tol=0.0001,
-                          B1=parameterDf$slope1Param_Estimate,
-                          M1=parameterDf$midPoint1Param_Estimate,
-                          B2=parameterDf$slope2Param_Estimate ,
-                          L=parameterDf$midPointDistanceParam_Estimate,
+                          interval = c(-1.125 * max_x, max_x * 3),
+                          tol = 0.0001,
+                          B1 = parameterDf$slope1Param_Estimate,
+                          M1 = parameterDf$midPoint1Param_Estimate,
+                          B2 = parameterDf$slope2Param_Estimate,
+                          L = parameterDf$midPointDistanceParam_Estimate,
                           maximum = TRUE);
-  argumentt=xmax$maximum;
-  constt=f0(argumentt,
-            B1=parameterDf$slope1Param_Estimate,
-            M1=parameterDf$midPoint1Param_Estimate,
-            B2=parameterDf$slope2Param_Estimate ,
-            L=parameterDf$midPointDistanceParam_Estimate);
+  argumentt <- xmax$maximum;
+  constt <- f0(argumentt,
+               B1 = parameterDf$slope1Param_Estimate,
+               M1 = parameterDf$midPoint1Param_Estimate,
+               B2 = parameterDf$slope2Param_Estimate,
+               L = parameterDf$midPointDistanceParam_Estimate);
 
   mid1x <- try(expr = stats::uniroot(f0mid,
-                                     interval=c(-1.125*max_x,argumentt),
-                                     tol=0.0001,
-                                     B1=parameterDf$slope1Param_Estimate,
-                                     M1=parameterDf$midPoint1Param_Estimate,
-                                     B2=parameterDf$slope2Param_Estimate,
-                                     L=parameterDf$midPointDistanceParam_Estimate,const=constt),silent = TRUE);
-  if(class(mid1x)=="try-error")
+                                     interval = c(-1.125 * max_x, argumentt),
+                                     tol = 0.0001,
+                                     B1 = parameterDf$slope1Param_Estimate,
+                                     M1 = parameterDf$midPoint1Param_Estimate,
+                                     B2 = parameterDf$slope2Param_Estimate,
+                                     L = parameterDf$midPointDistanceParam_Estimate, const = constt), silent = TRUE);
+  if(class(mid1x) == "try-error")
   {
-    rangeList=seq(-1,30)
-    rangeListCounter=-1
-    while(class(mid1x)=="try-error" & rangeListCounter<=30)
+    rangeList <- seq(-1,30)
+    rangeListCounter <- -1
+    while(class(mid1x) == "try-error" & rangeListCounter <= 30)
     {
       #print(rangeListCounter)
-      rangeListSelection=rangeList[rangeListCounter+2];
+      rangeListSelection <- rangeList[rangeListCounter + 2];
       mid1x <- try(expr = stats::uniroot(f0mid,
-                                         interval=c((-1)*(2^rangeListSelection)*max_x,argumentt),
-                                         tol=0.0001,
-                                         B1=parameterDf$slope1Param_Estimate,
-                                         M1=parameterDf$midPoint1Param_Estimate,
-                                         B2=parameterDf$slope2Param_Estimate,
-                                         L=parameterDf$midPointDistanceParam_Estimate,const=constt),silent = TRUE);
-      rangeListCounter=rangeListCounter+1
+                                         interval = c((-1) * (2^rangeListSelection) * max_x, argumentt),
+                                         tol = 0.0001,
+                                         B1 = parameterDf$slope1Param_Estimate,
+                                         M1 = parameterDf$midPoint1Param_Estimate,
+                                         B2 = parameterDf$slope2Param_Estimate,
+                                         L = parameterDf$midPointDistanceParam_Estimate, const = constt), silent = TRUE);
+      rangeListCounter <- rangeListCounter + 1
     }
   }
 
-  mid1x=mid1x$root
+  mid1x <- mid1x$root
 
   return(mid1x)
   }
@@ -474,63 +514,63 @@ f_mid1_doublesigmoidal <- function(parameterDf){
 #cat("\014")
 #
 ## Generate a parameters DF
-#parameterDf=data.frame(dataScalingParameters.timeRange=24,
-#                       slope1Param_Estimate=1,
-#                       midPoint1Param_Estimate=7,
-#                       slope2Param_Estimate=1,
-#                       midPointDistanceParam_Estimate=8,
-#                       model="doublesigmoidal")
+#parameterDf <- data.frame(dataScalingParameters.timeRange = 24,
+#                          slope1Param_Estimate = 1,
+#                          midPoint1Param_Estimate = 7,
+#                          slope2Param_Estimate = 1,
+#                          midPointDistanceParam_Estimate = 8,
+#                          model = "doublesigmoidal")
 #
 # # Find the x value of the maximum for this model
 # # with in the range of [0, dataScalingParameters.timeRange]
-# midPoint2_x=f_mid2_doublesigmoidal(parameterDf)
+# midPoint2_x <- f_mid2_doublesigmoidal(parameterDf)
 #
 f_mid2_doublesigmoidal <- function(parameterDf){
 
-  max_x = parameterDf$dataScalingParameters.timeRange
+  max_x <- parameterDf$dataScalingParameters.timeRange
   xmax <- stats::optimize(f1,
-                          interval=c(-1.125*max_x,max_x*3),
-                          tol=0.0001,
-                          B1=parameterDf$slope1Param_Estimate,
-                          M1=parameterDf$midPoint1Param_Estimate,
-                          B2=parameterDf$slope2Param_Estimate ,
-                          L=parameterDf$midPointDistanceParam_Estimate,
+                          interval = c(-1.125 * max_x, max_x * 3),
+                          tol = 0.0001,
+                          B1 = parameterDf$slope1Param_Estimate,
+                          M1 = parameterDf$midPoint1Param_Estimate,
+                          B2 = parameterDf$slope2Param_Estimate,
+                          L = parameterDf$midPointDistanceParam_Estimate,
                           maximum = TRUE);
 
-  argumentt=xmax$maximum;
-  constt=f0(argumentt,
-            B1=parameterDf$slope1Param_Estimate,
-            M1=parameterDf$midPoint1Param_Estimate,
-            B2=parameterDf$slope2Param_Estimate ,
-            L=parameterDf$midPointDistanceParam_Estimate);
+  argumentt <- xmax$maximum;
+  constt <- f0(argumentt,
+               B1 = parameterDf$slope1Param_Estimate,
+               M1 = parameterDf$midPoint1Param_Estimate,
+               B2 = parameterDf$slope2Param_Estimate ,
+               L = parameterDf$midPointDistanceParam_Estimate);
 
   mid2x <- try(stats::uniroot(f0mid,
-                              interval=c(argumentt,max_x*(1.25)),
-                              tol=0.0001,
-                              B1=parameterDf$slope1Param_Estimate,
-                              M1=parameterDf$midPoint1Param_Estimate,
-                              B2=parameterDf$slope2Param_Estimate,
-                              L=parameterDf$midPointDistanceParam_Estimate,const=constt),silent = TRUE);
-  if(class(mid2x)=="try-error")
-  {
-    rangeList=seq(-1,30)
-    rangeListCounter=-1
-    while(class(mid2x)=="try-error" & rangeListCounter<=30)
-    {
-      rangeListSelection=rangeList[rangeListCounter+2];
+                              interval = c(argumentt, max_x * (1.25)),
+                              tol = 0.0001,
+                              B1 = parameterDf$slope1Param_Estimate,
+                              M1 = parameterDf$midPoint1Param_Estimate,
+                              B2 = parameterDf$slope2Param_Estimate,
+                              L = parameterDf$midPointDistanceParam_Estimate, const=constt), silent = TRUE);
+
+  if(class(mid2x) == "try-error"){
+    rangeList <- seq(-1,30)
+    rangeListCounter <- -1
+    while(class(mid2x) == "try-error" & rangeListCounter <= 30){
+      rangeListSelection <- rangeList[rangeListCounter + 2];
       mid2x <- try(stats::uniroot(f0mid,
-                                  interval=c(argumentt,max_x*(2^rangeListSelection)),
-                                  tol=0.0001,B1=parameterDf$slope1Param_Estimate,
-                                  M1=parameterDf$midPoint1Param_Estimate,
-                                  B2=parameterDf$slope2Param_Estimate,
-                                  L=parameterDf$midPointDistanceParam_Estimate,const=constt),silent = TRUE);
-      rangeListCounter=rangeListCounter+1
+                                  interval = c(argumentt, max_x * (2^rangeListSelection)),
+                                  tol = 0.0001, B1 = parameterDf$slope1Param_Estimate,
+                                  M1 = parameterDf$midPoint1Param_Estimate,
+                                  B2 = parameterDf$slope2Param_Estimate,
+                                  L = parameterDf$midPointDistanceParam_Estimate, const = constt), silent = TRUE);
+      rangeListCounter <- rangeListCounter + 1
     }
   }
 
-  mid2x=mid2x$root
+  mid2x <- mid2x$root
 
-  return(mid2x)}
+  return(mid2x)
+  }
 #**************************************
 
 
@@ -567,20 +607,21 @@ f_mid2_doublesigmoidal <- function(parameterDf){
 #cat("\014")
 #
 ## Generate a parameters DF
-#parameterDataframe=data.frame(dataScalingParameters.timeRange=24,
-#                              finalAsymptoteIntensityRatio_Estimate=.3,
-#                              maximum_Estimate=4,
-#                              slope1Param_Estimate=1,
-#                              midPoint1Param_Estimate=7,
-#                              slope2Param_Estimate=1,
-#                              midPointDistanceParam_Estimate=8,
-#                              model="doublesigmoidal")
+#parameterDataframe <- data.frame(dataScalingParameters.timeRange = 24,
+#                                 finalAsymptoteIntensityRatio_Estimate = .3,
+#                                 maximum_Estimate = 4,
+#                                 slope1Param_Estimate = 1,
+#                                 midPoint1Param_Estimate = 7,
+#                                 slope2Param_Estimate = 1,
+#                                 midPointDistanceParam_Estimate = 8,
+#                                 model = "doublesigmoidal")
 #
 # # Find the x value of the maximum for this model
 # # with in the range of [0, dataScalingParameters.timeRange]
-# slopeParam_Estimate=f_slope_doublesigmoidal(x=6.5,
-#                                        parameterDf=parameterDataframe,
-#                                        timeStep=0.00001)
+# slopeParam_Estimate <- f_slope_doublesigmoidal(x = 6.5,
+#                                                parameterDf = parameterDataframe,
+#                                                timeStep = 0.00001)
+#
 ## Example 2
 ## x might be vector as well
 ## Initial Command to Reset the System
@@ -589,57 +630,57 @@ f_mid2_doublesigmoidal <- function(parameterDf){
 #cat("\014")
 #
 ## Generate a parameters DF
-#parameterDataframe=data.frame(dataScalingParameters.timeRange=24,
-#                              finalAsymptoteIntensityRatio_Estimate=.3,
-#                              maximum_Estimate=4,
-#                              slope1Param_Estimate=1,
-#                              midPoint1Param_Estimate=7,
-#                              slope2Param_Estimate=1,
-#                              midPointDistanceParam_Estimate=8,
-#                              model="doublesigmoidal")
+#parameterDataframe <- data.frame(dataScalingParameters.timeRange = 24,
+#                                 finalAsymptoteIntensityRatio_Estimate = .3,
+#                                 maximum_Estimate = 4,
+#                                 slope1Param_Estimate = 1,
+#                                 midPoint1Param_Estimate = 7,
+#                                 slope2Param_Estimate = 1,
+#                                 midPointDistanceParam_Estimate = 8,
+#                                 model = "doublesigmoidal")
 #
 # # Find the x value of the maximum for this model
 # # with in the range of [0, dataScalingParameters.timeRange]
-# slopeParam_Estimate=f_slope_doublesigmoidal(x=seq(-6.5,50,0.5),
-#                                        parameterDf=parameterDataframe,
-#                                        timeStep=0.00001)
+# slopeParam_Estimate <- f_slope_doublesigmoidal(x = seq(-6.5, 50, 0.5),
+#                                                parameterDf = parameterDataframe,
+#                                                timeStep = 0.00001)
 ## Note that some points in the x sequence are out of the range of
-## time = [0, dataScalingParameters.timeRange]
+## time <- [0, dataScalingParameters.timeRange]
 #
-f_slope_doublesigmoidal <- function(x, parameterDf, timeStep=0.00001){
+f_slope_doublesigmoidal <- function(x, parameterDf, timeStep = 0.00001){
 
-  fxp2h=doublesigmoidalFitFormula(x=x+2*timeStep,
-                                  finalAsymptoteIntensityRatio=parameterDf$finalAsymptoteIntensityRatio_Estimate,
-                                  maximum=parameterDf$maximum_Estimate,
-                                  slope1Param=parameterDf$slope1Param_Estimate,
-                                  midPoint1Param=parameterDf$midPoint1Param_Estimate,
-                                  slope2Param=parameterDf$slope2Param_Estimate,
-                                  midPointDistanceParam=parameterDf$midPointDistanceParam_Estimate)
-  fxph=doublesigmoidalFitFormula(x=x+timeStep,
-                                 finalAsymptoteIntensityRatio=parameterDf$finalAsymptoteIntensityRatio_Estimate,
-                                 maximum=parameterDf$maximum_Estimate,
-                                 slope1Param=parameterDf$slope1Param_Estimate,
-                                 midPoint1Param=parameterDf$midPoint1Param_Estimate,
-                                 slope2Param=parameterDf$slope2Param_Estimate,
-                                 midPointDistanceParam=parameterDf$midPointDistanceParam_Estimate)
+  fxp2h <- doublesigmoidalFitFormula(x = x + 2 * timeStep,
+                                     finalAsymptoteIntensityRatio = parameterDf$finalAsymptoteIntensityRatio_Estimate,
+                                     maximum = parameterDf$maximum_Estimate,
+                                     slope1Param = parameterDf$slope1Param_Estimate,
+                                     midPoint1Param = parameterDf$midPoint1Param_Estimate,
+                                     slope2Param = parameterDf$slope2Param_Estimate,
+                                     midPointDistanceParam = parameterDf$midPointDistanceParam_Estimate)
+  fxph <- doublesigmoidalFitFormula(x = x + timeStep,
+                                    finalAsymptoteIntensityRatio = parameterDf$finalAsymptoteIntensityRatio_Estimate,
+                                    maximum = parameterDf$maximum_Estimate,
+                                    slope1Param = parameterDf$slope1Param_Estimate,
+                                    midPoint1Param = parameterDf$midPoint1Param_Estimate,
+                                    slope2Param = parameterDf$slope2Param_Estimate,
+                                    midPointDistanceParam = parameterDf$midPointDistanceParam_Estimate)
 
-  fxmh=doublesigmoidalFitFormula(x=x-timeStep,
-                                 finalAsymptoteIntensityRatio=parameterDf$finalAsymptoteIntensityRatio_Estimate,
-                                 maximum=parameterDf$maximum_Estimate,
-                                 slope1Param=parameterDf$slope1Param_Estimate,
-                                 midPoint1Param=parameterDf$midPoint1Param_Estimate,
-                                 slope2Param=parameterDf$slope2Param_Estimate,
-                                 midPointDistanceParam=parameterDf$midPointDistanceParam_Estimate)
+  fxmh <- doublesigmoidalFitFormula(x = x - timeStep,
+                                    finalAsymptoteIntensityRatio = parameterDf$finalAsymptoteIntensityRatio_Estimate,
+                                    maximum = parameterDf$maximum_Estimate,
+                                    slope1Param = parameterDf$slope1Param_Estimate,
+                                    midPoint1Param = parameterDf$midPoint1Param_Estimate,
+                                    slope2Param = parameterDf$slope2Param_Estimate,
+                                    midPointDistanceParam = parameterDf$midPointDistanceParam_Estimate)
 
-  fxm2h=doublesigmoidalFitFormula(x=x-2*timeStep,
-                                  finalAsymptoteIntensityRatio=parameterDf$finalAsymptoteIntensityRatio_Estimate,
-                                  maximum=parameterDf$maximum_Estimate,
-                                  slope1Param=parameterDf$slope1Param_Estimate,
-                                  midPoint1Param=parameterDf$midPoint1Param_Estimate,
-                                  slope2Param=parameterDf$slope2Param_Estimate,
-                                  midPointDistanceParam=parameterDf$midPointDistanceParam_Estimate)
+  fxm2h <- doublesigmoidalFitFormula(x = x - 2 * timeStep,
+                                     finalAsymptoteIntensityRatio = parameterDf$finalAsymptoteIntensityRatio_Estimate,
+                                     maximum = parameterDf$maximum_Estimate,
+                                     slope1Param = parameterDf$slope1Param_Estimate,
+                                     midPoint1Param = parameterDf$midPoint1Param_Estimate,
+                                     slope2Param = parameterDf$slope2Param_Estimate,
+                                     midPointDistanceParam = parameterDf$midPointDistanceParam_Estimate)
 
-  der=(-1*fxp2h+8*fxph-8*fxmh+1*fxm2h)/(12*timeStep)
+  der <- (-1 * fxp2h + 8 * fxph - 8 * fxmh + 1 * fxm2h) / (12 * timeStep)
   return(der)
 }
 #**************************************
@@ -661,23 +702,23 @@ f_slope_doublesigmoidal <- function(x, parameterDf, timeStep=0.00001){
 # @param isalist defines if the input is provided as a list (i.e normalized) or as a data frame (i.e not normalized)
 # @details If the fit was done in normalized data frame then the found fit parameters will belong to normalized data.
 #          This function generates unnormalized counterparts of those parameters.
-doublesigmoidalRenormalizeParameters<-function(parameterDF,isalist)
+doublesigmoidalRenormalizeParameters <- function(parameterDF, isalist)
 {
   if(isalist){
-    parameterDF$finalAsymptoteIntensityRatio_Estimate=parameterDF$finalAsymptoteIntensityRatio_N_Estimate
-    parameterDF$maximum_Estimate=parameterDF$maximum_N_Estimate*parameterDF$dataScalingParameters.intensityRange+parameterDF$dataScalingParameters.intensityMin
-    parameterDF$slope1Param_Estimate=parameterDF$slope1Param_N_Estimate/parameterDF$dataScalingParameters.timeRange
-    parameterDF$midPoint1Param_Estimate=parameterDF$midPoint1Param_N_Estimate*parameterDF$dataScalingParameters.timeRange
-    parameterDF$slope2Param_Estimate=parameterDF$slope2Param_N_Estimate/parameterDF$dataScalingParameters.timeRange
-    parameterDF$midPointDistanceParam_Estimate=parameterDF$midPointDistanceParam_N_Estimate*parameterDF$dataScalingParameters.timeRange
+    parameterDF$finalAsymptoteIntensityRatio_Estimate <- parameterDF$finalAsymptoteIntensityRatio_N_Estimate
+    parameterDF$maximum_Estimate <- parameterDF$maximum_N_Estimate * parameterDF$dataScalingParameters.intensityRange + parameterDF$dataScalingParameters.intensityMin
+    parameterDF$slope1Param_Estimate <- parameterDF$slope1Param_N_Estimate / parameterDF$dataScalingParameters.timeRange
+    parameterDF$midPoint1Param_Estimate <- parameterDF$midPoint1Param_N_Estimate * parameterDF$dataScalingParameters.timeRange
+    parameterDF$slope2Param_Estimate <- parameterDF$slope2Param_N_Estimate / parameterDF$dataScalingParameters.timeRange
+    parameterDF$midPointDistanceParam_Estimate <- parameterDF$midPointDistanceParam_N_Estimate * parameterDF$dataScalingParameters.timeRange
   }
   if(!isalist){
-    parameterDF$finalAsymptoteIntensityRatio_Estimate=parameterDF$finalAsymptoteIntensityRatio_N_Estimate
-    parameterDF$maximum_Estimate=parameterDF$maximum_N_Estimate
-    parameterDF$slope1Param_Estimate=parameterDF$slope1Param_N_Estimate
-    parameterDF$midPoint1Param_Estimate=parameterDF$midPoint1Param_N_Estimate
-    parameterDF$slope2Param_Estimate=parameterDF$slope2Param_N_Estimate
-    parameterDF$midPointDistanceParam_Estimate=parameterDF$midPointDistanceParam_N_Estimate
+    parameterDF$finalAsymptoteIntensityRatio_Estimate <- parameterDF$finalAsymptoteIntensityRatio_N_Estimate
+    parameterDF$maximum_Estimate <- parameterDF$maximum_N_Estimate
+    parameterDF$slope1Param_Estimate <- parameterDF$slope1Param_N_Estimate
+    parameterDF$midPoint1Param_Estimate <- parameterDF$midPoint1Param_N_Estimate
+    parameterDF$slope2Param_Estimate <- parameterDF$slope2Param_N_Estimate
+    parameterDF$midPointDistanceParam_Estimate <- parameterDF$midPointDistanceParam_N_Estimate
   }
   return(parameterDF)
 }

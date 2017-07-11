@@ -1,5 +1,5 @@
 ---
-title: Fitting individual models
+title: "Fitting individual models"
 author: "Umut Caglar, Claus O. Wilke"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette

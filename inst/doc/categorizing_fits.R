@@ -70,12 +70,12 @@ plot_grid(f1, f2)
 
 ## ------------------------------------------------------------------------
 # now we can categorize the fits
-outputCluster <- categorize(threshold_minimum_for_intensity_maximum = 0.3,
+decisionProcess <- categorize(threshold_minimum_for_intensity_maximum = 0.3,
                                       threshold_intensity_range = 0.1,
                                       threshold_t0_max_int = 0.05,
                                       parameterVectorSigmoidal = sigmoidalModel,
                                       parameterVectorDoubleSigmoidal = doubleSigmoidalModel)
 
 ## ------------------------------------------------------------------------
-print(outputCluster$decision)
+print(decisionProcess$decision)
 

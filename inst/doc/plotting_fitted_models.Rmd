@@ -1,5 +1,5 @@
 ---
-title: Plotting the fitted models
+title: "Plotting the fitted models"
 author: "Umut Caglar, Claus O. Wilke"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette

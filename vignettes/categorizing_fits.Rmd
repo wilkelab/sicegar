@@ -1,5 +1,5 @@
 ---
-title: Identifying the best-fitting model category 
+title: "Identifying the best-fitting model category"
 author: "Umut Caglar, Claus O. Wilke"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette

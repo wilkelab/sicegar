@@ -50,7 +50,7 @@ fig_b <- figureModelCurves(dataInput = fitObj$normalizedInput,
 plot_grid(fig_a, fig_b, ncol = 2) # function from the cowplot package
 
 ## ------------------------------------------------------------------------
-fitObj$outputCluster$decision # final decision
+fitObj$decisionProcess$decision # final decision
 
 ## ------------------------------------------------------------------------
 names(fitObj)

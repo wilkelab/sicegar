@@ -1,5 +1,5 @@
 ---
-title: Calculation of additional parameters of interest
+title: "Calculation of additional parameters of interest"
 author: "Umut Caglar, Claus O. Wilke"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Umut Caglar, Claus O. Wilke" />
 
-<meta name="date" content="2017-06-23" />
+<meta name="date" content="2017-07-10" />
 
 <title>Calculation of additional parameters of interest</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Calculation of additional parameters of interest</h1>
 <h4 class="author"><em>Umut Caglar, Claus O. Wilke</em></h4>
-<h4 class="date"><em>2017-06-23</em></h4>
+<h4 class="date"><em>2017-07-10</em></h4>
 
 
 
@@ -84,85 +84,85 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># before parameter calculation </span>
 <span class="kw">t</span>(sigmoidalModel)</code></pre></div>
 <pre><code>##                                      [,1]             
-## maximum_N_Estimate                   &quot;0.9892762&quot;      
-## maximum_Std_Error                    &quot;0.00172638&quot;     
-## maximum_t_value                      &quot;573.035&quot;        
-## maximum_Pr_t                         &quot;6.473173e-80&quot;   
-## slopeParam_N_Estimate                &quot;24.91311&quot;       
-## slopeParam_Std_Error                 &quot;0.3550744&quot;      
-## slopeParam_t_value                   &quot;70.16306&quot;       
-## slopeParam_Pr_t                      &quot;1.684368e-43&quot;   
-## midPoint_N_Estimate                  &quot;0.3352606&quot;      
-## midPoint_Std_Error                   &quot;0.0006568671&quot;   
-## midPoint_t_value                     &quot;510.3933&quot;       
-## midPoint_Pr_t                        &quot;6.635846e-78&quot;   
-## residual_Sum_of_Squares              &quot;0.003021868&quot;    
-## log_likelihood                       &quot;144.5919&quot;       
-## AIC_value                            &quot;-281.1837&quot;      
-## BIC_value                            &quot;-274.1389&quot;      
+## maximum_N_Estimate                   &quot;0.9895555&quot;      
+## maximum_Std_Error                    &quot;0.001571651&quot;    
+## maximum_t_value                      &quot;629.6281&quot;       
+## maximum_Pr_t                         &quot;1.496843e-81&quot;   
+## slopeParam_N_Estimate                &quot;24.60521&quot;       
+## slopeParam_Std_Error                 &quot;0.3171219&quot;      
+## slopeParam_t_value                   &quot;77.58911&quot;       
+## slopeParam_Pr_t                      &quot;3.098929e-45&quot;   
+## midPoint_N_Estimate                  &quot;0.3343662&quot;      
+## midPoint_Std_Error                   &quot;0.0006014525&quot;   
+## midPoint_t_value                     &quot;555.9311&quot;       
+## midPoint_Pr_t                        &quot;2.174998e-79&quot;   
+## residual_Sum_of_Squares              &quot;0.002499942&quot;    
+## log_likelihood                       &quot;148.6684&quot;       
+## AIC_value                            &quot;-289.3369&quot;      
+## BIC_value                            &quot;-282.2921&quot;      
 ## isThisaFit                           &quot;TRUE&quot;           
-## startVector.maximum                  &quot;1.469176&quot;       
-## startVector.slopeParam               &quot;47.06382&quot;       
-## startVector.midPoint                 &quot;0.5558083&quot;      
+## startVector.maximum                  &quot;1.17621&quot;        
+## startVector.slopeParam               &quot;26.52185&quot;       
+## startVector.midPoint                 &quot;0.3179062&quot;      
 ## dataScalingParameters.timeRange      &quot;24&quot;             
-## dataScalingParameters.intensityMin   &quot;0.1065867&quot;      
-## dataScalingParameters.intensityMax   &quot;4.09696&quot;        
-## dataScalingParameters.intensityRange &quot;3.990373&quot;       
+## dataScalingParameters.intensityMin   &quot;0.07949097&quot;     
+## dataScalingParameters.intensityMax   &quot;4.09609&quot;        
+## dataScalingParameters.intensityRange &quot;4.016599&quot;       
 ## model                                &quot;sigmoidal&quot;      
 ## additionalParameters                 &quot;FALSE&quot;          
-## maximum_Estimate                     &quot;4.054168&quot;       
-## slopeParam_Estimate                  &quot;1.038046&quot;       
-## midPoint_Estimate                    &quot;8.046253&quot;       
+## maximum_Estimate                     &quot;4.054139&quot;       
+## slopeParam_Estimate                  &quot;1.025217&quot;       
+## midPoint_Estimate                    &quot;8.024788&quot;       
 ## dataInputName                        &quot;sigmoidalSample&quot;
-## betterFit                            &quot;2&quot;              
+## betterFit                            &quot;4&quot;              
 ## correctFit                           &quot;20&quot;             
 ## totalFit                             &quot;25&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># after parameter calculation </span>
 <span class="kw">t</span>(sigmoidalModelAugmented)</code></pre></div>
 <pre><code>##                                      [,1]             
-## maximum_N_Estimate                   &quot;0.9892762&quot;      
-## maximum_Std_Error                    &quot;0.00172638&quot;     
-## maximum_t_value                      &quot;573.035&quot;        
-## maximum_Pr_t                         &quot;6.473173e-80&quot;   
-## slopeParam_N_Estimate                &quot;24.91311&quot;       
-## slopeParam_Std_Error                 &quot;0.3550744&quot;      
-## slopeParam_t_value                   &quot;70.16306&quot;       
-## slopeParam_Pr_t                      &quot;1.684368e-43&quot;   
-## midPoint_N_Estimate                  &quot;0.3352606&quot;      
-## midPoint_Std_Error                   &quot;0.0006568671&quot;   
-## midPoint_t_value                     &quot;510.3933&quot;       
-## midPoint_Pr_t                        &quot;6.635846e-78&quot;   
-## residual_Sum_of_Squares              &quot;0.003021868&quot;    
-## log_likelihood                       &quot;144.5919&quot;       
-## AIC_value                            &quot;-281.1837&quot;      
-## BIC_value                            &quot;-274.1389&quot;      
+## maximum_N_Estimate                   &quot;0.9895555&quot;      
+## maximum_Std_Error                    &quot;0.001571651&quot;    
+## maximum_t_value                      &quot;629.6281&quot;       
+## maximum_Pr_t                         &quot;1.496843e-81&quot;   
+## slopeParam_N_Estimate                &quot;24.60521&quot;       
+## slopeParam_Std_Error                 &quot;0.3171219&quot;      
+## slopeParam_t_value                   &quot;77.58911&quot;       
+## slopeParam_Pr_t                      &quot;3.098929e-45&quot;   
+## midPoint_N_Estimate                  &quot;0.3343662&quot;      
+## midPoint_Std_Error                   &quot;0.0006014525&quot;   
+## midPoint_t_value                     &quot;555.9311&quot;       
+## midPoint_Pr_t                        &quot;2.174998e-79&quot;   
+## residual_Sum_of_Squares              &quot;0.002499942&quot;    
+## log_likelihood                       &quot;148.6684&quot;       
+## AIC_value                            &quot;-289.3369&quot;      
+## BIC_value                            &quot;-282.2921&quot;      
 ## isThisaFit                           &quot;TRUE&quot;           
-## startVector.maximum                  &quot;1.469176&quot;       
-## startVector.slopeParam               &quot;47.06382&quot;       
-## startVector.midPoint                 &quot;0.5558083&quot;      
+## startVector.maximum                  &quot;1.17621&quot;        
+## startVector.slopeParam               &quot;26.52185&quot;       
+## startVector.midPoint                 &quot;0.3179062&quot;      
 ## dataScalingParameters.timeRange      &quot;24&quot;             
-## dataScalingParameters.intensityMin   &quot;0.1065867&quot;      
-## dataScalingParameters.intensityMax   &quot;4.09696&quot;        
-## dataScalingParameters.intensityRange &quot;3.990373&quot;       
+## dataScalingParameters.intensityMin   &quot;0.07949097&quot;     
+## dataScalingParameters.intensityMax   &quot;4.09609&quot;        
+## dataScalingParameters.intensityRange &quot;4.016599&quot;       
 ## model                                &quot;sigmoidal&quot;      
 ## additionalParameters                 &quot;TRUE&quot;           
-## maximum_Estimate                     &quot;4.054168&quot;       
-## slopeParam_Estimate                  &quot;1.038046&quot;       
-## midPoint_Estimate                    &quot;8.046253&quot;       
+## maximum_Estimate                     &quot;4.054139&quot;       
+## slopeParam_Estimate                  &quot;1.025217&quot;       
+## midPoint_Estimate                    &quot;8.024788&quot;       
 ## dataInputName                        &quot;sigmoidalSample&quot;
-## betterFit                            &quot;2&quot;              
+## betterFit                            &quot;4&quot;              
 ## correctFit                           &quot;20&quot;             
 ## totalFit                             &quot;25&quot;             
 ## maximum_x                            NA               
-## maximum_y                            &quot;4.054168&quot;       
-## midPoint_x                           &quot;8.046253&quot;       
-## midPoint_y                           &quot;2.027084&quot;       
-## slope                                &quot;1.052103&quot;       
-## incrementTime                        &quot;3.853393&quot;       
-## startPoint_x                         &quot;6.119557&quot;       
+## maximum_y                            &quot;4.054139&quot;       
+## midPoint_x                           &quot;8.024788&quot;       
+## midPoint_y                           &quot;2.027069&quot;       
+## slope                                &quot;1.039093&quot;       
+## incrementTime                        &quot;3.901613&quot;       
+## startPoint_x                         &quot;6.073982&quot;       
 ## startPoint_y                         &quot;0&quot;              
-## reachMaximum_x                       &quot;9.97295&quot;        
-## reachMaximum_y                       &quot;4.054168&quot;</code></pre>
+## reachMaximum_x                       &quot;9.975594&quot;       
+## reachMaximum_y                       &quot;4.054139&quot;</code></pre>
 <p>We see that the variable <code>additionalParameters</code> has switched from <code>FALSE</code> to <code>TRUE</code>, and further, there are numerous additional quantities listed now, starting with <code>maximum_x</code>. Below, we describe the meaning of these additional parameters for the sigmoidal and double-sigmoidal models.</p>
 <div id="additional-parameters-for-the-sigmoidal-model" class="section level2">
 <h2>Additional parameters for the sigmoidal model</h2>

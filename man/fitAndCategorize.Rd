@@ -30,13 +30,13 @@ fitAndCategorize(dataInput, dataInputName = NA, n_runs_min_sm = 20,
 
 \item{dataInputName}{Name of data set (Default is 'NA').}
 
-\item{n_runs_min_sm}{This number indicates the lower limit of the successful fitting attempts for sigmoidal model. It should be smaller than the upper limit of the fitting attempts (n_runs_max_sm).}
+\item{n_runs_min_sm}{This number indicates the lower limit of the successful fitting attempts for sigmoidal model. It should be smaller than the upper limit of the fitting attempts (n_runs_max_sm). Default is 20}
 
-\item{n_runs_max_sm}{This number indicates the upper limit of the fitting attempts for sigmoidal model.}
+\item{n_runs_max_sm}{This number indicates the upper limit of the fitting attempts for sigmoidal model. Default is 500}
 
-\item{n_runs_min_dsm}{This number indicates the lower limit of the successful fitting attempts for double sigmoidal model. It should be smaller than the upper limit of the fitting attempts (n_runs_max_dsm).}
+\item{n_runs_min_dsm}{This number indicates the lower limit of the successful fitting attempts for double sigmoidal model. It should be smaller than the upper limit of the fitting attempts (n_runs_max_dsm). Default is 20}
 
-\item{n_runs_max_dsm}{This number indicates the upper limit of the fitting attempts for sigmoidal model for double sigmoidal model.}
+\item{n_runs_max_dsm}{This number indicates the upper limit of the fitting attempts for sigmoidal model for double sigmoidal model. Default is 500}
 
 \item{showDetails}{Logical if TRUE prints details of intermediate steps of individual fits (Default is FALSE).}
 

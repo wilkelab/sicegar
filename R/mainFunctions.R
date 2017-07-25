@@ -1,10 +1,10 @@
 #' @title Fit and categorize.
 #'
 #' @param dataInput Un_normalized input data that will be fitted transferred into related functions
-#' @param n_runs_max_sm This number indicates the upper limit of the fitting attempts for sigmoidal model.
-#' @param n_runs_min_sm This number indicates the lower limit of the successful fitting attempts for sigmoidal model. It should be smaller than the upper limit of the fitting attempts (n_runs_max_sm).
-#' @param n_runs_max_dsm This number indicates the upper limit of the fitting attempts for sigmoidal model for double sigmoidal model.
-#' @param n_runs_min_dsm This number indicates the lower limit of the successful fitting attempts for double sigmoidal model. It should be smaller than the upper limit of the fitting attempts (n_runs_max_dsm).
+#' @param n_runs_max_sm This number indicates the upper limit of the fitting attempts for sigmoidal model. Default is 500
+#' @param n_runs_min_sm This number indicates the lower limit of the successful fitting attempts for sigmoidal model. It should be smaller than the upper limit of the fitting attempts (n_runs_max_sm). Default is 20
+#' @param n_runs_max_dsm This number indicates the upper limit of the fitting attempts for sigmoidal model for double sigmoidal model. Default is 500
+#' @param n_runs_min_dsm This number indicates the lower limit of the successful fitting attempts for double sigmoidal model. It should be smaller than the upper limit of the fitting attempts (n_runs_max_dsm). Default is 20
 #' @param startList_sm The initial set of parameters vector that sigmoidal fit algorithm tries for the first fit attempt for the relevant parameters. The vector composes of three elements; 'maximum', 'slopeParam' and, 'midPoint'.  Detailed explanations of those parameters can be found in vignettes. Defaults are maximum = 1, slopeParam = 1 and, midPoint = 0.33. The numbers are in normalized time intensity scale.
 #' @param lowerBounds_sm The lower bounds for the randomly generated start parameters for the sigmoidal fit. The vector composes of three elements; 'maximum', 'slopeParam' and, 'midPoint'. Detailed explanations of those parameters can be found in vignettes. Defaults are maximum = 0.3, slopeParam = 0.01, and midPoint = -0.52. The numbers are in normalized time intensity scale.
 #' @param upperBounds_sm The upper bounds for the randomly generated start parameters for the sigmoidal fit. The vector composes of three elements; 'maximum', 'slopeParam' and, 'midPoint'. Detailed explanations of those parameters can be found in vignettes. Defaults are maximum = 1.5, slopeParam = 180,  midPoint = 1.15. The numbers are in normalized time intensity scale.

@@ -141,10 +141,10 @@ Next the algorithm checks if the sigmoidal and double sigmoidal models make sens
 * Test 4b: The value `startPoint_x` for the double-sigmoidal model must be a positive number; otherwise, the data cannot be labeled with `"double_sigmoidal"`.
 * Test 5a: The value `start_intensity` for the sigmoidal model must be smaller than `threshold_t0_max_int`; otherwise, the data cannot be labeled with `"sigmoidal"`.
 * Test 5b: The value `start_intensity` for the double-sigmoidal model must be smaller than `threshold_t0_max_int`; otherwise, the data cannot be labeled with `"double_sigmoidal"`.
-* Test 6: For the double-sigmoidal model, the ratio of _/the model's intensity prediction at the last observation time/_ to _/the model's maximum intesity prediction/_ must be smaller than `threshold_dsm_tmax_IntensityRatio`; otherwise, the data cannot be labeled with `"double_sigmoidal"`.
-* Test 7: For the sigmoidal model; the ratio of _/the model's intensity prediction at the last observation time/_ to _/the model's maximum intesity prediction/_ must be smaller than `threshold_sm_tmax_IntensityRatio`; otherwise, the data cannot be labeled with `"sigmoidal"`.
+* Test 6: For the double-sigmoidal model, the ratio of _/the model's intensity prediction at the last observation time/_ to _/the model's maximum intensity prediction/_ must be smaller than `threshold_dsm_tmax_IntensityRatio`; otherwise, the data cannot be labeled with `"double_sigmoidal"`.
+* Test 7: For the sigmoidal model; the ratio of _/the model's intensity prediction at the last observation time/_ to _/the model's maximum intensity prediction/_ must be smaller than `threshold_sm_tmax_IntensityRatio`; otherwise, the data cannot be labeled with `"sigmoidal"`.
 
-In step eight, the algorithm checks wheather the data should be labelled as `"ambiguous"` or not.
+In step eight, the algorithm checks whether the data should be labelled as `"ambiguous"` or not.
 
 * Test 8: If at this point we still have at least one of the two options `"sigmoidal"` or `"double_sigmoidal"`, then the data cannot be labeled with `"ambiguous"`.
 

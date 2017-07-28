@@ -39,9 +39,6 @@
 #'
 parameterCalculation<-function(parameterVector, stepSize=0.00001){
 
-  if(parameterVector$model == "linear"){
-    warning("nothing to do with a linear model")
-  }
 
   if(parameterVector$model == "sigmoidal"){
 

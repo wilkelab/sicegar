@@ -12,7 +12,7 @@
 
 <meta name="author" content="Umut Caglar, Claus O. Wilke" />
 
-<meta name="date" content="2017-07-10" />
+<meta name="date" content="2017-07-27" />
 
 <title>Identifying the best-fitting model category</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Identifying the best-fitting model category</h1>
 <h4 class="author"><em>Umut Caglar, Claus O. Wilke</em></h4>
-<h4 class="date"><em>2017-07-10</em></h4>
+<h4 class="date"><em>2017-07-27</em></h4>
 
 
 
@@ -152,10 +152,10 @@ decisionProcess &lt;-<span class="st"> </span><span class="kw">categorize</span>
 <li>Test 4b: The value <code>startPoint_x</code> for the double-sigmoidal model must be a positive number; otherwise, the data cannot be labeled with <code>&quot;double_sigmoidal&quot;</code>.</li>
 <li>Test 5a: The value <code>start_intensity</code> for the sigmoidal model must be smaller than <code>threshold_t0_max_int</code>; otherwise, the data cannot be labeled with <code>&quot;sigmoidal&quot;</code>.</li>
 <li>Test 5b: The value <code>start_intensity</code> for the double-sigmoidal model must be smaller than <code>threshold_t0_max_int</code>; otherwise, the data cannot be labeled with <code>&quot;double_sigmoidal&quot;</code>.</li>
-<li>Test 6: For the double-sigmoidal model, the ratio of <em>/the model’s intensity prediction at the last observation time/</em> to <em>/the model’s maximum intesity prediction/</em> must be smaller than <code>threshold_dsm_tmax_IntensityRatio</code>; otherwise, the data cannot be labeled with <code>&quot;double_sigmoidal&quot;</code>.</li>
-<li>Test 7: For the sigmoidal model; the ratio of <em>/the model’s intensity prediction at the last observation time/</em> to <em>/the model’s maximum intesity prediction/</em> must be smaller than <code>threshold_sm_tmax_IntensityRatio</code>; otherwise, the data cannot be labeled with <code>&quot;sigmoidal&quot;</code>.</li>
+<li>Test 6: For the double-sigmoidal model, the ratio of <em>/the model’s intensity prediction at the last observation time/</em> to <em>/the model’s maximum intensity prediction/</em> must be smaller than <code>threshold_dsm_tmax_IntensityRatio</code>; otherwise, the data cannot be labeled with <code>&quot;double_sigmoidal&quot;</code>.</li>
+<li>Test 7: For the sigmoidal model; the ratio of <em>/the model’s intensity prediction at the last observation time/</em> to <em>/the model’s maximum intensity prediction/</em> must be larger than <code>threshold_sm_tmax_IntensityRatio</code>; otherwise, the data cannot be labeled with <code>&quot;sigmoidal&quot;</code>.</li>
 </ul>
-<p>In step eight, the algorithm checks wheather the data should be labelled as <code>&quot;ambiguous&quot;</code> or not.</p>
+<p>In step eight, the algorithm checks whether the data should be labelled as <code>&quot;ambiguous&quot;</code> or not.</p>
 <ul>
 <li>Test 8: If at this point we still have at least one of the two options <code>&quot;sigmoidal&quot;</code> or <code>&quot;double_sigmoidal&quot;</code>, then the data cannot be labeled with <code>&quot;ambiguous&quot;</code>.</li>
 </ul>

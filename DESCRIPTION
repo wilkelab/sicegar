@@ -17,8 +17,11 @@ Imports:
 License: GPL-2 | GPL-3
 LazyData: true
 Suggests:
-    knitr,
-    cowplot
+    covr,
+    cowplot,
+    testthat,
+    vdiffr,
+    knitr
 VignetteBuilder: knitr
 BugReports: https://github.com/wilkelab/sicegar/issues
 Collate:

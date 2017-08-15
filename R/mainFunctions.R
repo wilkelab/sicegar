@@ -120,7 +120,7 @@ fitAndCategorize <-
       return(list(normalizedInput = normalizedInput,
                   sigmoidalModel = NA,
                   doubleSigmoidalModel = NA,
-                  DecisionProcess = preDecisionProcess,
+                  decisionProcess = preDecisionProcess,
                   summaryVector = summaryVector))
     }
 

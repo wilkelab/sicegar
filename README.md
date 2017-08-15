@@ -8,7 +8,9 @@
 
 Written by M. Umut Caglar and Claus O. Wilke.
 
-This package aims to quantify time intensity data by using sigmoidal and double sigmoidal curves. It fits sigmoidal and double sigmoidal curves on to time vs intensity data. Then both fits are used to make a decision on which model (sigmoidal, double sigmoidal, no signal, or ambiguous) best describes the data. No signal means the intensity does not reach a high enough point or does not change at all over time. Sigmoidal means intensity starts from a small number than climbs to a maximum. Double sigmoidal means intensity starts from a small number, climbs to a maximum then starts to decay. After the decision between those four options, the algorithm gives the sigmoidal (or double sigmoidal) associated parameter values that quantifies the time intensity curve. The origin of the package name came from "SIngle CEll Growth Analysis in R".
+This package aims to quantify time intensity data by using sigmoidal and double sigmoidal curves. It fits sigmoidal and double sigmoidal curves on to time vs intensity data. Then both fits are used to make a decision on which model (sigmoidal, double sigmoidal, no signal, or ambiguous) best describes the data. No signal means the intensity does not reach a high enough point or does not change at all over time. Sigmoidal means intensity starts from a small number than climbs to a maximum. Double sigmoidal means intensity starts from a small number, climbs to a maximum then starts to decay. Once the decision has been reached, the algorithm returns the parameters associated with the sigmoidal or double-sigmoidal model quantifying the time-intensity curve.
+
+The package name stands for "SIngle CEll Growth Analysis in R".
 
 CRAN: https://cran.r-project.org/package=sicegar
 

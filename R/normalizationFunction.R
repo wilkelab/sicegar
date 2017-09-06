@@ -22,13 +22,13 @@ normalizeData <-function(dataInput, dataInputName = NA)
 
     #timeMin <- min(dataInput$time)
     timeData <- dataInput$time
-    timeRange <- max(timeData,na.rm = T)
+    timeRange <- max(timeData)
     timeData <- timeData / timeRange
 
-    intensityMin <- min(dataInput$intensity,na.rm = T)
-    intensityMax <- max(dataInput$intensity,na.rm = T)
+    intensityMin <- min(dataInput$intensity)
+    intensityMax <- max(dataInput$intensity)
     intensityData <- dataInput$intensity - intensityMin
-    intensityRange <- max(intensityData,na.rm = T)
+    intensityRange <- max(intensityData)
     intensityData <- intensityData / intensityRange
 
     dataOutput <- data.frame(time = timeData, intensity = intensityData)

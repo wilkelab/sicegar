@@ -81,10 +81,11 @@ dataCheck <- function(data, showDetails=TRUE){
       arecolumnsnumeric <- (is.numeric(data_next_check$time) & is.numeric(data_next_check$intensity))
 
       if(arecolumnsnumeric){
-        doesIntesityHaveVariation <- (max(data_next_check$intensity) - min(data_next_check$intensity) > 0)
+        doesIntesityHaveVariation <- (max(data_next_check$intensity,na.rm = T) -
+                                        min(data_next_check$intensity,na.rm = T) > 0)
 
         if(!doesIntesityHaveVariation){
-          stop("min intensity = max intensity i.e intensity do not have variation")
+          warning("min intensity = max intensity i.e intensity do not have variation")
         }
 
         if(doesIntesityHaveVariation) {

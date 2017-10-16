@@ -204,6 +204,7 @@ for(counter06 in 1 : length(timeChoiceVector))
 
           counter04=counter04+1
           print(counter04)
+          browser()
           initialSigmoidalValues$runCount = counter04
 
           tempOutput <- bind_cols(tempOutput, initialSigmoidalValues)

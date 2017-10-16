@@ -37,7 +37,7 @@ require("foreach")
 # ARRANGE BACKENDS
 ## use the multicore library
 # a.
-ProcCount <- 5 # registers specified number of workers  or
+ProcCount <- 7 # registers specified number of workers  or
 registerDoMC(ProcCount) # Or, reserve all all available cores
 # b.
 #registerDoMC()  # Automatically assign cores
@@ -59,11 +59,11 @@ distinctParameters <- 4  # Used in paper is "50"
 
 
 ###*****************************
-trackRunsDf <- expand.grid(timeChoice = timeChoiceVector,
-                           noiseType = noiseTypeVector,
-                           distinctParameters = seq(1,distinctParameters))
+trackRunsDfSM <- expand.grid(timeChoice = timeChoiceVector,
+                             noiseType = noiseTypeVector,
+                             distinctParameters = seq(1,distinctParameters))
 
-nFirstLoop = nrow(trackRunsDf)
+nFirstLoopSM = nrow(trackRunsDfSM)
 ###*****************************
 
 
@@ -72,7 +72,7 @@ nFirstLoop = nrow(trackRunsDf)
 
 #counter04=0
 #for (counter01 in 1:distinctParameters)
-parallel_Result_SM <- foreach(counter01=1:nFirstLoop) %dopar%
+parallel_Result_SM <- foreach(counter01 = 1:nFirstLoopSM) %dopar%
 {
 
   ###*****************************
@@ -87,9 +87,9 @@ parallel_Result_SM <- foreach(counter01=1:nFirstLoop) %dopar%
 
   ###*****************************
   # make the noise type choice
-  noiseType = trackRunsDf$noiseType[counter01]
+  noiseType = trackRunsDfSM$noiseType[counter01]
   # make time vector choice
-  timeChoice = trackRunsDf$timeChoice[counter01]
+  timeChoice = trackRunsDfSM$timeChoice[counter01]
   ###*****************************
 
 
@@ -235,7 +235,7 @@ parallel_Result_SM <- foreach(counter01=1:nFirstLoop) %dopar%
       # # counter 04 related stuff
       # counter04=counter04+1
       # print(counter04)
-      # initialDoubleSigmoidalValues$runCount <- counter04
+      # initialSigmoidalValues$runCount <- counter04
 
       # add noise related info
       tempOutput$timeChoice = timeChoice   # timechoice
@@ -270,11 +270,11 @@ distinctParameters <- 4  # Used in paper is "50"
 
 
 ###*****************************
-trackRunsDf <- expand.grid(timeChoice = timeChoiceVector,
-                           noiseType = noiseTypeVector,
-                           distinctParameters = seq(1,distinctParameters))
+trackRunsDfDSM <- expand.grid(timeChoice = timeChoiceVector,
+                              noiseType = noiseTypeVector,
+                              distinctParameters = seq(1,distinctParameters))
 
-nFirstLoop = nrow(trackRunsDf)
+nFirstLoopDSM = nrow(trackRunsDfDSM)
 ###*****************************
 
 
@@ -284,7 +284,7 @@ nFirstLoop = nrow(trackRunsDf)
 
 #counter04=0
 #for (counter01 in 1:distinctParameters)
-parallel_Result_DSM <- foreach(counter01=1:distinctParameters) %dopar%
+parallel_Result_DSM <- foreach(counter01 = 1:nFirstLoopDSM) %dopar%
 {
   ###*****************************
   # Generate data frame
@@ -298,9 +298,9 @@ parallel_Result_DSM <- foreach(counter01=1:distinctParameters) %dopar%
 
   ###*****************************
   # make the noise type choice
-  noiseType = trackRunsDf$noiseType[counter01]
+  noiseType = trackRunsDfDSM$noiseType[counter01]
   # make time vector choice
-  timeChoice = trackRunsDf$timeChoice[counter01]
+  timeChoice = trackRunsDfDSM$timeChoice[counter01]
   ###*****************************
 
 
@@ -352,7 +352,6 @@ parallel_Result_DSM <- foreach(counter01=1:distinctParameters) %dopar%
     for (counter03 in 1:distinctRuns)
     {
       #simulate intensity data and add noise
-      intensity_noise <- stats::runif(n = length(time), min = -0.5, max = 0.5) * noiseParameterValue[counter02] * maximumDSMValue
       intensityOriginal <- doublesigmoidalFitFormula(time,
                                                      finalAsymptoteIntensityRatio = finalAsymptoteIntensityRatioValue,
                                                      maximum = maximumDSMValue,
@@ -360,7 +359,20 @@ parallel_Result_DSM <- foreach(counter01=1:distinctParameters) %dopar%
                                                      midPoint1Param = midpoint1ParamValue,
                                                      slope2Param = slope2ParamValue,
                                                      midPointDistanceParam = midPointDistanceParamValue)
-      intensity <- intensityOriginal + intensity_noise
+
+      #simulate intensity data and add noise
+      if(noiseType == "additive")
+      {
+        intensity_noise <- stats::runif(n = length(time), min = -0.5, max = 0.5) *
+          noiseParameterValue[counter02] * maximumDSMValue
+        intensity <- intensityOriginal + intensity_noise
+      }
+      if(noiseType == "multiplicative")
+      {
+        intensity_noise <- 2^(stats::runif(n = length(time), min = -1, max = 1) *
+                                noiseParameterValue[counter02] )
+        intensity <- intensityOriginal * intensity_noise
+      }
 
       dataInput <- data.frame(intensity = intensity, time = time)
       ###*****************************
@@ -473,6 +485,6 @@ sigmoidalOutput$realInput <- "sigmoidal"
 doubleSigmoidalOutput$realInput <- "double_sigmoidal"
 
 
-write.csv(x = sigmoidalOutput, file = "sigmoidalExtendedPerformanceTestResults.csv", row.names = F)
-write.csv(x = doubleSigmoidalOutput, file = "doubleSigmoidalExtendedPerformanceTestResults.csv", row.names = F)
+write.csv(x = sigmoidalOutput, file = "sigmoidalExtendedPerformanceTestResultsParallel.csv", row.names = F)
+write.csv(x = doubleSigmoidalOutput, file = "doubleSigmoidalExtendedPerformanceTestResultsParallel.csv", row.names = F)
 

@@ -301,7 +301,7 @@ for(counter06 in 1 : length(timeChoiceVector))
         for (counter03 in 1:distinctRuns)
         {
           #simulate intensity data and add noise
-          intensity_noise <- stats::runif(n = length(time), min = -0.5, max = 0.5) * noiseParameterValue[counter02] * maximumDSMValue
+          # intensity_noise <- stats::runif(n = length(time), min = -0.5, max = 0.5) * noiseParameterValue[counter02] * maximumDSMValue
           intensityOriginal <- doublesigmoidalFitFormula(time,
                                                          finalAsymptoteIntensityRatio = finalAsymptoteIntensityRatioValue,
                                                          maximum = maximumDSMValue,
@@ -309,7 +309,20 @@ for(counter06 in 1 : length(timeChoiceVector))
                                                          midPoint1Param = midpoint1ParamValue,
                                                          slope2Param = slope2ParamValue,
                                                          midPointDistanceParam = midPointDistanceParamValue)
-          intensity <- intensityOriginal + intensity_noise
+
+          #simulate intensity data and add noise
+          if(noiseType == "additive")
+          {
+            intensity_noise <- stats::runif(n = length(time), min = -0.5, max = 0.5) *
+              noiseParameterValue[counter02] * maximumDSMValue
+            intensity <- intensityOriginal + intensity_noise
+          }
+          if(noiseType == "multiplicative")
+          {
+            intensity_noise <- 2^(stats::runif(n = length(time), min = -1, max = 1) *
+                                    noiseParameterValue[counter02] )
+            intensity <- intensityOriginal * intensity_noise
+          }
 
           dataInput <- data.frame(intensity = intensity, time = time)
           ###*****************************

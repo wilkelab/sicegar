@@ -52,9 +52,9 @@ getDoParWorkers() # check how many cores (workers) are registered
 timeChoiceVector = c("equidistant", "uniform", "beta_0.5_1.5", "beta_2_2", "beta_2_0.25")
 noiseTypeVector = c("additive", "multiplicative")
 
-noiseParameterValue <- seq(from= 0, to = 0.4, length.out = 3) # used in paper is "seq(from= 0, to = 1.5, length.out =11)"
+noiseParameterValue <- seq(from= 0, to = 1.5, length.out = 11) # used in paper is "seq(from= 0, to = 1.5, length.out =11)"
 distinctRuns <- 3  # used in paper is "3"
-distinctParameters <- 4  # Used in paper is "50"
+distinctParameters <- 50  # Used in paper is "50"
 ###*****************************
 
 
@@ -263,9 +263,9 @@ parallel_Result_SM <- foreach(counter01 = 1:nFirstLoopSM) %dopar%
 timeChoiceVector = c("equidistant", "uniform", "beta_0.5_1.5", "beta_2_2", "beta_2_0.25")
 noiseTypeVector = c("additive", "multiplicative")
 
-noiseParameterValue <- seq(from= 0, to = 0.4, length.out = 3) # used in paper is "seq(from= 0, to = 1.5, length.out =11)"
+noiseParameterValue <- seq(from= 0, to = 1.5, length.out = 11) # used in paper is "seq(from= 0, to = 1.5, length.out =11)"
 distinctRuns <- 3  # used in paper is "3"
-distinctParameters <- 4  # Used in paper is "50"
+distinctParameters <- 50  # Used in paper is "50"
 ###*****************************
 
 

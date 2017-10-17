@@ -1,8 +1,8 @@
 Package: sicegar
 Type: Package
 Title: Analysis of Single-Cell Viral Growth Curves
-Version: 0.2.1
-Date: 2017-07-10
+Version: 0.2.2
+Date: 2017-10-16
 Authors@R: c( person("M. Umut", "Caglar", role = c("aut", "cre"), email =
     "umut.caglar@gmail.com"), person("Claus O.", "Wilke", role = c("aut"), email =
     "wilke@austin.utexas.edu") )

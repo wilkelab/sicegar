@@ -52,9 +52,9 @@ getDoParWorkers() # check how many cores (workers) are registered
 timeChoiceVector = c("equidistant", "uniform", "beta_0.5_1.5", "beta_2_2", "beta_2_0.25")
 noiseTypeVector = c("additive", "multiplicative")
 
-noiseParameterValue <- seq(from= 0, to = 1.5, length.out = 11) # used in paper is "seq(from= 0, to = 1.5, length.out =11)"
-distinctRuns <- 3  # used in paper is "3"
-distinctParameters <- 50  # Used in paper is "50"
+noiseParameterValue <- rev(seq(from= 0, to = 1.5, length.out = 11)) # used in paper is "seq(from= 0, to = 1.5, length.out =11)"
+distinctRuns <- 1  # used in paper is "3"
+distinctParameters <- 10  # Used in paper is "50"
 ###*****************************
 
 
@@ -71,8 +71,8 @@ nFirstLoopSM = nrow(trackRunsDfSM)
 # Sigmoidal Analayze
 
 #counter04=0
-#for (counter01 in 1:distinctParameters)
-parallel_Result_SM <- foreach(counter01 = 1:nFirstLoopSM) %dopar%
+#for (counter01 in 1 : nFirstLoopSM)
+parallel_Result_SM <- foreach(counter01 = 1 : nFirstLoopSM) %dopar%
 {
 
   ###*****************************
@@ -153,6 +153,10 @@ parallel_Result_SM <- foreach(counter01 = 1:nFirstLoopSM) %dopar%
 
 
       dataInput <- data.frame(intensity = intensity, time = time)
+      print(paste0("  Process: ", counter01,
+                   "  Max: ", max(dataInput$intensity),
+                   "  Noise type: ", noiseType,
+                   "  Time choice: ", timeChoice))  # will be removed
       ###*****************************
 
 
@@ -263,9 +267,9 @@ parallel_Result_SM <- foreach(counter01 = 1:nFirstLoopSM) %dopar%
 timeChoiceVector = c("equidistant", "uniform", "beta_0.5_1.5", "beta_2_2", "beta_2_0.25")
 noiseTypeVector = c("additive", "multiplicative")
 
-noiseParameterValue <- seq(from= 0, to = 1.5, length.out = 11) # used in paper is "seq(from= 0, to = 1.5, length.out =11)"
-distinctRuns <- 3  # used in paper is "3"
-distinctParameters <- 50  # Used in paper is "50"
+noiseParameterValue <- rev(seq(from= 0, to = 1.5, length.out = 11)) # used in paper is "seq(from= 0, to = 1.5, length.out =11)"
+distinctRuns <- 1  # used in paper is "3"
+distinctParameters <- 10  # Used in paper is "50"
 ###*****************************
 
 

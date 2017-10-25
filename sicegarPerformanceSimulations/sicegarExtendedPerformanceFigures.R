@@ -63,13 +63,17 @@ combinedResults$decision <- factor(combinedResults$decision,
 
 combinedResults$timeChoice <- replace_fun(input_vector = combinedResults$timeChoice,
                                         initialVal = c("equidistant", "uniform", "beta_0.5_1.5", "beta_2_2", "beta_2_0.25"),
-                                        finalVal = c("equidistant", "uniform", "beta a=0.5 b=1.5", "beta a=2 b=2", "beta a=2 b=0.25"))
+                                        finalVal = c("Equidistant", "Uniform", "Beta a=0.5 b=1.5", "Beta a=2 b=2", "Beta a=2 b=0.25"))
 
 combinedResults$timeChoice <- factor(combinedResults$timeChoice,
-                                     levels = c("equidistant", "uniform", "beta a=0.5 b=1.5", "beta a=2 b=2", "beta a=2 b=0.25"))
+                                     levels = c("Equidistant", "Uniform", "Beta a=0.5 b=1.5", "Beta a=2 b=2", "Beta a=2 b=0.25"))
+
+combinedResults$noiseType <- replace_fun(input_vector = combinedResults$noiseType,
+                                          initialVal = c("additive", "multiplicative"),
+                                          finalVal = c("Additive", "Multiplicative"))
 
 combinedResults$noiseType <- factor(combinedResults$noiseType,
-                                     levels = c("additive", "multiplicative"))
+                                     levels = c("Additive", "Multiplicative"))
 
 combinedResults %>%
   dplyr::group_by() %>%
@@ -89,7 +93,7 @@ fig01 <- ggplot2::ggplot(combinedResults, aes(x=noiseLevel2, y=mAError)) +
   xlab("Percent Noise Level")+
   ylab("Normalized Mean Absolute Error")+
   ylim(0,0.3)+
-  facet_grid(noiseType + timeChoice ~ realInput)+
+  facet_grid(timeChoice ~ noiseType + realInput)+
   theme_bw()+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank())
@@ -104,14 +108,15 @@ fig01b <- ggplot2::ggplot(combinedResults, aes(x=noiseLevel2, y=mAError)) +
   xlab("Percent Noise Level")+
   ylab("Normalized Mean Absolute Error")+
   ylim(0,0.3)+
-  facet_grid(noiseType + timeChoice ~ realInput)+
+  facet_grid(timeChoice ~ noiseType + realInput)+
   theme_bw()+
   theme(panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank())
+        panel.grid.minor.y = element_blank(),
+        panel.spacing = unit(1, "lines"))
 
 print(fig01b)
 
-cowplot::save_plot(filename = "ViolinDistributionExtended.pdf", plot = fig01b, ncol = 2.2, nrow = 5)
+cowplot::save_plot(filename = "ViolinDistributionExtended.pdf", plot = fig01b, ncol = 4.4, nrow = 5/2)
 
 combinedResults %>%
   group_by(realInput, noiseLevel2, decision, noiseType, timeChoice) %>%
@@ -121,7 +126,7 @@ combinedResults %>%
 
 brks <- c(0, 0.25, 0.5, 0.75, 1)
 fig02 <- ggplot2::ggplot(combinedResultsSum, aes(x = noiseLevel2, y = perc, fill = decision)) +
-  facet_grid(noiseType + timeChoice ~ realInput)+
+  facet_grid(timeChoice ~ noiseType + realInput)+
   geom_bar(stat="identity", width = 0.8)+
   scale_y_continuous(breaks = brks, labels = scales::percent(brks), expand = c(0,0))+
   scale_fill_manual(values = c("#66c2a5","#fc8d62","#e78ac3","#8da0cb"), name = "Class")+
@@ -131,11 +136,12 @@ fig02 <- ggplot2::ggplot(combinedResultsSum, aes(x = noiseLevel2, y = perc, fill
   theme_bw()+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
-        legend.position="top")
+        legend.position="top",
+        panel.spacing = unit(1, "lines"))
 
 print(fig02)
 
-cowplot::save_plot(filename = "barDistributionExtended.pdf", plot = fig02, ncol = 2.2, nrow = 5)
+cowplot::save_plot(filename = "barDistributionExtended.pdf", plot = fig02, ncol = 2.2*2 , nrow = 5/2)
 ###*****************************
 
 

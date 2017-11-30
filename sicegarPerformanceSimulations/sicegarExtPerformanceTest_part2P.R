@@ -52,7 +52,7 @@ getDoParWorkers() # check how many cores (workers) are registered
 ###*****************************
 # Load data
 load(file = "distinct_runs_supplementary_fig.Rda")
-df <- df[1:10,]  # LETS GET DANGEROUS
+#df <- df[1:10,]  # LETS GET DANGEROUS
 ###*****************************
 
 
@@ -153,7 +153,7 @@ main_function <- function(condition_vector, error_mode = FALSE)
 {
   # 0. step: print run_no
   run_no <- condition_vector$run_no
-  print(paste0("run_no: ", run_no))
+  cat(paste0("\n","run no: ", run_no,"\n"))
 
   # 1. step: extract parameters
   if(error_mode){print("step 1")}
@@ -244,6 +244,7 @@ main_function <- function(condition_vector, error_mode = FALSE)
 
 ###*****************************
 # The code that runs the main function
+#for(counter01 in 1 : ProcCount)
 df_prediction_list <- foreach(counter01 = 1 : ProcCount) %dopar%
 {
   df %>%
@@ -258,7 +259,6 @@ df_prediction_list %>%
   purrr::map_df(bind_rows) %>%
   dplyr::arrange(run_no)-> df_prediction
 
-browser()
 
 for(counter01 in 1: nrow(df_prediction))
 {names(df_prediction$p_model_parameters[[counter01]]) <- paste0("p_", names(df_prediction$p_model_parameters[[counter01]]))}

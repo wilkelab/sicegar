@@ -20,6 +20,21 @@ set.seed(seedNo)
 ###*****************************
 
 
+###*****************************
+# Required packages
+
+# Sicegar and Data Related
+require("sicegar")
+require("tidyverse")
+require("cowplot")
+require("dplyr")
+
+# Parallel
+require("doMC")
+require("foreach")
+###*****************************
+
+
 #********************************************
 # ARRANGE BACKENDS
 ## use the multicore library
@@ -34,27 +49,16 @@ getDoParWorkers() # check how many cores (workers) are registered
 
 
 ###*****************************
-# Required packages
-
-# Sicegar and Data Related
-require("sicegar")
-require("tidyverse")
-require("cowplot")
-require("dplyr")
-###*****************************
-
-
-###*****************************
 # Parameters
 
 initial_model = c("SM", "DSM")
 #initial_model = c("DSM")
 noise_type_vector = c("additive", "multiplicative")
-time_sampling_vector = c("equidistant", "uniform", "beta_0.5_1.5", "beta_2_2", "beta_2_0.25")
+time_sampling_vector = c("equidistant", "uniform", "beta_0.5_1.5", "beta_2_2", "beta_1.5_0.5")
 
 
-noise_parameter_vector <- seq(from= 0, to = 1.5, length.out = 3) # used value in supplementary figure is "seq(from = 0, to = 1.5, length.out = 11)"
-distinct_model_parameters <- 2  # Used value in supplementary figure is "50"
+noise_parameter_vector <- seq(from= 0, to = 1.5, length.out = 11) # used value in supplementary figure is "seq(from = 0, to = 1.5, length.out = 11)"
+distinct_model_parameters <- 50  # Used value in supplementary figure is "50"
 distinct_runs <- 1  # used value in supplementary figure is "1"
 
 n_samples = 55
@@ -311,10 +315,20 @@ double_sigmoidal_parameters <- function(true_model, run_no)
 
 
 # add model parameters to df
-df %>%
-  group_by(true_model, noise_type, time_sampling,
-           noise_parameter, distinct_model_parameters, distinct_runs, run_no, par_work) %>%
-  dplyr::do(sm_param = sigmoidal_parameters(.$true_model, .$run_no)) -> df2_sm
+df2_sm_list <- foreach(counter01 = 1 : ProcCount) %dopar%
+{
+  df %>%
+    dplyr::filter(par_work == counter01) %>%
+    group_by(true_model, noise_type, time_sampling,
+             noise_parameter, distinct_model_parameters, distinct_runs, run_no, par_work) %>%
+    dplyr::do(sm_param = sigmoidal_parameters(.$true_model, .$run_no)) -> df2_sm_sub
+}
+
+df2_sm_list %>%
+  purrr::map_df(bind_rows) %>%
+  dplyr::arrange(run_no)-> df2_sm
+
+
 
 df2_dsm_list <- foreach(counter01 = 1 : ProcCount) %dopar%
 {
@@ -324,6 +338,7 @@ df2_dsm_list <- foreach(counter01 = 1 : ProcCount) %dopar%
              noise_parameter, distinct_model_parameters, distinct_runs, run_no, par_work) %>%
     dplyr::do(dsm_param = double_sigmoidal_parameters(.$true_model, .$run_no)) -> df2_dsm_sub
 }
+
 df2_dsm_list %>%
   purrr::map_df(bind_rows) %>%
   dplyr::arrange(run_no)-> df2_dsm

@@ -52,7 +52,6 @@ getDoParWorkers() # check how many cores (workers) are registered
 ###*****************************
 # Load data
 load(file = "distinct_runs_supplementary_fig.Rda")
-#df <- df[1:10,]  # LETS GET DANGEROUS
 ###*****************************
 
 
@@ -149,7 +148,7 @@ intensity_data_generation <- function(model_choice, time, model_parameters)
 # The main function:
 # use: the inputs true_model, noise_type, noise_parameter, model_parameters
 # generate: predicted_model, model_parameters
-main_function <- function(condition_vector, error_mode = FALSE)
+main_function_sub <- function(condition_vector, error_mode = FALSE)
 {
   # 0. step: print run_no
   run_no <- condition_vector$run_no
@@ -240,6 +239,23 @@ main_function <- function(condition_vector, error_mode = FALSE)
 
 }
 ###*****************************
+
+main_function <- function(condition_vector, error_mode_ = FALSE)
+{
+
+  try((main_function_sub(condition_vector, error_mode = error_mode_))) -> p_model_parameters
+  if (class(p_model_parameters) == "try-error")
+  {
+    p_model_parameters = c()
+    p_model_parameters$error = 1
+  }
+  return(p_model_parameters)
+}
+
+
+
+
+
 
 
 ###*****************************

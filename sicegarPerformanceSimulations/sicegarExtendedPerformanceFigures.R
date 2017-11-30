@@ -145,4 +145,9 @@ cowplot::save_plot(filename = "barDistributionExtended.pdf", plot = fig02, ncol 
 ###*****************************
 
 
+###*****************************
+# Combine figures and save them
 
+fig_comb <- cowplot::plot_grid(fig02, fig01b, nrow=2, labels = c("A", "B"), scale = 1)
+cowplot::save_plot(filename = "extendedFigCombined.pdf", plot = fig_comb, nrow = 4.5, ncol =3)
+###*****************************

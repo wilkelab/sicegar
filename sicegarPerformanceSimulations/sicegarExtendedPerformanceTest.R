@@ -35,9 +35,9 @@ require("dplyr")
 timeChoiceVector = c("equidistant", "uniform", "beta_0.5_1.5", "beta_2_2", "beta_2_0.25")
 noiseTypeVector = c("additive", "multiplicative")
 
-noiseParameterValue <- seq(from= 0, to = 0.4, length.out = 3) # used in paper is "seq(from= 0, to = 1.5, length.out =11)"
+noiseParameterValue <- seq(from= 0, to = 1.5, length.out = 11) # used in paper is "seq(from= 0, to = 1.5, length.out =11)"
 distinctRuns <- 3  # used in paper is "3"
-distinctParameters <- 4  # Used in paper is "50"
+distinctParameters <- 50  # Used in paper is "50"
 ###*****************************
 
 
@@ -78,9 +78,9 @@ for(counter06 in 1 : length(timeChoiceVector))
     counter04=0
     for (counter01 in 1:distinctParameters)
     {
-      maximumSMValue <- runif(1, 0.3, 20)  # used in paper is "runif(1, 0.3, 20)"
-      slopeParamValue <- runif(1, 0.001, 40)   # used in paper is "runif(1, 0.001, 40)"
-      midpointValue <- runif(1, 3, 27)     # used in paper is "runif(1, 3, 27)"
+      maximumSMValue <- runif(n=1, min = 0.3, max = 20)  # used in paper is "runif(1, 0.3, 20)"
+      slopeParamValue <- tan(runif(n=1, min = 0.0, max = pi/2))   # used in paper is "runif(1, 0.001, 40)"
+      midpointValue <- runif(n=1, min = 3, max = 27)     # used in paper is "runif(1, 3, 27)"
 
       initialSigmoidalValues <- as.data.frame(t(c(maximumSMValue=maximumSMValue,
                                                   slopeParamValue=slopeParamValue,
@@ -102,6 +102,7 @@ for(counter06 in 1 : length(timeChoiceVector))
                                                             maximum = maximumSMValue,
                                                             slopeParam = slopeParamValue,
                                                             midPoint = midpointValue)
+
 
           #simulate intensity data and add noise
           if(noiseType == "additive")
@@ -137,6 +138,7 @@ for(counter06 in 1 : length(timeChoiceVector))
                                                       midPoint = fitObj$summaryVector$midPoint_x,
                                                       slopeParam = fitObj$sigmoidalModel$slopeParam_Estimate)
 
+            AIC_score <- fitObj$decisionProcess$sigmoidalAIC
             mAError <- mean(abs(intensityPredicted - intensityOriginal)) / max(intensityOriginal)
 
             tempOutput=as.data.frame(t(c(noiseLevel = noiseParameterValue[counter02],
@@ -147,10 +149,13 @@ for(counter06 in 1 : length(timeChoiceVector))
                                          midpoint = fitObj$summaryVector$midPoint_x,
                                          slopeParam = fitObj$sigmoidalModel$slopeParam_Estimate,
 
-                                         mAError = mAError)))
+                                         mAError = mAError,
+                                         AIC_score = AIC_score)))
 
-            tempOutput[,c("noiseLevel", "distinctRunNo", "maximumSM", "midpoint", "slopeParam", "mAError")] <-
-              as.numeric(as.character(unlist(tempOutput[,c("noiseLevel", "distinctRunNo", "maximumSM", "midpoint", "slopeParam", "mAError")])))
+            tempOutput[,c("noiseLevel", "distinctRunNo", "maximumSM", "midpoint", "slopeParam",
+                          "mAError", "AIC_score")] <-
+              as.numeric(as.character(unlist(tempOutput[,c("noiseLevel", "distinctRunNo", "maximumSM", "midpoint", "slopeParam",
+                                                           "mAError", "AIC_score")])))
           }
 
           if(fitObj$summaryVector$decision=="double_sigmoidal")
@@ -163,6 +168,7 @@ for(counter06 in 1 : length(timeChoiceVector))
                                                             slope2Param = fitObj$doubleSigmoidalModel$slope2Param_Estimate,
                                                             midPointDistanceParam = fitObj$doubleSigmoidalModel$midPointDistanceParam_Estimate)
 
+            AIC_score <- fitObj$decisionProcess$doublesigmoidalAIC
             mAError <- mean(abs(intensityPredicted - intensityOriginal)) / max(intensityOriginal)
 
             tempOutput=as.data.frame(t(c(noiseLevel=noiseParameterValue[counter02],
@@ -176,16 +182,19 @@ for(counter06 in 1 : length(timeChoiceVector))
                                          slope2Param = fitObj$doubleSigmoidalModel$slope2Param_Estimate,
                                          midPointDistanceParam = fitObj$doubleSigmoidalModel$midPointDistanceParam_Estimate,
 
-                                         mAError = mAError)))
+                                         mAError = mAError,
+                                         AIC_score = AIC_score)))
 
             tempOutput[,c("noiseLevel", "distinctRunNo",
                           "finalAsymptoteIntensityRatio", "maximumDSM",
                           "slope1Param", "midPoint1Param",
-                          "slope2Param", "midPointDistanceParam", "mAError")] <-
+                          "slope2Param", "midPointDistanceParam",
+                          "mAError", "AIC_score")] <-
               as.numeric(as.character(unlist(tempOutput[,c("noiseLevel", "distinctRunNo",
                                                            "finalAsymptoteIntensityRatio", "maximumDSM",
                                                            "slope1Param", "midPoint1Param",
-                                                           "slope2Param", "midPointDistanceParam", "mAError")])))
+                                                           "slope2Param", "midPointDistanceParam",
+                                                           "mAError", "AIC_score")])))
           }
 
           if(fitObj$summaryVector$decision %in% c("ambiguous","no_signal"))
@@ -235,9 +244,9 @@ doubleSigmoidalOutput <- data.frame(runCount=double(), noiseLevel=double(), dist
 timeChoiceVector = c("equidistant", "uniform", "beta_0.5_1.5", "beta_2_2", "beta_2_0.25")
 noiseTypeVector = c("additive", "multiplicative")
 
-noiseParameterValue <- seq(from= 0, to = 0.4, length.out = 3) # used in paper is "seq(from= 0, to = 1.5, length.out =11)"
+noiseParameterValue <- seq(from= 0, to = 1.5, length.out = 11) # used in paper is "seq(from= 0, to = 1.5, length.out =11)"
 distinctRuns <- 3  # used in paper is "3"
-distinctParameters <- 4  # Used in paper is "50"
+distinctParameters <- 50  # Used in paper is "50"
 ###*****************************
 
 
@@ -271,12 +280,12 @@ for(counter06 in 1 : length(timeChoiceVector))
     counter04=0
     for (counter01 in 1:distinctParameters)
     {
-      finalAsymptoteIntensityRatioValue <- runif(1, 0, 0.85)
-      maximumDSMValue <- runif(1, 0.3, 20)
-      slope1ParamValue <- runif(1, 0.001, 40)
-      midpoint1ParamValue <- runif(1, 3, 26)
-      slope2ParamValue <- runif(1, 0.001, 40)
-      midPointDistanceParamValue = runif(1, 1, 27-midpoint1ParamValue)
+      finalAsymptoteIntensityRatioValue <- runif(n = 1, min = 0, max = 0.85)
+      maximumDSMValue <- runif(n = 1, min = 0.3, max = 20)
+      slope1ParamValue <- tan(runif(n=1, min = 0.0, max = pi/2)) # was runif(1, 0.001, 40)
+      midpoint1ParamValue <- runif(n = 1, min = 3, max = 26)
+      slope2ParamValue <- tan(runif(n = 1, min = 0.0, max = pi/2)) # was runif(1, 0.001, 40)
+      midPointDistanceParamValue = runif(n = 1, min = 1, max = 27-midpoint1ParamValue)
 
       initialDoubleSigmoidalValues <- as.data.frame(t(c(finalAsymptoteIntensityRatioValue=finalAsymptoteIntensityRatioValue,
                                                         maximumDSMValue=maximumDSMValue,
@@ -343,6 +352,7 @@ for(counter06 in 1 : length(timeChoiceVector))
                                                       midPoint = fitObj$summaryVector$midPoint_x,
                                                       slopeParam = fitObj$sigmoidalModel$slopeParam_Estimate)
 
+            AIC_score <- fitObj$decisionProcess$sigmoidalAIC
             mAError <- mean(abs(intensityPredicted - intensityOriginal)) / max(intensityOriginal)
 
             tempOutput=as.data.frame(t(c(noiseLevel = noiseParameterValue[counter02],
@@ -353,10 +363,13 @@ for(counter06 in 1 : length(timeChoiceVector))
                                          midpoint = fitObj$summaryVector$midPoint_x,
                                          slopeParam = fitObj$sigmoidalModel$slopeParam_Estimate,
 
-                                         mAError = mAError)))
+                                         mAError = mAError,
+                                         AIC_score =AIC_score)))
 
-            tempOutput[,c("noiseLevel", "distinctRunNo", "maximumSM", "midpoint", "slopeParam", "mAError")] <-
-              as.numeric(as.character(unlist(tempOutput[,c("noiseLevel", "distinctRunNo", "maximumSM", "midpoint", "slopeParam", "mAError")])))
+            tempOutput[,c("noiseLevel", "distinctRunNo", "maximumSM", "midpoint", "slopeParam",
+                          "mAError", "AIC_score")] <-
+              as.numeric(as.character(unlist(tempOutput[,c("noiseLevel", "distinctRunNo", "maximumSM", "midpoint", "slopeParam",
+                                                           "mAError", "AIC_score")])))
 
             sicegar::figureModelCurves(dataInput = dataInput,
                                        sigmoidalFitVector = fitObj$sigmoidalModel,
@@ -374,6 +387,7 @@ for(counter06 in 1 : length(timeChoiceVector))
                                                             slope2Param = fitObj$doubleSigmoidalModel$slope2Param_Estimate,
                                                             midPointDistanceParam = fitObj$doubleSigmoidalModel$midPointDistanceParam_Estimate)
 
+            AIC_score <- fitObj$decisionProcess$doublesigmoidalAIC
             mAError <- mean(abs(intensityPredicted - intensityOriginal)) / max(intensityOriginal)
 
 
@@ -388,16 +402,19 @@ for(counter06 in 1 : length(timeChoiceVector))
                                          slope2Param = fitObj$doubleSigmoidalModel$slope2Param_Estimate,
                                          midPointDistanceParam = fitObj$doubleSigmoidalModel$midPointDistanceParam_Estimate,
 
-                                         mAError = mAError)))
+                                         mAError = mAError,
+                                         AIC_score = AIC_score)))
 
             tempOutput[,c("noiseLevel", "distinctRunNo",
                           "finalAsymptoteIntensityRatio", "maximumDSM",
                           "slope1Param", "midPoint1Param",
-                          "slope2Param", "midPointDistanceParam", "mAError")] <-
+                          "slope2Param", "midPointDistanceParam",
+                          "mAError", "AIC_score")] <-
               as.numeric(as.character(unlist(tempOutput[,c("noiseLevel", "distinctRunNo",
                                                            "finalAsymptoteIntensityRatio", "maximumDSM",
                                                            "slope1Param", "midPoint1Param",
-                                                           "slope2Param", "midPointDistanceParam", "mAError")])))
+                                                           "slope2Param", "midPointDistanceParam",
+                                                           "mAError", "AIC_score")])))
           }
 
           if(fitObj$summaryVector$decision %in% c("ambiguous","no_signal"))
@@ -431,6 +448,6 @@ sigmoidalOutput$realInput <- "sigmoidal"
 doubleSigmoidalOutput$realInput <- "double_sigmoidal"
 
 
-write.csv(x = sigmoidalOutput, file = "sigmoidalExtendedPerformanceTestResults.csv", row.names = F)
-write.csv(x = doubleSigmoidalOutput, file = "doubleSigmoidalExtendedPerformanceTestResults.csv", row.names = F)
+write.csv(x = sigmoidalOutput, file = "sigmoidalExtendedPerformanceTestResultsAIC.csv", row.names = F)
+write.csv(x = doubleSigmoidalOutput, file = "doubleSigmoidalExtendedPerformanceTestResultsAIC.csv", row.names = F)
 

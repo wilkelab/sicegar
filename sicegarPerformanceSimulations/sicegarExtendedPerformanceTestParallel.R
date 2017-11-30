@@ -37,7 +37,7 @@ require("foreach")
 # ARRANGE BACKENDS
 ## use the multicore library
 # a.
-ProcCount <- 7 # registers specified number of workers  or
+ProcCount <- 5 # registers specified number of workers  or
 registerDoMC(ProcCount) # Or, reserve all all available cores
 # b.
 #registerDoMC()  # Automatically assign cores
@@ -54,7 +54,7 @@ noiseTypeVector = c("additive", "multiplicative")
 
 noiseParameterValue <- rev(seq(from= 0, to = 1.5, length.out = 11)) # used in paper is "seq(from= 0, to = 1.5, length.out =11)"
 distinctRuns <- 1  # used in paper is "3"
-distinctParameters <- 10  # Used in paper is "50"
+distinctParameters <- 10  # Used in paper is "10"
 ###*****************************
 
 
@@ -110,7 +110,7 @@ parallel_Result_SM <- foreach(counter01 = 1 : nFirstLoopSM) %dopar%
 
   ###*****************************
   maximumSMValue <- runif(1, 0.3, 20)  # used in paper is "runif(1, 0.3, 20)"
-  slopeParamValue <- runif(1, 0.001, 40)   # used in paper is "runif(1, 0.001, 40)"
+  slopeParamValue <- tan(runif(n = 1, min = 0.0, max = pi/2))   # used in paper is "runif(1, 0.001, 40)"
   midpointValue <- runif(1, 3, 27)     # used in paper is "runif(1, 3, 27)"
   ###*****************************
 
@@ -288,7 +288,7 @@ nFirstLoopDSM = nrow(trackRunsDfDSM)
 
 #counter04=0
 #for (counter01 in 1:distinctParameters)
-parallel_Result_DSM <- foreach(counter01 = 1:nFirstLoopDSM) %dopar%
+parallel_Result_DSM <- foreach(counter01 = 1:nFirstLoopDSM) %do%
 {
   ###*****************************
   # Generate data frame
@@ -326,9 +326,9 @@ parallel_Result_DSM <- foreach(counter01 = 1:nFirstLoopDSM) %dopar%
   ###*****************************
   finalAsymptoteIntensityRatioValue <- runif(1, 0, 0.85)
   maximumDSMValue <- runif(1, 0.3, 20)
-  slope1ParamValue <- runif(1, 0.001, 40)
+  slope1ParamValue <- tan(runif(n = 1, min = 0.0, max = pi/2))
   midpoint1ParamValue <- runif(1, 3, 26)
-  slope2ParamValue <- runif(1, 0.001, 40)
+  slope2ParamValue <- tan(runif(n = 1, min = 0.0, max = pi/2))
   midPointDistanceParamValue = runif(1, 1, 27-midpoint1ParamValue)
   ###*****************************
 

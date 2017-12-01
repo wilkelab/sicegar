@@ -121,7 +121,7 @@ fig01b <- ggplot2::ggplot(combinedResults, aes(x=noise_parameter_2, y=p_mean_abs
 
 print(fig01b)
 
-cowplot::save_plot(filename = "ViolinDistributionExtended2.pdf", plot = fig01b, ncol = 4.4, nrow = 5/2)
+cowplot::save_plot(filename = "ViolinDistributionExtended.pdf", plot = fig01b, ncol = 4.4, nrow = 5/2)
 
 combinedResults %>%
   group_by(true_model, noise_parameter_2, p_predicted_model, noise_type, time_sampling) %>%
@@ -146,7 +146,7 @@ fig02 <- ggplot2::ggplot(combinedResultsSum, aes(x = noise_parameter_2, y = perc
 
 print(fig02)
 
-cowplot::save_plot(filename = "barDistributionExtended2.pdf", plot = fig02, ncol = 2.2*2 , nrow = 5/2)
+cowplot::save_plot(filename = "barDistributionExtended.pdf", plot = fig02, ncol = 2.2*2 , nrow = 5/2)
 
 ###*****************************
 
@@ -155,5 +155,66 @@ cowplot::save_plot(filename = "barDistributionExtended2.pdf", plot = fig02, ncol
 # Combine figures and save them
 
 fig_comb <- cowplot::plot_grid(fig02, fig01b, nrow=2, labels = c("A", "B"), scale = 1)
-cowplot::save_plot(filename = "extendedFigCombined2.pdf", plot = fig_comb, nrow = 4.5, ncol =3)
+cowplot::save_plot(filename = "extendedFigCombined.pdf", plot = fig_comb, nrow = 4.5, ncol =3)
+###*****************************
+
+
+
+###*****************************
+# GENERATE THE SUB FIGURE
+combinedResults %>%
+  dplyr::filter(time_sampling == "Equidistant",
+                noise_type == "Additive") -> combined_results_sub
+
+
+fig03 <- ggplot2::ggplot(combined_results_sub, aes(x=noise_parameter_2, y=p_mean_absolute_error)) +
+  geom_violin(scale = "width", fill="lightblue", color="white")+
+  geom_sina(size=.3, scale = FALSE, color= "darkblue")+
+  xlab("Percent Noise Level")+
+  ylab("Normalized Mean Absolute Error")+
+  ylim(0,0.3)+
+  facet_grid(. ~ true_model)+
+  theme_bw()+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        panel.spacing = unit(1, "lines"))
+
+print(fig03)
+
+
+cowplot::save_plot(filename = "ViolinDistribution.pdf", plot = fig03, ncol = 2.2, nrow = 1)
+
+combined_results_sub %>%
+  group_by(true_model, noise_parameter_2, p_predicted_model, noise_type, time_sampling) %>%
+  summarise(count=n()) %>%
+  group_by(true_model, noise_parameter_2, noise_type, time_sampling) %>%
+  mutate(perc=count/sum(count)) -> combined_results_sub_sum
+
+
+brks <- c(0, 0.25, 0.5, 0.75, 1)
+fig04 <- ggplot2::ggplot(combined_results_sub_sum, aes(x = noise_parameter_2, y = perc, fill = p_predicted_model)) +
+  facet_grid(. ~ true_model)+
+  geom_bar(stat="identity", width = 0.8)+
+  scale_y_continuous(breaks = brks, labels = scales::percent(brks), expand = c(0,0))+
+  scale_fill_manual(values = c("#66c2a5","#fc8d62","#8da0cb"), name = "Class")+
+  geom_text(aes(x=1, y=1.03, label="Stretch it"), vjust=-1)+
+  xlab("Percent Noise Level")+
+  ylab("Percent Decision Category")+
+  theme_bw()+
+  theme(panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        legend.position="top",
+        panel.spacing = unit(1, "lines"))
+
+print(fig04)
+
+cowplot::save_plot(filename = "barDistribution.pdf", plot = fig04, ncol = 2.2, nrow = 1)
+###*****************************
+
+
+###*****************************
+# Combine figures and save them
+
+fig_comb <- cowplot::plot_grid(fig04, fig03, nrow=2, labels = c("A", "B"), scale = 1)
+cowplot::save_plot(filename = "figCombined.pdf", plot = fig_comb, nrow = 2, ncol = 2.2)
 ###*****************************

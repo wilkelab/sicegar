@@ -293,7 +293,7 @@ df %>%
                                            unlist(.$p_model_parameters)))),
                      FUN = as.character))) -> df_e
 
-save(... = df, file = "distinct_runs_with_label_exp_supplementary_fig.Rda")
+write.csv(x = df_e, file = "distinct_runs_with_label_exp_supplementary_fig.csv", row.names = FALSE)
 ###*****************************
 
 

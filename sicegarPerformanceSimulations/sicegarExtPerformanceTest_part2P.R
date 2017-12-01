@@ -281,11 +281,19 @@ for(counter01 in 1: nrow(df_prediction))
 
 dplyr::left_join(df, df_prediction) -> df
 
+save(... = df, file = "distinct_runs_with_label_supplementary_fig.Rda")
+load(file = "distinct_runs_with_label_supplementary_fig.Rda")
+
 df %>%
   dplyr::group_by(true_model, noise_type, time_sampling,
                   noise_parameter, distinct_model_parameters, distinct_runs, run_no,
                   n_samples, t_min, t_max) %>%
-  dplyr::do(.,as.data.frame(t(c(unlist(.$sm_param), unlist(.$dsm_param), unlist(.$p_model_parameters))))) -> df_e
+  dplyr::do(.,as.data.frame(lapply(X = as.data.frame(t(c(unlist(.$sm_param),
+                                           unlist(.$dsm_param),
+                                           unlist(.$p_model_parameters)))),
+                     FUN = as.character))) -> df_e
+
+save(... = df, file = "distinct_runs_with_label_exp_supplementary_fig.Rda")
 ###*****************************
 
 

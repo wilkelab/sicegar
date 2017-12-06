@@ -5,10 +5,10 @@
 # noise types: additive / multiplicative	                                                          2
 # temporal distributions: uniform + normal + 3 beta distibutions	                                  5
 # noise levels:  "seq(from= 0, to = 1.5, length.out = 11)"	                                        11
-# distinct parameters sets that will be used to generate initial distributions	                    10
+# distinct parameters sets that will be used to generate initial distributions	                    50
 # distinct runs for given parameter set and with given temporal distributions	                      1
 
-#                                                                           Total	                  2200
+#                                                                           Total	                  11000
 
 ###*****************************
 # INITIAL COMMANDS TO RESET THE SYSTEM

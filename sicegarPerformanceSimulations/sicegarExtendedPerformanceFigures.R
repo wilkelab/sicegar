@@ -81,6 +81,7 @@ combined_results$noise_type <- factor(combined_results$noise_type,
 
 
 combined_results %>%
+  dplyr::filter(!is.na(p_predicted_model)) %>%
   dplyr::group_by() %>%
   dplyr::mutate(random_sampling = sample(x = c(0,1),size = n(),replace = T, prob = c(1,1))) %>%
   dplyr::mutate(noise_parameter_2 = noise_parameter * 100) -> combined_results
@@ -104,8 +105,6 @@ fig01 <- ggplot2::ggplot(combined_results, aes(x=noise_parameter_2, y=p_mean_abs
         panel.grid.minor.y = element_blank())
 
 print(fig01)
-
-
 
 fig01b <- ggplot2::ggplot(combined_results, aes(x=noise_parameter_2, y=p_mean_absolute_error)) +
   geom_violin(scale = "width", fill="lightblue", color="white")+
@@ -147,7 +146,6 @@ fig02 <- ggplot2::ggplot(combined_results_sum, aes(x = noise_parameter_2, y = pe
 print(fig02)
 
 cowplot::save_plot(filename = "barDistributionExtended.pdf", plot = fig02, ncol = 2.2*2 , nrow = 5/2)
-
 ###*****************************
 
 

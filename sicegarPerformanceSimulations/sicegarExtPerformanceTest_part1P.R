@@ -313,7 +313,7 @@ double_sigmoidal_parameters <- function(true_model, run_no)
   return(output2)
 }
 
-
+browser()
 # add model parameters to df
 df2_sm_list <- foreach(counter01 = 1 : ProcCount) %dopar%
 {
@@ -352,6 +352,7 @@ df2 %>%
 
 # Save the df
 df <- df2
+browser()
 save(... = df, file = "distinct_runs_supplementary_fig.Rda", compression_level = 9)
 ###*****************************
 

@@ -4,3 +4,4 @@
 ^\.codecov\.yml$
 ^sicegarPerformanceSimulations$
 ^appendixFigures$
+^cran-comments\.md$

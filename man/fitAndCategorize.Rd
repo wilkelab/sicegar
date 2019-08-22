@@ -11,9 +11,10 @@ fitAndCategorize(dataInput, dataInputName = NA, n_runs_min_sm = 20,
   midPoint = -0.52), upperBounds_sm = c(maximum = 1.5, slopeParam = 180,
   midPoint = 1.15), min_Factor_sm = 1/2^20, n_iterations_sm = 1000,
   startList_dsm = list(finalAsymptoteIntensityRatio = 0, maximum = 1,
-  slope1Param = 1, midPoint1Param = 0.33, slope2Param = 1, midPointDistanceParam
-  = 0.29), lowerBounds_dsm = c(finalAsymptoteIntensityRatio = 0, maximum =
-  0.3, slope1Param = 0.01, midPoint1Param = -0.52, slope2Param = 0.01,
+  slope1Param = 1, midPoint1Param = 0.33, slope2Param = 1,
+  midPointDistanceParam = 0.29),
+  lowerBounds_dsm = c(finalAsymptoteIntensityRatio = 0, maximum = 0.3,
+  slope1Param = 0.01, midPoint1Param = -0.52, slope2Param = 0.01,
   midPointDistanceParam = 0.04),
   upperBounds_dsm = c(finalAsymptoteIntensityRatio = 1, maximum = 1.5,
   slope1Param = 180, midPoint1Param = 1.15, slope2Param = 180,

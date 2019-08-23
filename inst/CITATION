@@ -1,0 +1,28 @@
+bibentry(
+  "article",
+  title = "Sicegar: {R} package for sigmoidal and double-sigmoidal curve fitting",
+  author = c(
+    person(
+      given = "M. Umut",
+      family = "Caglar",
+    ),
+    person(
+      given = "Ashley I.",
+      family = "Teufel",
+    ),
+    person(
+      given = "Claus O.",
+      family = "Wilke",
+    )
+  ),
+  year = 2018,
+  journal = "PeerJ",
+  volume = 6,
+  pages = "e4251",
+  doi = "10.7717/peerj.4251",
+  textVersion = "Caglar MU, Teufel AI, Wilke CO. 2018. Sicegar: R package for sigmoidal and double-sigmoidal curve fitting. PeerJ 6:e4251 https://doi.org/10.7717/peerj.4251",
+
+  mheader = "To cite sicegar in publications use",
+
+  mfooter = ""
+)

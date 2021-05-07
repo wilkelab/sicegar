@@ -4,8 +4,15 @@
 \alias{multipleFitFunction}
 \title{multiple fit function.}
 \usage{
-multipleFitFunction(dataInput, dataInputName = NA, model,
-  n_runs_min = 20, n_runs_max = 500, showDetails = FALSE, ...)
+multipleFitFunction(
+  dataInput,
+  dataInputName = NA,
+  model,
+  n_runs_min = 20,
+  n_runs_max = 500,
+  showDetails = FALSE,
+  ...
+)
 }
 \arguments{
 \item{dataInput}{A data frame or a list contatining the dataframe. The data frame should be composed of at least two columns. One represents time, and the other represents intensity. The data should be normalized with the normalize data function sicegar::normalizeData() before imported into this function.}

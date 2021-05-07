@@ -1,7 +1,7 @@
 Package: sicegar
 Type: Package
 Title: Analysis of Single-Cell Viral Growth Curves
-Version: 0.2.3.9900
+Version: 0.2.4
 Authors@R: c( 
     person(
       given = "M. Umut",
@@ -34,12 +34,12 @@ Imports:
     ggplot2,
     stats
 License: GPL-2 | GPL-3
-LazyData: true
 Suggests:
     covr,
     cowplot,
     testthat,
-    knitr
+    knitr,
+    rmarkdown
 VignetteBuilder: knitr
 BugReports: https://github.com/wilkelab/sicegar/issues
 Collate:
@@ -53,4 +53,6 @@ Collate:
     'dataInputCheck.R'
     'parameterCalculation.R'
     'figureGeneration.R'
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
+Encoding: UTF-8
+

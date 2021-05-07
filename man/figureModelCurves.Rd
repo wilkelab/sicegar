@@ -4,10 +4,16 @@
 \alias{figureModelCurves}
 \title{Generate model associated figures.}
 \usage{
-figureModelCurves(dataInput, sigmoidalFitVector = NULL,
-  doubleSigmoidalFitVector = NULL, showParameterRelatedLines = FALSE,
-  xlabelText = "time", ylabelText = "intensity", fittedXmin = 0,
-  fittedXmax = NA)
+figureModelCurves(
+  dataInput,
+  sigmoidalFitVector = NULL,
+  doubleSigmoidalFitVector = NULL,
+  showParameterRelatedLines = FALSE,
+  xlabelText = "time",
+  ylabelText = "intensity",
+  fittedXmin = 0,
+  fittedXmax = NA
+)
 }
 \arguments{
 \item{dataInput}{A data frame or a list contatining the dataframe. The data frame should be composed of at least two columns. One represents time, and the other represents intensity. The data should be normalized with the normalize data function sicegar::normalizeData() before imported into this function.}

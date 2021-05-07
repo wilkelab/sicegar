@@ -4,8 +4,11 @@
 \alias{preCategorize}
 \title{Checks for signal in the data.}
 \usage{
-preCategorize(normalizedInput, threshold_intensity_range = 0.1,
-  threshold_minimum_for_intensity_maximum = 0.3)
+preCategorize(
+  normalizedInput,
+  threshold_intensity_range = 0.1,
+  threshold_minimum_for_intensity_maximum = 0.3
+)
 }
 \arguments{
 \item{normalizedInput}{is the output of the sicegar::normalizeData() function.}

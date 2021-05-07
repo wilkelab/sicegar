@@ -4,17 +4,18 @@
 \alias{doublesigmoidalFitFunction}
 \title{Double sigmoidal fit function.}
 \usage{
-doublesigmoidalFitFunction(dataInput, tryCounter,
-  startList = list(finalAsymptoteIntensityRatio = 0, maximum = 1,
-  slope1Param = 1, midPoint1Param = 0.33, slope2Param = 1,
-  midPointDistanceParam = 0.29),
-  lowerBounds = c(finalAsymptoteIntensityRatio = 0, maximum = 0.3,
-  slope1Param = 0.01, midPoint1Param = -0.52, slope2Param = 0.01,
-  midPointDistanceParam = 0.04),
-  upperBounds = c(finalAsymptoteIntensityRatio = 1, maximum = 1.5,
-  slope1Param = 180, midPoint1Param = 1.15, slope2Param = 180,
-  midPointDistanceParam = 0.63), min_Factor = 1/2^20,
-  n_iterations = 1000)
+doublesigmoidalFitFunction(
+  dataInput,
+  tryCounter,
+  startList = list(finalAsymptoteIntensityRatio = 0, maximum = 1, slope1Param = 1,
+    midPoint1Param = 0.33, slope2Param = 1, midPointDistanceParam = 0.29),
+  lowerBounds = c(finalAsymptoteIntensityRatio = 0, maximum = 0.3, slope1Param = 0.01,
+    midPoint1Param = -0.52, slope2Param = 0.01, midPointDistanceParam = 0.04),
+  upperBounds = c(finalAsymptoteIntensityRatio = 1, maximum = 1.5, slope1Param = 180,
+    midPoint1Param = 1.15, slope2Param = 180, midPointDistanceParam = 0.63),
+  min_Factor = 1/2^20,
+  n_iterations = 1000
+)
 }
 \arguments{
 \item{dataInput}{A data frame or a list contatining the dataframe. The data frame should be composed of at least two columns. One represents time, and the other represents intensity. The data should be normalized with the normalize data function sicegar::normalizeData() before imported into this function.}

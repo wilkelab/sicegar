@@ -4,11 +4,15 @@
 \alias{sigmoidalFitFunction}
 \title{Sigmoidal fit function}
 \usage{
-sigmoidalFitFunction(dataInput, tryCounter, startList = list(maximum = 1,
-  slopeParam = 1, midPoint = 0.33), lowerBounds = c(maximum = 0.3,
-  slopeParam = 0.01, midPoint = -0.52), upperBounds = c(maximum = 1.5,
-  slopeParam = 180, midPoint = 1.15), min_Factor = 1/2^20,
-  n_iterations = 1000)
+sigmoidalFitFunction(
+  dataInput,
+  tryCounter,
+  startList = list(maximum = 1, slopeParam = 1, midPoint = 0.33),
+  lowerBounds = c(maximum = 0.3, slopeParam = 0.01, midPoint = -0.52),
+  upperBounds = c(maximum = 1.5, slopeParam = 180, midPoint = 1.15),
+  min_Factor = 1/2^20,
+  n_iterations = 1000
+)
 }
 \arguments{
 \item{dataInput}{A data frame or a list contatining the dataframe. The data frame should be composed of at least two columns. One represents time, and the other represents intensity. The data should be normalized with the normalize data function sicegar::normalizeData() before imported into this function.}

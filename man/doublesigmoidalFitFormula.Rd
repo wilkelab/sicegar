@@ -4,8 +4,15 @@
 \alias{doublesigmoidalFitFormula}
 \title{Double Sigmoidal Formula}
 \usage{
-doublesigmoidalFitFormula(x, finalAsymptoteIntensityRatio, maximum,
-  slope1Param, midPoint1Param, slope2Param, midPointDistanceParam)
+doublesigmoidalFitFormula(
+  x,
+  finalAsymptoteIntensityRatio,
+  maximum,
+  slope1Param,
+  midPoint1Param,
+  slope2Param,
+  midPointDistanceParam
+)
 }
 \arguments{
 \item{x}{the "time" (time) column of the dataframe}

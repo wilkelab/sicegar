@@ -1,6 +1,6 @@
 # R package sicegar
 
-[![Build Status](https://travis-ci.org/wilkelab/sicegar.svg?branch=master)](https://travis-ci.org/wilkelab/sicegar)
+[![R build status](https://github.com/wilkelab/sicegar/workflows/R-CMD-check/badge.svg)](https://github.com/wilkelab/sicegar/actions)
 [![Coverage Status](https://img.shields.io/codecov/c/github/wilkelab/sicegar/master.svg)](https://codecov.io/github/wilkelab/sicegar?branch=master)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/sicegar)](https://CRAN.R-project.org/package=sicegar)
 [![CRAN\_Downloads\_Badge](https://cranlogs.r-pkg.org/badges/grand-total/sicegar?color=brightgreen)](https://cranlogs.r-pkg.org/downloads/total/last-month/sicegar)

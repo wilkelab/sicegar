@@ -68,7 +68,7 @@ categorize <-
            threshold_intensity_range = 0.1,
            threshold_minimum_for_intensity_maximum = 0.3,
            threshold_bonus_sigmoidal_AIC = 0,
-           threshold_sm_tmax_IntensityRatio = 0.85,
+           threshold_sm_tmax_IntensityRatio = 0.75,
            threshold_dsm_tmax_IntensityRatio = 0.75,
            threshold_AIC = -10,
            threshold_t0_max_int = 0.05,
@@ -154,7 +154,7 @@ categorize <-
 
     decisionList$sm_tmax_IntensityRatio <- sm_intensity_at_tmax / parameterVectorSigmoidal$maximum_y
     decisionList$threshold_sm_tmax_IntensityRatio <- threshold_sm_tmax_IntensityRatio
-    decisionList$test.sm_tmax_IntensityRatio <- decisionList$sm_tmax_IntensityRatio > threshold_dsm_tmax_IntensityRatio
+    decisionList$test.sm_tmax_IntensityRatio <- decisionList$sm_tmax_IntensityRatio > threshold_sm_tmax_IntensityRatio
 
     # Calculate predicted intensity for double-sigmoidal model at last observed time point
     # The intensity of double-sigmoidal at timeRange point
